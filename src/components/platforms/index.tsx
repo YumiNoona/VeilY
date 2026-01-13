@@ -2,6 +2,7 @@ import { Message, Person, ChatType, AppearanceSettings } from "@/types/chat";
 import { ArrowLeft, Phone, Video, MoreVertical, Plus, Camera, Mic, Smile, Users, ChevronLeft, Send, Image, Sticker, AtSign, Hash, Search, Inbox, Gift, Heart, ThumbsUp, Check, CheckCheck } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { EditableText } from "@/components/ui/EditableText";
 
 export interface PlatformChatProps {
   messages: Message[];
@@ -9,6 +10,8 @@ export interface PlatformChatProps {
   activePerson: Person | null;
   chatType: ChatType;
   appearance: AppearanceSettings;
+  onUpdateMessage?: (id: string, text: string) => void;
+  onUpdatePerson?: (person: Person) => void;
 }
 
 // Shared helper
@@ -73,7 +76,7 @@ const getWallpaperStyle = (appearance: AppearanceSettings) => {
 };
 
 // WhatsApp
-export function WhatsAppChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function WhatsAppChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgClass = appearance.darkMode ? 'bg-[#0b141a]' : 'bg-[#efeae2]';
   const headerBg = appearance.darkMode ? 'bg-[#202c33]' : 'bg-[#f6f6f6]'; // iOS Header (Light Gray/White)
@@ -91,7 +94,14 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
           <span className="text-[17px] -ml-1">Back</span>
         </button>
         <div className="flex-1 flex flex-col items-center mr-8">
-          <h3 className={cn("font-semibold text-[16px]", textColor)}>{chatType === 'group' ? 'Group' : displayPerson?.name || 'Contact'}</h3>
+          <h3 className={cn("font-semibold text-[16px]", textColor)}>
+            {chatType === 'group' ? 'Group' : (
+              <EditableText
+                value={displayPerson?.name || 'Contact'}
+                onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+              />
+            )}
+          </h3>
           {appearance.showStatus && <p className="text-[11px] text-[#8696a0]">{displayPerson?.isOnline ? 'online' : 'last seen today at 12:00 PM'}</p>}
         </div>
         <div className="flex items-center gap-4">
@@ -164,7 +174,7 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
 }
 
 // iMessage
-export function IMessageChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function IMessageChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-[#1c1c1e]' : 'bg-white';
   const headerBg = appearance.darkMode ? 'bg-[#2c2c2e]' : 'bg-[#f6f6f6]';
@@ -182,7 +192,12 @@ export function IMessageChat({ messages, people, activePerson, chatType, appeara
               {chatType === 'group' ? <Users className="w-5 h-5" /> : displayPerson?.name.charAt(0) || 'U'}
             </div>
           )}
-          {appearance.showStatus && <p className="text-[11px] text-[#8e8e93] mt-0.5">{chatType === 'group' ? `${people.length} people` : displayPerson?.name}</p>}
+          {appearance.showStatus && <p className="text-[11px] text-[#8e8e93] mt-0.5">{chatType === 'group' ? `${people.length} people` : (
+            <EditableText
+              value={displayPerson?.name || 'Contact'}
+              onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+            />
+          )}</p>}
         </div>
         <button className="text-[#007aff]"><Video className="w-6 h-6" /></button>
       </div>
@@ -192,7 +207,13 @@ export function IMessageChat({ messages, people, activePerson, chatType, appeara
             <div className={cn("max-w-[75%] px-3 py-2 rounded-[18px]", message.isOwn ? "bg-[#007aff] text-white rounded-br-[4px]" : appearance.darkMode ? "bg-[#3a3a3c] text-white rounded-bl-[4px]" : "bg-[#e9e9eb] text-black rounded-bl-[4px]")} style={{ wordBreak: 'break-word' }}>
               {chatType === 'group' && !message.isOwn && <p className="text-[11px] font-medium text-[#8e8e93] mb-0.5">{getSenderName(message.senderId, people)}</p>}
               {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-              <p className="text-[17px] leading-[22px]">{message.text}</p>
+              <p className="text-[17px] leading-[22px]">
+                <EditableText
+                  value={message.text}
+                  onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                  multiline
+                />
+              </p>
             </div>
             {appearance.showTimestamps && <span className="text-[10px] text-[#8e8e93] mt-0.5 mx-2">{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
           </div>
@@ -208,7 +229,7 @@ export function IMessageChat({ messages, people, activePerson, chatType, appeara
 }
 
 // Discord
-export function DiscordChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function DiscordChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-[#313338]' : 'bg-[#f2f3f5]';
   const headerBg = appearance.darkMode ? 'bg-[#313338]' : 'bg-[#f2f3f5]';
@@ -222,7 +243,14 @@ export function DiscordChat({ messages, people, activePerson, chatType, appearan
     <div className={cn("flex flex-col h-full", bgColor)}>
       <div className={cn("px-4 py-3 flex items-center border-b shadow-sm", headerBg, appearance.darkMode ? "border-[#1e1f22]" : "border-[#e1e2e4]")}>
         {chatType === 'group' ? <Hash className={cn("w-6 h-6 mr-2", iconColor)} /> : <AtSign className={cn("w-6 h-6 mr-2", iconColor)} />}
-        <h3 className={cn("font-semibold", textColor)}>{chatType === 'group' ? 'general' : displayPerson?.name}</h3>
+        <h3 className={cn("font-semibold", textColor)}>
+          {chatType === 'group' ? 'general' : (
+            <EditableText
+              value={displayPerson?.name || 'Contact'}
+              onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+            />
+          )}
+        </h3>
         <div className="ml-auto flex items-center gap-4"><Search className={cn("w-5 h-5", iconColor)} /><Inbox className={cn("w-5 h-5", iconColor)} /></div>
       </div>
       <div className={cn("flex-1 overflow-y-auto p-4 space-y-4", bgColor)} style={getWallpaperStyle(appearance)}>
@@ -244,7 +272,13 @@ export function DiscordChat({ messages, people, activePerson, chatType, appearan
                   {appearance.showTimestamps && <span className={cn("text-[11px]", appearance.darkMode ? "text-[#949ba4]" : "text-[#5c5e66]")}>{format(message.timestamp instanceof Date ? message.timestamp : new Date(message.timestamp), appearance.use24HourFormat ? 'MM/dd/yyyy HH:mm' : 'MM/dd/yyyy h:mm a')}</span>}
                 </div>
                 {message.image && <img src={message.image} alt="" className="max-w-[200px] rounded-lg mt-1" />}
-                <p className={cn("text-[15px] leading-[1.375rem] break-words", subtextColor)}>{message.text}</p>
+                <p className={cn("text-[15px] leading-[1.375rem] break-words", subtextColor)}>
+                  <EditableText
+                    value={message.text}
+                    onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                    multiline
+                  />
+                </p>
               </div>
             </div>
           );
@@ -262,7 +296,7 @@ export function DiscordChat({ messages, people, activePerson, chatType, appearan
 }
 
 // Instagram
-export function InstagramChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function InstagramChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-black' : 'bg-white';
   const textColor = appearance.darkMode ? 'text-white' : 'text-black';
@@ -286,7 +320,14 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
             </div>
           )}
           <div>
-            <p className={cn("font-semibold text-[15px]", textColor)}>{chatType === 'group' ? people.filter(p => p.id !== 'user').map(p => p.name).join(', ') : displayPerson?.name}</p>
+            <p className={cn("font-semibold text-[15px]", textColor)}>
+              {chatType === 'group' ? people.filter(p => p.id !== 'user').map(p => p.name).join(', ') : (
+                <EditableText
+                  value={displayPerson?.name || 'Contact'}
+                  onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+                />
+              )}
+            </p>
             {appearance.showStatus && <p className={cn("text-xs", subtextColor)}>{displayPerson?.isOnline ? 'Active now' : 'Active 2h ago'}</p>}
           </div>
         </div>
@@ -310,7 +351,13 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
               <div className={cn("flex flex-col", message.isOwn ? "items-end" : "items-start")}>
                 <div className={cn("max-w-[75%] px-4 py-2.5 rounded-[22px]", message.isOwn ? "bg-[#3797f0] text-white" : cn(otherBubble, textColor))} style={{ wordBreak: 'break-word' }}>
                   {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-                  <p className="text-[15px] leading-[20px]">{message.text}</p>
+                  <p className="text-[15px] leading-[20px]">
+                    <EditableText
+                      value={message.text}
+                      onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                      multiline
+                    />
+                  </p>
                 </div>
                 {appearance.showTimestamps && (
                   <span className={cn("text-[11px] mt-1 px-1", subtextColor)}>
@@ -337,7 +384,7 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
 }
 
 // Telegram
-export function TelegramChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function TelegramChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const today = new Date();
 
@@ -353,7 +400,12 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
           </div>
         )}
         <div className="ml-3 flex-1">
-          <h3 className="font-medium text-white">{chatType === 'group' ? 'Group Chat' : displayPerson?.name}</h3>
+          <h3 className="font-medium text-white">{chatType === 'group' ? 'Group Chat' : (
+            <EditableText
+              value={displayPerson?.name || 'Contact'}
+              onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+            />
+          )}</h3>
           {appearance.showStatus && <p className="text-xs text-[#6ab2f2]">{chatType === 'group' ? `${people.length} members` : displayPerson?.isOnline ? 'online' : 'last seen recently'}</p>}
         </div>
         <div className="flex items-center gap-2"><Search className="w-5 h-5 text-[#6ab2f2]" /><MoreVertical className="w-5 h-5 text-[#6ab2f2]" /></div>
@@ -371,7 +423,13 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
               {chatType === 'group' && !message.isOwn && <p className="text-[13px] font-medium text-[#6ab2f2] mb-0.5">{getSenderName(message.senderId, people)}</p>}
               {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
               <div className="flex items-end gap-2">
-                <p className="text-[15px] text-white leading-[20px]">{message.text}</p>
+                <p className="text-[15px] text-white leading-[20px]">
+                  <EditableText
+                    value={message.text}
+                    onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                    multiline
+                  />
+                </p>
                 {appearance.showTimestamps && <span className="text-[11px] text-[#6ab2f2] whitespace-nowrap">{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
               </div>
             </div>
@@ -389,7 +447,7 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
 }
 
 // Messenger
-export function MessengerChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function MessengerChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-black' : 'bg-white';
   const textColor = appearance.darkMode ? 'text-white' : 'text-black';
@@ -413,7 +471,12 @@ export function MessengerChat({ messages, people, activePerson, chatType, appear
             </div>
           )}
           <div className="flex flex-col">
-            <h3 className={cn("font-semibold text-[15px] leading-tight", textColor)}>{chatType === 'group' ? 'Group' : displayPerson?.name}</h3>
+            <h3 className={cn("font-semibold text-[15px] leading-tight", textColor)}>{chatType === 'group' ? 'Group' : (
+              <EditableText
+                value={displayPerson?.name || 'Contact'}
+                onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+              />
+            )}</h3>
             {appearance.showStatus && <p className={cn("text-[12px]", subtextColor)}>Active now</p>}
           </div>
         </div>
@@ -461,7 +524,13 @@ export function MessengerChat({ messages, people, activePerson, chatType, appear
                     message.isOwn ? cn(ownBubbleGradient, "text-white rounded-[18px]") : cn(otherBubble, textColor, "rounded-[18px]")
                   )} style={{ wordBreak: 'break-word' }}>
                     {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-                    <p>{message.text}</p>
+                    <p>
+                      <EditableText
+                        value={message.text}
+                        onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                        multiline
+                      />
+                    </p>
                   </div>
                 </div>
               </div>
@@ -495,7 +564,7 @@ export function MessengerChat({ messages, people, activePerson, chatType, appear
 }
 
 // Slack
-export function SlackChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function SlackChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-[#1a1d21]' : 'bg-white';
   const textColor = appearance.darkMode ? 'text-white' : 'text-[#1d1c1d]';
@@ -508,7 +577,12 @@ export function SlackChat({ messages, people, activePerson, chatType, appearance
     <div className={cn("flex flex-col h-full font-lato", bgColor)}>
       <div className={cn("px-4 py-3 border-b flex items-center shadow-sm z-10", bgColor, borderColor)}>
         <h3 className={cn("font-black text-[18px]", textColor)}>
-          {chatType === 'group' ? '# general' : displayPerson?.name}
+          {chatType === 'group' ? '# general' : (
+            <EditableText
+              value={displayPerson?.name || 'Contact'}
+              onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+            />
+          )}
         </h3>
         <ChevronLeft className={cn("w-3 h-3 rotate-[270deg] ml-1 mt-1", subtextColor)} />
       </div>
@@ -544,7 +618,11 @@ export function SlackChat({ messages, people, activePerson, chatType, appearance
                 </div>
                 <div className={cn("text-[15px] leading-[1.46668]", textColor)}>
                   {message.image && <img src={message.image} alt="" className="max-w-[300px] rounded-lg mb-1 mt-1 border" />}
-                  {message.text}
+                  <EditableText
+                    value={message.text}
+                    onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                    multiline
+                  />
                 </div>
               </div>
             </div>
@@ -574,7 +652,7 @@ export function SlackChat({ messages, people, activePerson, chatType, appearance
 }
 
 // TikTok
-export function TikTokChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function TikTokChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-black' : 'bg-white';
   const textColor = appearance.darkMode ? 'text-white' : 'text-black';
@@ -588,7 +666,12 @@ export function TikTokChat({ messages, people, activePerson, chatType, appearanc
       <div className={cn("px-4 py-3 flex items-center border-b", borderColor)}>
         <button><ArrowLeft className={cn("w-6 h-6", textColor)} /></button>
         <div className="flex-1 text-center">
-          <p className={cn("font-semibold", textColor)}>{chatType === 'group' ? 'Group Chat' : displayPerson?.name}</p>
+          <p className={cn("font-semibold", textColor)}>{chatType === 'group' ? 'Group Chat' : (
+            <EditableText
+              value={displayPerson?.name || 'Contact'}
+              onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+            />
+          )}</p>
           {appearance.showStatus && <p className={cn("text-xs", subtextColor)}>{displayPerson?.isOnline ? 'Active now' : 'Tap to view profile'}</p>}
         </div>
         <MoreVertical className={cn("w-6 h-6", textColor)} />
@@ -598,7 +681,13 @@ export function TikTokChat({ messages, people, activePerson, chatType, appearanc
           <div key={message.id} className={cn("flex flex-col", message.isOwn ? "items-end" : "items-start")}>
             <div className={cn("max-w-[70%] px-4 py-2 rounded-2xl", message.isOwn ? "bg-[#fe2c55] text-white" : cn(otherBubble, textColor))} style={{ wordBreak: 'break-word' }}>
               {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-              <p className="text-[15px]">{message.text}</p>
+              <p className="text-[15px]">
+                <EditableText
+                  value={message.text}
+                  onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                  multiline
+                />
+              </p>
             </div>
             {appearance.showTimestamps && <span className={cn("text-[10px] mt-1", subtextColor)}>{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
           </div>
@@ -615,7 +704,7 @@ export function TikTokChat({ messages, people, activePerson, chatType, appearanc
 }
 
 // Snapchat
-export function SnapchatChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function SnapchatChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-black' : 'bg-white';
   const textColor = appearance.darkMode ? 'text-white' : 'text-black';
@@ -628,7 +717,12 @@ export function SnapchatChat({ messages, people, activePerson, chatType, appeara
           {displayPerson?.avatar ? <img src={displayPerson.avatar} className="w-full h-full rounded-full object-cover" /> : displayPerson?.name?.charAt(0)}
         </div>
         <div className="flex-1">
-          <h3 className={cn("font-bold text-[17px]", textColor)}>{displayPerson?.name}</h3>
+          <h3 className={cn("font-bold text-[17px]", textColor)}>
+            <EditableText
+              value={displayPerson?.name || 'Contact'}
+              onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+            />
+          </h3>
           <p className="text-[13px] text-gray-500 font-medium">Online</p>
         </div>
         <div className="flex gap-4 text-gray-900">
@@ -655,7 +749,13 @@ export function SnapchatChat({ messages, people, activePerson, chatType, appeara
               </span>
               <div className={cn("pl-3 border-l-[2px] py-0.5", isOwn ? "border-l-[#E91E63]" : "border-l-[#2196F3]")}>
                 {message.image && <img src={message.image} alt="" className="max-w-[200px] rounded-lg mb-2" />}
-                <p className={cn("text-[15px] font-medium leading-snug", indicatorColor)}>{message.text}</p>
+                <p className={cn("text-[15px] font-medium leading-snug", indicatorColor)}>
+                  <EditableText
+                    value={message.text}
+                    onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                    multiline
+                  />
+                </p>
               </div>
             </div>
           );
@@ -683,7 +783,7 @@ export function SnapchatChat({ messages, people, activePerson, chatType, appeara
 }
 
 // Reddit
-export function RedditChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function RedditChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-black' : 'bg-white';
   const headerBg = appearance.darkMode ? 'bg-[#1a1a1b]' : 'bg-white';
@@ -694,7 +794,12 @@ export function RedditChat({ messages, people, activePerson, chatType, appearanc
       {/* Header */}
       <div className={cn("px-4 py-2 flex items-center border-b", headerBg, appearance.darkMode ? "border-[#343536]" : "border-[#edeff1]")}>
         <button><ArrowLeft className={cn("w-6 h-6 mr-4", textColor)} /></button>
-        <h3 className={cn("font-bold text-[16px]", textColor)}>{chatType === 'group' ? 'Group Chat' : displayPerson?.name}</h3>
+        <h3 className={cn("font-bold text-[16px]", textColor)}>{chatType === 'group' ? 'Group Chat' : (
+          <EditableText
+            value={displayPerson?.name || 'Contact'}
+            onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+          />
+        )}</h3>
         <div className="ml-auto flex gap-4">
           <Share2 className={cn("w-6 h-6", textColor)} />
         </div>
@@ -721,7 +826,13 @@ export function RedditChat({ messages, people, activePerson, chatType, appearanc
                   <span className="text-xs text-gray-500">{formatTime(message.timestamp, true)}</span>
                 </div>
                 {message.image && <img src={message.image} alt="" className="max-w-full rounded mb-1 mt-1" />}
-                <p className={cn("text-[15px] leading-snug mt-0.5", textColor)}>{message.text}</p>
+                <p className={cn("text-[15px] leading-snug mt-0.5", textColor)}>
+                  <EditableText
+                    value={message.text}
+                    onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                    multiline
+                  />
+                </p>
               </div>
             </div>
           );
@@ -752,7 +863,7 @@ function FileImage({ className }: { className?: string }) { return <Image classN
 
 // LINE
 // LINE
-export function LineChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function LineChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-[#1a1a1a]' : 'bg-[#8c9dbb]'; // Standard Line Blue-Grey background
   const textColor = appearance.darkMode ? 'text-white' : 'text-black';
@@ -765,7 +876,12 @@ export function LineChat({ messages, people, activePerson, chatType, appearance 
       <div className={cn("px-4 py-3 flex items-center shadow-sm z-10", headerBg)}>
         <button className="mr-3"><ArrowLeft className={cn("w-6 h-6", headerText)} /></button>
         <div className="flex-1">
-          <h3 className={cn("font-semibold text-lg leading-tight", headerText)}>{chatType === 'group' ? 'Group' : displayPerson?.name}</h3>
+          <h3 className={cn("font-semibold text-lg leading-tight", headerText)}>{chatType === 'group' ? 'Group' : (
+            <EditableText
+              value={displayPerson?.name || 'Contact'}
+              onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+            />
+          )}</h3>
         </div>
         <div className="flex gap-4">
           <Search className={cn("w-6 h-6", headerText)} />
@@ -809,7 +925,13 @@ export function LineChat({ messages, people, activePerson, chatType, appearance 
                       : "bg-white text-black rounded-tl-sm"
                   )} style={{ wordBreak: 'break-word' }}>
                     {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-                    <p className="leading-snug">{message.text}</p>
+                    <p className="leading-snug">
+                      <EditableText
+                        value={message.text}
+                        onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                        multiline
+                      />
+                    </p>
                   </div>
 
                   <span className={cn("text-[10px] text-white/90 mb-0.5 min-w-[30px]", message.isOwn ? "text-right" : "")}>
@@ -837,7 +959,7 @@ export function LineChat({ messages, people, activePerson, chatType, appearance 
 }
 
 // Microsoft Teams
-export function TeamsChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function TeamsChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-[#1f1f1f]' : 'bg-[#f0f0f0]'; // Light gray background
   const headerBg = appearance.darkMode ? 'bg-[#292929]' : 'bg-white';
@@ -922,7 +1044,7 @@ export function TeamsChat({ messages, people, activePerson, chatType, appearance
 }
 
 // Signal
-export function SignalChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function SignalChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-[#1b1c1f]' : 'bg-white';
   const headerBg = appearance.darkMode ? 'bg-[#1b1c1f]' : 'bg-white';
@@ -1006,7 +1128,7 @@ export function SignalChat({ messages, people, activePerson, chatType, appearanc
 }
 
 // Tinder
-export function TinderChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function TinderChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-[#111418]' : 'bg-white';
   const headerBg = appearance.darkMode ? 'bg-[#111418]' : 'bg-white';
@@ -1054,7 +1176,7 @@ export function TinderChat({ messages, people, activePerson, chatType, appearanc
 
 // WeChat
 // WeChat
-export function WeChatChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function WeChatChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-[#1e1e1e]' : 'bg-[#f3f3f3]';
   const headerBg = appearance.darkMode ? 'bg-[#2e2e2e]' : 'bg-[#f3f3f3]';
@@ -1131,7 +1253,7 @@ export function WeChatChat({ messages, people, activePerson, chatType, appearanc
 }
 
 // X (Twitter DMs)
-export function XChat({ messages, people, activePerson, chatType, appearance }: PlatformChatProps) {
+export function XChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgColor = appearance.darkMode ? 'bg-black' : 'bg-white';
   const textColor = appearance.darkMode ? 'text-white' : 'text-black';

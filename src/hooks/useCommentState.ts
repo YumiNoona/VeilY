@@ -201,6 +201,17 @@ export const useCommentState = () => {
         }));
     };
 
+    const reorderComments = (newComments: Comment[]) => {
+        setState(prev => ({ ...prev, comments: newComments }));
+    };
+
+    const globalReplaceProfileName = (oldName: string, newName: string) => {
+        setState(prev => ({
+            ...prev,
+            profiles: prev.profiles.map(p => p.name === oldName ? { ...p, name: newName } : p)
+        }));
+    };
+
     return {
         state,
         setPlatform,
@@ -211,5 +222,7 @@ export const useCommentState = () => {
         addComment,
         updateComment,
         deleteComment,
+        reorderComments,
+        globalReplaceProfileName,
     };
 };

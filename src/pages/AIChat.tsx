@@ -64,6 +64,9 @@ const AIChat = () => {
             deviceView={deviceView}
             appearance={chatState.appearance}
             aiModel={chatState.aiModel}
+            onUpdateMessage={handleUpdateMessage}
+            onUpdatePerson={handleUpdatePerson}
+            onUpdateAppearance={handleAppearanceChange}
           />
         </div>
 

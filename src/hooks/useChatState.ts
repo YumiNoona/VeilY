@@ -106,6 +106,17 @@ export const useChatState = () => {
         setChatState(prev => ({ ...prev, aiModel }));
     }, []);
 
+    const handleReorderMessages = useCallback((newMessages: Message[]) => {
+        setChatState(prev => ({ ...prev, messages: newMessages }));
+    }, []);
+
+    const globalReplaceSenderName = useCallback((oldName: string, newName: string) => {
+        setChatState(prev => ({
+            ...prev,
+            people: prev.people.map(p => p.name === oldName ? { ...p, name: newName } : p)
+        }));
+    }, []);
+
     return {
         chatState,
         handlePlatformChange,
@@ -118,5 +129,7 @@ export const useChatState = () => {
         handleUpdateMessage,
         handleAppearanceChange,
         handleAiModelChange,
+        handleReorderMessages,
+        globalReplaceSenderName,
     };
 };

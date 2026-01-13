@@ -1,6 +1,7 @@
 import { Message, Person, AppearanceSettings } from "@/types/chat";
 import { cn } from "@/lib/utils";
 import { AlignJustify, Pencil, Plus, Copy, Volume2, ThumbsUp, ThumbsDown, RotateCw, Mic, AudioLines, SlidersHorizontal } from "lucide-react";
+import { EditableText } from "@/components/ui/EditableText";
 
 interface ChatProps {
     messages: Message[];
@@ -8,9 +9,11 @@ interface ChatProps {
     activePerson: Person | null;
     appearance: AppearanceSettings;
     aiModel?: string;
+    onUpdateMessage?: (id: string, text: string) => void;
+    onUpdatePerson?: (person: Person) => void;
 }
 
-export function ChatGPTChat({ messages, people, appearance, aiModel }: ChatProps) {
+export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMessage, onUpdatePerson }: ChatProps) {
     const getPerson = (id: string) => people.find(p => p.id === id);
 
     // Format model name for display
@@ -115,7 +118,13 @@ export function ChatGPTChat({ messages, people, appearance, aiModel }: ChatProps
                                 <div className="max-w-[100%] pr-2">
                                     <div className="space-y-1">
                                         <div className="text-[16px] leading-[1.6] text-[#0D0D0D]">
-                                            {formatMessageText(message.text)}
+                                            <EditableText
+                                                value={message.text}
+                                                displayValue={formatMessageText(message.text)}
+                                                onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                                                multiline
+                                                className="block w-full"
+                                            />
                                         </div>
                                     </div>
 
@@ -143,7 +152,13 @@ export function ChatGPTChat({ messages, people, appearance, aiModel }: ChatProps
                             {/* User Layout */}
                             {isUser && (
                                 <div className="max-w-[90%] bg-[#2F2F2F] text-white px-5 py-3 rounded-[26px] text-[16px] leading-[1.5] mb-2">
-                                    {message.text}
+                                    <EditableText
+                                        value={message.text}
+                                        onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                                        multiline
+                                        className="text-white"
+                                        inputClassName="text-white"
+                                    />
                                 </div>
                             )}
                         </div>

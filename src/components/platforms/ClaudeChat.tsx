@@ -1,6 +1,7 @@
 import { Message, Person, AppearanceSettings } from "@/types/chat";
 import { cn } from "@/lib/utils";
 import { Mic, Pencil, Plus, ArrowUp } from "lucide-react";
+import { EditableText } from "@/components/ui/EditableText";
 
 interface ChatProps {
     messages: Message[];
@@ -8,9 +9,11 @@ interface ChatProps {
     activePerson: Person | null;
     appearance: AppearanceSettings;
     aiModel?: string;
+    onUpdateMessage?: (id: string, text: string) => void;
+    onUpdatePerson?: (person: Person) => void;
 }
 
-export function ClaudeChat({ messages, people, appearance, aiModel }: ChatProps) {
+export function ClaudeChat({ messages, people, appearance, aiModel, onUpdateMessage, onUpdatePerson }: ChatProps) {
     const getPerson = (id: string) => people.find(p => p.id === id);
 
     // Format model name for display
@@ -55,7 +58,12 @@ export function ClaudeChat({ messages, people, appearance, aiModel }: ChatProps)
                             {!isUser && (
                                 <div className="space-y-1.5 max-w-[95%]">
                                     <div className="text-[17px] leading-relaxed text-[#2D2D2D] font-serif tracking-[0.01em]">
-                                        {message.text}
+                                        <EditableText
+                                            value={message.text}
+                                            onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                                            multiline
+                                            className="block w-full"
+                                        />
                                     </div>
                                 </div>
                             )}
@@ -63,7 +71,12 @@ export function ClaudeChat({ messages, people, appearance, aiModel }: ChatProps)
                             {/* User Layout */}
                             {isUser && (
                                 <div className="max-w-[85%] bg-[#F0F0EB] text-[#2D2D2D] px-5 py-3 rounded-[24px] text-[16px] leading-[1.6]">
-                                    {message.text}
+                                    <EditableText
+                                        value={message.text}
+                                        onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                                        multiline
+                                        className="block w-full"
+                                    />
                                 </div>
                             )}
                         </div>

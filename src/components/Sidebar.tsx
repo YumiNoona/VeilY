@@ -25,6 +25,7 @@ interface SidebarProps {
   onRemovePerson: (id: string) => void;
   onAppearanceChange: (appearance: AppearanceSettings) => void;
   onAiModelChange?: (model: string) => void;
+  onReorderMessages?: (newMessages: ChatState['messages']) => void;
 }
 
 export function Sidebar({
@@ -40,6 +41,7 @@ export function Sidebar({
   onRemovePerson,
   onAppearanceChange,
   onAiModelChange,
+  onReorderMessages,
 }: SidebarProps) {
 
   return (
@@ -92,6 +94,7 @@ export function Sidebar({
               onAddMessage={onAddMessage}
               onRemoveMessage={onRemoveMessage}
               onUpdateMessage={onUpdateMessage}
+              onReorderMessages={onReorderMessages}
             />
 
             <AppearanceSection

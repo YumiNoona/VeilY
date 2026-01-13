@@ -18,6 +18,7 @@ const Index = () => {
     handleRemovePerson,
     handleUpdateMessage,
     handleAppearanceChange,
+    handleReorderMessages,
   } = useChatState();
 
   const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
@@ -39,6 +40,7 @@ const Index = () => {
         onAddPerson={handleAddPerson}
         onRemovePerson={handleRemovePerson}
         onAppearanceChange={handleAppearanceChange}
+        onReorderMessages={handleReorderMessages}
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden">
@@ -52,6 +54,9 @@ const Index = () => {
             chatType={chatState.chatType}
             deviceView={deviceView}
             appearance={chatState.appearance}
+            onUpdateMessage={handleUpdateMessage}
+            onUpdatePerson={handleUpdatePerson}
+            onUpdateAppearance={handleAppearanceChange}
           />
         </div>
 

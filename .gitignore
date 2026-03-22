@@ -13,6 +13,7 @@ node_modules
 # Build
 dist
 dist-ssr
+dist_electron
 
 # Environment variables (CRITICAL)
 .env

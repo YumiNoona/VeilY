@@ -1,0 +1,97 @@
+import { ArrowLeft, ChevronLeft, Video, Phone, Camera, Mic, Plus, CheckCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { EditableText } from "@/components/ui/EditableText";
+import { PlatformChatProps, getSenderName, formatTime, isSameDay, formatDateSeparator, getWallpaperStyle } from "./shared";
+
+export function WhatsAppChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
+  const displayPerson = activePerson || people.find(p => p.id !== 'user');
+  const bgClass = appearance.darkMode ? 'bg-[#0b141a]' : 'bg-[#efeae2]';
+  const headerBg = appearance.darkMode ? 'bg-[#202c33]' : 'bg-[#f6f6f6]';
+  const textColor = appearance.darkMode ? 'text-[#e9edef]' : 'text-black';
+  const ownBubble = appearance.darkMode ? 'bg-[#005c4b]' : 'bg-[#dcf8c6]';
+  const otherBubble = appearance.darkMode ? 'bg-[#202c33]' : 'bg-white';
+  const iconColor = appearance.darkMode ? 'text-[#8696a0]' : 'text-[#007aff]';
+
+  return (
+    <div className={cn("flex flex-col h-full", bgClass)}>
+      {/* Header */}
+      <div className={cn("px-3 py-2 flex items-center border-b", headerBg, appearance.darkMode ? "border-[#202c33]" : "border-[#bdc1c6]")}>
+        <button className={cn("p-1 flex items-center gap-1", iconColor)}>
+          <ChevronLeft className="w-7 h-7 -ml-2" />
+          <span className="text-[17px] -ml-1">Back</span>
+        </button>
+        <div className="flex-1 flex flex-col items-center mr-8">
+          <h3 className={cn("font-semibold text-[16px]", textColor)}>
+            {chatType === 'group' ? 'Group' : (
+              <EditableText
+                value={displayPerson?.name || 'Contact'}
+                onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+              />
+            )}
+          </h3>
+          {appearance.showStatus && <p className="text-[11px] text-[#8696a0]">{displayPerson?.isOnline ? 'online' : 'last seen today at 12:00 PM'}</p>}
+        </div>
+        <div className="flex items-center gap-4">
+          <Video className={cn("w-6 h-6", iconColor)} />
+          <Phone className={cn("w-5 h-5", iconColor)} />
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-1" style={{
+        ...getWallpaperStyle(appearance),
+        backgroundImage: appearance.wallpaperUrl ? `url(${appearance.wallpaperUrl})` : "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')"
+      }}>
+        {messages.map((message, i) => {
+          const msgDate = new Date(message.timestamp);
+          const prevMsgDate = i > 0 ? new Date(messages[i - 1].timestamp) : null;
+          const showDateSeparator = !prevMsgDate || !isSameDay(msgDate, prevMsgDate);
+
+          return (
+            <div key={message.id} className="flex flex-col mb-1">
+              {showDateSeparator && (
+                <div className="flex justify-center my-4">
+                  <span className={cn(
+                    "px-3 py-1 rounded-md text-[12.5px] shadow-sm uppercase font-medium",
+                    appearance.darkMode ? "bg-[#182229] text-[#8696a0]" : "bg-[#e1f3fb] text-[#54656f]"
+                  )}>
+                    {formatDateSeparator(msgDate)}
+                  </span>
+                </div>
+              )}
+              <div className={cn("flex flex-col", message.isOwn ? "items-end" : "items-start")}>
+                <div className={cn(
+                  "px-2 py-1.5 rounded-lg max-w-[80%] text-[15px] shadow-sm relative",
+                  message.isOwn ? ownBubble : otherBubble
+                )} style={{ wordBreak: 'break-word' }}>
+                  {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
+                  <div className="flex items-end gap-2 flex-wrap min-w-[60px] justify-between">
+                    <span className={cn("leading-[1.35] pt-0.5", appearance.darkMode ? "text-white" : "text-black")}>{message.text}</span>
+                    <span className={cn("text-[11px] flex items-center gap-0.5 ml-auto translate-y-0.5", appearance.darkMode ? "text-[#8696a0]" : "text-[#999]")}>
+                      {formatTime(message.timestamp, appearance.use24HourFormat ?? false)}
+                      {message.isOwn && (
+                        <span className="ml-0.5">
+                          <CheckCheck className={cn("w-4 h-4", "text-[#53bdeb]")} />
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Input */}
+      <div className={cn("p-2 flex items-center gap-2", appearance.darkMode ? "bg-[#202c33]" : "bg-[#f6f6f6]")}>
+        <Plus className="w-7 h-7 text-[#007aff]" />
+        <div className={cn("flex-1 rounded-full px-3 py-1.5 border", appearance.darkMode ? "bg-[#2a3942] border-none" : "bg-white border-[#dbdbdb]")}>
+          <input type="text" placeholder="" className={cn("w-full bg-transparent text-[16px] outline-none", textColor)} readOnly />
+        </div>
+        {!appearance.darkMode && <Camera className="w-6 h-6 text-[#007aff]" />}
+        <Mic className="w-6 h-6 text-[#007aff]" />
+      </div>
+    </div>
+  );
+}

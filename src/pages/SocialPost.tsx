@@ -15,7 +15,8 @@ const SocialPost = () => {
         setConfig,
         setThreadItems,
         loadTemplate,
-        randomizeState
+        randomizeState,
+        handleResetState
     } = useSocialPostState();
 
     const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
@@ -33,6 +34,7 @@ const SocialPost = () => {
                 setThreadItems={setThreadItems}
                 loadTemplate={loadTemplate}
                 randomizeState={randomizeState}
+                handleResetState={handleResetState}
             />
             <div className="flex-1 relative overflow-y-auto overflow-x-hidden">
                 <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8 pt-32 pb-20">

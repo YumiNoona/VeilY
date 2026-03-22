@@ -212,6 +212,22 @@ export const useCommentState = () => {
         }));
     };
 
+    const handleResetState = () => {
+        setState({
+            platform: 'instagram',
+            profiles: INITIAL_PROFILES,
+            comments: INITIAL_COMMENTS,
+            config: {
+                theme: 'light',
+                showWatermark: true,
+            }
+        });
+    };
+
+    const loadTemplate = (template: CommentsState) => {
+        setState(template);
+    };
+
     return {
         state,
         setPlatform,
@@ -224,5 +240,7 @@ export const useCommentState = () => {
         deleteComment,
         reorderComments,
         globalReplaceProfileName,
+        handleResetState,
+        loadTemplate,
     };
 };

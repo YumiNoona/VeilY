@@ -19,6 +19,8 @@ const AIChat = () => {
     handleUpdateMessage,
     handleAppearanceChange,
     handleAiModelChange,
+    handleResetState,
+    handleLoadTemplate,
   } = useChatState();
 
   // Set default to ChatGPT when entering AI Chat if not already an AI platform
@@ -50,6 +52,8 @@ const AIChat = () => {
         onRemovePerson={handleRemovePerson}
         onAppearanceChange={handleAppearanceChange}
         onAiModelChange={handleAiModelChange}
+        onReset={handleResetState}
+        onTemplateLoad={handleLoadTemplate}
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden">

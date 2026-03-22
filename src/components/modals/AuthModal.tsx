@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
 export const AuthModal = () => {
     const { isAuthModalOpen, setAuthModalOpen } = useAuth();
-    const [isSignUp, setIsSignUp] = useState(false);
+    const [mode, setMode] = useState<'signin' | 'signup'>('signin');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -20,13 +16,21 @@ export const AuthModal = () => {
         setLoading(true);
 
         try {
-            if (isSignUp) {
-                const { error } = await supabase.auth.signUp({
+            if (mode === 'signup') {
+                const { data, error } = await supabase.auth.signUp({
                     email,
                     password,
+                    options: {
+                        emailRedirectTo: window.location.origin,
+                    }
                 });
                 if (error) throw error;
-                toast.success('Registration successful! Optionally check your email, or you are logged in automatically.');
+                
+                if (data?.user && !data.session) {
+                    toast.success('Confirmation email sent! Please check your inbox.');
+                } else {
+                    toast.success('Registration successful! You are now logged in.');
+                }
                 setAuthModalOpen(false);
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
@@ -44,86 +48,87 @@ export const AuthModal = () => {
         }
     };
 
-    const handleGoogleLogin = async () => {
-        try {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-            });
-            if (error) throw error;
-        } catch (error: any) {
-            toast.error(error.message || 'Failed to initialize Google login.');
-        }
-    };
+    if (!isAuthModalOpen) return null;
 
     return (
-        <Dialog open={isAuthModalOpen} onOpenChange={setAuthModalOpen}>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>{isSignUp ? 'Create an account' : 'Welcome back'}</DialogTitle>
-                    <DialogDescription>
-                        {isSignUp 
-                            ? 'Enter your details to create a new account.' 
-                            : 'Enter your credentials to access your account.'}
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="name@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <Button type="submit" className="w-full" disabled={loading}>
-                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isSignUp ? 'Sign Up' : 'Sign In'}
-                        </Button>
-                    </form>
-                    
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">
-                                Or continue with
-                            </span>
-                        </div>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
+                
+                {/* Header */}
+                <h2 className="text-2xl font-semibold text-gray-900">
+                    {mode === 'signin' ? 'Welcome back' : 'Create account'}
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                    {mode === 'signin'
+                        ? 'Sign in to continue to Veily'
+                        : 'Start using Veily today'}
+                </p>
+
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                    <div className="space-y-1">
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black outline-none transition"
+                        />
                     </div>
-                    
-                    <Button variant="outline" type="button" className="w-full" onClick={handleGoogleLogin}>
-                        <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
-                            <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
-                        </svg>
-                        Google
-                    </Button>
-                </div>
-                <div className="mt-4 text-center text-sm">
-                    {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+
+                    <div className="space-y-1">
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black outline-none transition"
+                        />
+                    </div>
+
                     <button
-                        type="button"
-                        onClick={() => setIsSignUp(!isSignUp)}
-                        className="font-medium text-primary hover:underline"
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-black text-white py-3 rounded-lg font-medium hover:opacity-90 transition flex items-center justify-center disabled:opacity-50"
                     >
-                        {isSignUp ? 'Sign in' : 'Sign up'}
+                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {mode === 'signin' ? 'Sign In' : 'Create Account'}
                     </button>
-                </div>
-            </DialogContent>
-        </Dialog>
+                </form>
+
+                {/* Footer / Toggle */}
+                <p className="text-sm text-center mt-4 text-gray-600">
+                    {mode === 'signin' ? (
+                        <>
+                            Don’t have an account?{" "}
+                            <span 
+                                onClick={() => setMode('signup')} 
+                                className="text-black font-medium cursor-pointer hover:underline"
+                            >
+                                Sign up
+                            </span>
+                        </>
+                    ) : (
+                        <>
+                            Already have an account?{" "}
+                            <span 
+                                onClick={() => setMode('signin')} 
+                                className="text-black font-medium cursor-pointer hover:underline"
+                            >
+                                Sign in
+                            </span>
+                        </>
+                    )}
+                </p>
+            </div>
+            
+            {/* Click outside to close (optional but standard) */}
+            <div 
+                className="absolute inset-0 -z-10" 
+                onClick={() => setAuthModalOpen(false)} 
+            />
+        </div>
     );
 };

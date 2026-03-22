@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 
 const UpgradeSuccess = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, refetchUserStatus } = useAuth();
     const [verifying, setVerifying] = useState(true);
     const [success, setSuccess] = useState(false);
 
@@ -25,16 +25,16 @@ const UpgradeSuccess = () => {
             for (let i = 0; i < 5; i++) {
                 const { data } = await supabase
                     .from('users')
-                    .select('is_premium')
+                    .select('plan')
                     .eq('id', user.id)
                     .single();
 
-                if (data?.is_premium) {
+                if (data?.plan !== 'free' && data?.plan !== undefined) {
                     isVerified = true;
                     setSuccess(true);
                     
-                    // Force the AuthContext to instantly re-sync via Supabase event
-                    supabase.auth.refreshSession();
+                    // Force the AuthContext to instantly re-sync via the new refetch method
+                    await refetchUserStatus();
                     break;
                 }
                 

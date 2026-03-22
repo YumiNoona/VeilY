@@ -32,45 +32,80 @@ export default async function handler(req: any, res: any) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // Idempotency: Ignore anything that isn't a successful checkout session completion natively
-  if (event.type !== 'checkout.session.completed') {
-    return res.status(200).json({ received: true });
-  }
-
-  const session = event.data.object as Stripe.Checkout.Session;
-  const userId = session.metadata?.user_id;
-
-  if (!userId) {
-    console.error('No userId attached to checkout session metadata');
-    return res.status(400).json({ error: 'No userId attached to checkout session' });
-  }
-
-  // Construct Supabase Client with service_role privilege avoiding RLS blocks
+  // Support multiple event types for subscription lifecycle
   const supabaseAdmin = createClient(supabaseUrl, supabaseSecretKey);
 
-  // Replay Protection: Inserts the event.id into DB; will constraint panic if duplicate
-  const { error: idempotencyError } = await supabaseAdmin
-    .from('webhook_events')
-    .insert([{ id: event.id }]);
+  switch (event.type) {
+    case 'checkout.session.completed': {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const userId = session.metadata?.user_id;
+      const plan = session.metadata?.plan;
+      const customerId = session.customer as string;
 
-  if (idempotencyError) {
-    if (idempotencyError.code === '23505') { // Postgres unique_violation error code
-      console.log(`Duplicate Stripe hook intercepted | Event ${event.id} already processed.`);
-      return res.status(200).json({ received: true });
+      if (!userId || !plan) {
+        console.error('Missing metadata in checkout.session.completed');
+        return res.status(400).json({ error: 'Missing metadata' });
+      }
+
+      // Update user with new plan and customer ID
+      const { error } = await supabaseAdmin
+        .from('users')
+        .update({ 
+          plan: plan,
+          stripe_customer_id: customerId,
+          is_premium: true // Keep legacy flag active on upgrade
+        })
+        .eq('id', userId);
+
+      if (error) throw error;
+      console.log(`User ${userId} upgraded to ${plan}`);
+      break;
     }
-    console.error('Failed to log webhook event to db:', idempotencyError);
-    return res.status(500).json({ error: 'Database idempotency constraint failure' });
-  }
 
-  // Perform backend user upgrade
-  const { error: upgradeError } = await supabaseAdmin
-    .from('users')
-    .update({ is_premium: true })
-    .eq('id', userId);
+    case 'invoice.payment_succeeded': {
+      const invoice = event.data.object as Stripe.Invoice;
+      const customerId = invoice.customer as string;
 
-  if (upgradeError) {
-    console.error('Failed to finalize user database upgrade:', upgradeError);
-    return res.status(500).json({ error: 'Failed to apply upgrade status' });
+      if (!customerId) break;
+
+      // Reset usage counters on successful monthly payment
+      const { error } = await supabaseAdmin
+        .from('users')
+        .update({ 
+          downloads_used: 0,
+          videos_used: 0
+        })
+        .eq('stripe_customer_id', customerId);
+
+      if (error) throw error;
+      console.log(`Monthly reset performed for customer ${customerId}`);
+      break;
+    }
+
+    case 'customer.subscription.deleted': {
+      const subscription = event.data.object as Stripe.Subscription;
+      const customerId = subscription.customer as string;
+
+      if (!customerId) break;
+
+      // Downgrade to free on cancellation and reset all limits
+      const { error } = await supabaseAdmin
+        .from('users')
+        .update({ 
+          plan: 'free',
+          is_premium: false,
+          downloads_used: 0,
+          videos_used: 0
+        })
+        .eq('stripe_customer_id', customerId);
+
+      if (error) throw error;
+      console.log(`Customer ${customerId} downgraded to free`);
+      break;
+    }
+
+    default:
+      console.log(`Unhandled event type ${event.type}`);
   }
 
   res.status(200).json({ success: true });

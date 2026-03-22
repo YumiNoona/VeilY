@@ -20,6 +20,7 @@ const Index = () => {
     handleAppearanceChange,
     handleReorderMessages,
     handleResetState,
+    handleLoadTemplate,
   } = useChatState();
 
   const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
@@ -43,6 +44,7 @@ const Index = () => {
         onAppearanceChange={handleAppearanceChange}
         onReorderMessages={handleReorderMessages}
         onReset={handleResetState}
+        onTemplateLoad={handleLoadTemplate}
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden">

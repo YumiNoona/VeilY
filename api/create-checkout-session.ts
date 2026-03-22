@@ -10,13 +10,21 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const { userId } = req.body;
+    const { userId, plan } = req.body;
 
-    if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
+    if (!userId || !plan) {
+      return res.status(400).json({ error: 'User ID and Plan are required' });
     }
 
-    // You must ensure this matches the environment variable in production
+    // Map App Plans to Stripe Price IDs
+    const priceId = plan === 'pro' 
+      ? process.env.STRIPE_PRICE_STANDARD 
+      : process.env.STRIPE_PRICE_PRO;
+
+    if (!priceId) {
+      return res.status(400).json({ error: 'Invalid plan or missing Price ID configuration' });
+    }
+
     const host = req.headers.host || 'localhost:5173';
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const origin = `${protocol}://${host}`;
@@ -25,22 +33,16 @@ export default async function handler(req: any, res: any) {
       payment_method_types: ['card'],
       line_items: [
         {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Veily Premium',
-              description: 'Unlock all premium features including watermark removal and high-res exports.',
-            },
-            unit_amount: 1900, // $19.00
-          },
+          price: priceId,
           quantity: 1,
         },
       ],
-      mode: 'payment',
+      mode: 'subscription',
       success_url: `${origin}/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/`,
       metadata: {
-        user_id: userId, // CRITICAL: This MUST be user_id, otherwise premium will NEVER update
+        user_id: userId,
+        plan: plan, // 'pro' or 'premium'
       },
     });
 

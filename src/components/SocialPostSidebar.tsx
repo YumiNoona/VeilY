@@ -17,8 +17,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Upload, X, Twitter, Instagram, Linkedin, Facebook, MessageSquare, Wand2, ChevronDown, ChevronRight, BadgeCheck } from 'lucide-react';
-import { Logo } from './Logo';
+import { Upload, X, Twitter, Instagram, Linkedin, Facebook, MessageSquare, Wand2, ChevronDown, ChevronRight, RotateCcw } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface SocialPostSidebarProps {
@@ -31,6 +30,7 @@ interface SocialPostSidebarProps {
     setThreadItems: ReturnType<typeof useSocialPostState>['setThreadItems'];
     loadTemplate: ReturnType<typeof useSocialPostState>['loadTemplate'];
     randomizeState: ReturnType<typeof useSocialPostState>['randomizeState'];
+    handleResetState: ReturnType<typeof useSocialPostState>['handleResetState'];
 }
 
 export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
@@ -42,9 +42,10 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
     setConfig,
     setThreadItems,
     loadTemplate,
-    randomizeState
+    randomizeState,
+    handleResetState
 }) => {
-    const { isPremium, setUpgradeModalOpen } = useAuth();
+    const { setUpgradeModalOpen } = useAuth();
     const [collapsedThreads, setCollapsedThreads] = React.useState<Record<string, boolean>>({});
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'avatar' | 'image') => {
@@ -120,8 +121,16 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
         <aside className="w-full lg:w-[450px] bg-sidebar-bg border-r border-sidebar-border h-full flex flex-col overflow-hidden">
             <div className="pt-5 px-3 pb-2 border-b border-sidebar-border">
                 <div className="flex items-center justify-between mb-4">
-                    <Logo />
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-1">
+                        <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            onClick={handleResetState}
+                            title="Reset All"
+                        >
+                            <RotateCcw className="h-4 w-4" />
+                        </Button>
                         <Button 
                             variant="outline" 
                             size="icon" 
@@ -132,29 +141,32 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                             <Wand2 className="h-4 w-4" />
                         </Button>
                         <Select onValueChange={(val) => {
-                            switch (val) {
-                                case 'viralTweet': loadTemplate(SOCIAL_TEMPLATES.viralTweet); break;
-                                case 'linkedinFlex': loadTemplate(SOCIAL_TEMPLATES.linkedinFlex); break;
-                                case 'redditTifu': loadTemplate(SOCIAL_TEMPLATES.redditTifu); break;
-                                case 'instagramViral': loadTemplate(SOCIAL_TEMPLATES.instagramViral); break;
-                            }
+                            const template = SOCIAL_TEMPLATES[val as keyof typeof SOCIAL_TEMPLATES];
+                            if (template) loadTemplate(template);
                         }}>
-                        <SelectTrigger className="w-[180px] h-8 text-xs font-medium">
-                            <SelectValue placeholder="Load Template..." />
+                        <SelectTrigger className="w-[120px] h-8 text-xs font-medium ml-1">
+                            <SelectValue placeholder="Templates" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectLabel>Viral</SelectLabel>
-                                <SelectItem value="viralTweet">Tech Bro Tweet</SelectItem>
-                                <SelectItem value="instagramViral">Aesthetic IG Post</SelectItem>
+                                <SelectLabel>X (Twitter)</SelectLabel>
+                                <SelectItem value="viralTweet">Growth Playbook</SelectItem>
+                                <SelectItem value="techNewsX">Tech News</SelectItem>
+                                <SelectItem value="redditAITA">Reddit AITA</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
-                                <SelectLabel>Professional</SelectLabel>
-                                <SelectItem value="linkedinFlex">LinkedIn Flex</SelectItem>
+                                <SelectLabel>Instagram</SelectLabel>
+                                <SelectItem value="instagramAesthetic">Aesthetic Vibe</SelectItem>
+                                <SelectItem value="instagramBrand">Brand Post</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
-                                <SelectLabel>Funny / Stories</SelectLabel>
-                                <SelectItem value="redditTifu">Reddit TIFU</SelectItem>
+                                <SelectLabel>LinkedIn</SelectLabel>
+                                <SelectItem value="linkedinHired">New Job</SelectItem>
+                                <SelectItem value="linkedinAdvice">Expert Advice</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>Facebook</SelectLabel>
+                                <SelectItem value="facebookMarketplace">Marketplace Sale</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -436,7 +448,7 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
 
                     {/* APPEARANCE SECTION */}
                     <AccordionItem value="appearance">
-                        <AccordionTrigger>Appearance & Pro</AccordionTrigger>
+                        <AccordionTrigger>Appearance</AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2">
                             <div className="flex items-center justify-between">
                                 <Label>Dark Mode</Label>
@@ -451,28 +463,6 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                     checked={state.config.transparentBackground}
                                     onCheckedChange={(checked) => setConfig({ transparentBackground: checked })}
                                 />
-                            </div>
-                            <div className="p-3 border rounded-lg bg-blue-500/5 mt-4">
-                                <div className="flex items-center justify-between mb-1">
-                                    <Label className="font-semibold text-blue-500">Premium Status</Label>
-                                    {isPremium ? (
-                                        <div className="flex items-center gap-1 text-green-600 text-xs font-bold bg-green-500/10 px-2 py-1 rounded-full">
-                                            <BadgeCheck className="w-3.5 h-3.5" />
-                                            Active
-                                        </div>
-                                    ) : (
-                                        <Button 
-                                            size="sm" 
-                                            onClick={() => setUpgradeModalOpen(true)}
-                                            className="h-7 text-[10px] bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0"
-                                        >
-                                            Upgrade
-                                        </Button>
-                                    )}
-                                </div>
-                                <p className="text-xs text-muted-foreground leading-relaxed mt-2">
-                                    Premium fully removes watermark branding and unlocks advanced AI generators.
-                                </p>
                             </div>
                         </AccordionContent>
                     </AccordionItem>

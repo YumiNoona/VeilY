@@ -7,6 +7,8 @@
 ![Stripe](https://img.shields.io/badge/Stripe-Payments-626CD9?logo=stripe)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)
 
+[**Live Demo →**](https://veily.vercel.app/)
+
 
 ## 🚀 Overview
 

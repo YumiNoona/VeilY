@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 interface SocialPostPreviewProps {
     state: SocialPostState;
@@ -22,7 +23,7 @@ export interface SocialPostPreviewRef {
 
 export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPostPreviewProps>(({ state }, ref) => {
     const previewRef = useRef<HTMLDivElement>(null);
-    const { user, isPremium, setAuthModalOpen, setUpgradeModalOpen } = useAuth();
+    const { user, plan, downloadsUsed, setAuthModalOpen, setUpgradeModalOpen } = useAuth();
 
     React.useImperativeHandle(ref, () => ({
         handleDownload,
@@ -47,7 +48,10 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
             setAuthModalOpen(true);
             return;
         }
-        if (!isPremium) {
+        
+        // Tiered download limits
+        if (plan === 'free' && downloadsUsed >= 5) {
+            toast.error("You've reached your free download limit (5/month). Please upgrade to continue.");
             setUpgradeModalOpen(true);
             return;
         }
@@ -62,7 +66,19 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
             link.download = `veily-${state.platform}-post.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
-            toast.success("Image downloaded successfully!");
+            
+            // Securely track usage on backend
+            const { data: { session } } = await supabase.auth.getSession();
+            await fetch('/api/track-usage', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session?.access_token}`
+                },
+                body: JSON.stringify({ type: 'download' })
+            });
+            
+            toast.success(plan === 'free' ? `Downloaded (Usage: ${downloadsUsed + 1}/5)` : "Image downloaded successfully!");
         } catch (err) {
             toast.error("Failed to download image");
             console.error(err);
@@ -72,10 +88,6 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
     const handleCopy = async () => {
         if (!user) {
             setAuthModalOpen(true);
-            return;
-        }
-        if (!isPremium) {
-            setUpgradeModalOpen(true);
             return;
         }
 
@@ -113,7 +125,7 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
                 >
                     <PostComponent state={state} />
 
-                    {!isPremium && (
+                    {plan === 'free' && (
                         <div className="absolute bottom-3 right-4 opacity-60 pointer-events-none">
                             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mix-blend-difference drop-shadow-md">Veily.app</span>
                         </div>

@@ -15,7 +15,9 @@ const Comments = () => {
         removeProfile,
         addComment,
         updateComment,
-        deleteComment
+        deleteComment,
+        handleResetState,
+        loadTemplate,
     } = useCommentState();
 
     // Set document title
@@ -38,6 +40,8 @@ const Comments = () => {
                 addComment={addComment}
                 updateComment={updateComment}
                 deleteComment={deleteComment}
+                onReset={handleResetState}
+                onTemplateLoad={loadTemplate}
             />
             <div className="flex-1 relative overflow-y-auto overflow-x-hidden">
                 <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8 pt-32 pb-20">

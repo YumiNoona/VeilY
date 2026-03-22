@@ -15,13 +15,15 @@ import {
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
+    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Twitter, Instagram, Linkedin, Facebook, Youtube, Plus, Trash2, Upload, MessageSquare, Heart, Clock } from 'lucide-react';
+import { Twitter, Instagram, Linkedin, Facebook, Youtube, Plus, Trash2, Upload, MessageSquare, Heart, Clock, RotateCcw } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Logo } from './Logo';
+import { COMMENT_TEMPLATES } from '@/lib/templates';
 
 // Mapping TikTok icon manually or using a similar one since Lucide might not have it or it's named differently
 // For now using MessageSquare as placeholder if TikTok not available, but let's check basic icons.
@@ -35,9 +37,11 @@ interface CommentsSidebarProps {
     addProfile: ReturnType<typeof useCommentState>['addProfile'];
     updateProfile: ReturnType<typeof useCommentState>['updateProfile'];
     removeProfile: ReturnType<typeof useCommentState>['removeProfile'];
-    addComment: ReturnType<typeof useCommentState>['addComment'];
-    updateComment: ReturnType<typeof useCommentState>['updateComment'];
-    deleteComment: ReturnType<typeof useCommentState>['deleteComment'];
+    addComment: (parentId?: string) => void;
+    updateComment: (id: string, updates: Partial<Comment>) => void;
+    deleteComment: (id: string) => void;
+    onReset?: () => void;
+    onTemplateLoad?: (template: any) => void;
 }
 
 export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
@@ -50,7 +54,10 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     addComment,
     updateComment,
     deleteComment,
+    onReset,
+    onTemplateLoad,
 }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>, profileId: string) => {
         const file = e.target.files?.[0];
@@ -153,8 +160,48 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
         <aside className="w-full lg:w-[450px] bg-sidebar-bg border-r border-sidebar-border h-full flex flex-col overflow-hidden">
             <div className="pt-5 px-3 pb-2 border-b border-sidebar-border">
                 <div className="flex items-center justify-between mb-4">
-                    <Logo />
-                    <Button variant="outline" size="sm" className="text-xs font-medium h-8">Sign In</Button>
+                    <div className="flex items-center gap-1.5 flex-1">
+                        <Select onValueChange={(val) => {
+                            if (onTemplateLoad) {
+                                const template = COMMENT_TEMPLATES[val as keyof typeof COMMENT_TEMPLATES];
+                                if (template) onTemplateLoad(template);
+                            }
+                        }}>
+                            <SelectTrigger className="w-[140px] h-8 text-xs font-medium">
+                                <SelectValue placeholder="Templates" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Instagram</SelectLabel>
+                                    <SelectItem value="instagramHype">IG Hype</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                    <SelectLabel>TikTok</SelectLabel>
+                                    <SelectItem value="tiktokViral">Viral Video</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                    <SelectLabel>X (Twitter)</SelectLabel>
+                                    <SelectItem value="twitterRatio">Ratioed</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                    <SelectLabel>YouTube</SelectLabel>
+                                    <SelectItem value="youtubeKnowledge">Knowledge Sharing</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {onReset && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs font-medium h-8 text-muted-foreground gap-1.5"
+                            onClick={onReset}
+                        >
+                            <RotateCcw className="w-3 h-3" />
+                            Reset
+                        </Button>
+                    )}
                 </div>
 
                 <Tabs
@@ -259,13 +306,6 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                                 <Switch
                                     checked={state.config.theme === 'dark'}
                                     onCheckedChange={(checked) => setConfig({ theme: checked ? 'dark' : 'light' })}
-                                />
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <Label>Show Watermark</Label>
-                                <Switch
-                                    checked={state.config.showWatermark}
-                                    onCheckedChange={(checked) => setConfig({ showWatermark: checked })}
                                 />
                             </div>
                         </AccordionContent>

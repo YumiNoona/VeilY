@@ -21,7 +21,7 @@ const initialAppearance: AppearanceSettings = {
     showStatus: true,
     use24HourFormat: false,
     showDeviceStatusBar: true,
-    showDeviceFrame: true,
+    showDeviceFrame: false,
     statusBarTime: '9:41',
     batteryLevel: 100,
     transparentBackground: false,
@@ -168,6 +168,16 @@ export const useChatState = () => {
         toast.success("Chat state reset to defaults.");
     }, []);
 
+    const handleLoadTemplate = useCallback((template: ChatState) => {
+        // Revive timestamps
+        const messagesWithDates = template.messages.map(msg => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp),
+        }));
+        setChatState({ ...template, messages: messagesWithDates });
+        toast.success("Template loaded successfully.");
+    }, []);
+
     return {
         chatState,
         handlePlatformChange,
@@ -183,5 +193,6 @@ export const useChatState = () => {
         handleReorderMessages,
         globalReplaceSenderName,
         handleResetState,
+        handleLoadTemplate,
     };
 };

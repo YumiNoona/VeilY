@@ -17,9 +17,13 @@ interface AuthContextType {
     setUpgradeModalOpen: (open: boolean) => void;
     isProfileModalOpen: boolean;
     setProfileModalOpen: (open: boolean) => void;
+    isDownloadModalOpen: boolean;
+    setDownloadModalOpen: (open: boolean) => void;
     refetchUserStatus: () => Promise<void>;
     signOut: () => Promise<void>;
     updateProfile: (updates: { avatar_url?: string; full_name?: string }) => Promise<void>;
+    incrementDownloads: () => Promise<void>;
+    incrementVideos: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -36,9 +40,13 @@ const AuthContext = createContext<AuthContextType>({
     setUpgradeModalOpen: () => {},
     isProfileModalOpen: false,
     setProfileModalOpen: () => {},
+    isDownloadModalOpen: false,
+    setDownloadModalOpen: () => {},
     refetchUserStatus: async () => {},
     signOut: async () => {},
     updateProfile: async () => {},
+    incrementDownloads: async () => {},
+    incrementVideos: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -54,6 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [isAuthModalOpen, setAuthModalOpen] = useState(false);
     const [isUpgradeModalOpen, setUpgradeModalOpen] = useState(false);
     const [isProfileModalOpen, setProfileModalOpen] = useState(false);
+    const [isDownloadModalOpen, setDownloadModalOpen] = useState(false);
     
     // Memory leak guard
     const isMounted = useRef(true);
@@ -104,6 +113,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setDownloadsUsed(0);
         setVideosUsed(0);
         toast.success("Successfully logged out");
+    };
+
+    const incrementDownloads = async () => {
+        if (!user) return;
+        const newVal = downloadsUsed + 1;
+        const { error } = await supabase
+            .from('users')
+            .update({ downloads_used: newVal })
+            .eq('id', user.id);
+        
+        if (!error) setDownloadsUsed(newVal);
+    };
+
+    const incrementVideos = async () => {
+        if (!user) return;
+        const newVal = videosUsed + 1;
+        const { error } = await supabase
+            .from('users')
+            .update({ videos_used: newVal })
+            .eq('id', user.id);
+        
+        if (!error) setVideosUsed(newVal);
     };
 
     const updateProfile = async (updates: { avatar_url?: string; full_name?: string }) => {
@@ -191,7 +222,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isAuthModalOpen, setAuthModalOpen,
             isUpgradeModalOpen, setUpgradeModalOpen,
             isProfileModalOpen, setProfileModalOpen,
-            refetchUserStatus, signOut, updateProfile
+            isDownloadModalOpen, setDownloadModalOpen,
+            refetchUserStatus, signOut, updateProfile,
+            incrementDownloads, incrementVideos
         }}>
             {children}
         </AuthContext.Provider>

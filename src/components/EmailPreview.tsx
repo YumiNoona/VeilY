@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
-import html2canvas from 'html2canvas';
 import { useEmailState } from '@/hooks/useEmailState';
 import { Paperclip } from 'lucide-react';
 import { Watermark } from '@/components/Watermark';
+import { exportAsImage, copyToClipboard } from '@/lib/export-utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 type EmailState = ReturnType<typeof useEmailState>['state'];
 
@@ -13,6 +15,7 @@ interface EmailPreviewProps {
 export interface EmailPreviewRef {
     handleDownload: () => Promise<void>;
     handleCopy: () => Promise<void>;
+    getRef: () => React.RefObject<HTMLDivElement>;
 }
 
 /** Replaces **text** with black redacted boxes */
@@ -157,24 +160,49 @@ const EmailCard: React.FC<{ state: EmailState }> = ({ state }) => {
 
 export const EmailPreview = React.forwardRef<EmailPreviewRef, EmailPreviewProps>(({ state }, ref) => {
     const captureRef = useRef<HTMLDivElement>(null);
+    const { user, plan, downloadsUsed, setAuthModalOpen, setUpgradeModalOpen, incrementDownloads } = useAuth();
 
     React.useImperativeHandle(ref, () => ({
         handleDownload: async () => {
+            if (!user) {
+                setAuthModalOpen(true);
+                return;
+            }
+
+            if (plan === 'free' && (3 - downloadsUsed) <= 0) {
+                toast.error("You've reached your free export limit!");
+                setUpgradeModalOpen(true);
+                return;
+            }
+
             if (!captureRef.current) return;
-            const canvas = await html2canvas(captureRef.current, { scale: 2, backgroundColor: '#f9fafb' });
-            const link = document.createElement('a');
-            link.download = `veily-email-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            try {
+                await exportAsImage(captureRef.current, {
+                    scale: 2,
+                    filename: `veily-email-${Date.now()}.png`
+                });
+                await incrementDownloads();
+                toast.success("Mockup downloaded!");
+            } catch (err) {
+                toast.error("Download failed");
+            }
         },
         handleCopy: async () => {
+            if (!user) {
+                setAuthModalOpen(true);
+                return;
+            }
+
             if (!captureRef.current) return;
-            const canvas = await html2canvas(captureRef.current, { scale: 2, backgroundColor: '#f9fafb' });
-            canvas.toBlob(async blob => {
-                if (!blob) return;
-                try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]); } catch {}
-            });
+            try {
+                const success = await copyToClipboard(captureRef.current, 2);
+                if (success) toast.success("Copied to clipboard!");
+                else toast.error("Failed to copy image");
+            } catch (err) {
+                toast.error("Copy failed");
+            }
         },
+        getRef: () => captureRef
     }));
 
     return (

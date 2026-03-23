@@ -28,6 +28,15 @@ dist_electron
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Tool-specific
+.agents/
+.agent/
+_agents/
+_agent/
+.cursor/
+.history/
 
 # Misc
 *.suo

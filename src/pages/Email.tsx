@@ -4,55 +4,61 @@ import { EmailSidebar } from '@/components/EmailSidebar';
 import { EmailPreview, EmailPreviewRef } from '@/components/EmailPreview';
 import { PreviewControls } from '@/components/PreviewControls';
 import { DeviceView } from '@/types/chat';
+import { useAuth } from '@/contexts/AuthContext';
+import { DownloadModal } from '@/components/modals/DownloadModal';
 
 const Email = () => {
     const {
         state,
         setSubject,
         setAttachment,
-        addParticipant,
         updateParticipant,
+        addParticipant,
         removeParticipant,
-        addEmail,
         updateEmail,
+        addEmail,
         removeEmail,
         handleReset,
         loadTemplate,
         randomizeState,
-        setAppearance,
+        setAppearance
     } = useEmailState();
 
+    const { setDownloadModalOpen } = useAuth();
     const [deviceView, setDeviceView] = useState<DeviceView>('desktop');
     const previewRef = useRef<EmailPreviewRef>(null);
 
     return (
-        <div className="flex h-full bg-background animate-in fade-in duration-300 overflow-hidden relative">
+        <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-background relative animate-in fade-in duration-300">
             <EmailSidebar
                 state={state}
                 setSubject={setSubject}
                 setAttachment={setAttachment}
-                addParticipant={addParticipant}
                 updateParticipant={updateParticipant}
+                addParticipant={addParticipant}
                 removeParticipant={removeParticipant}
-                addEmail={addEmail}
                 updateEmail={updateEmail}
+                addEmail={addEmail}
                 removeEmail={removeEmail}
                 handleReset={handleReset}
                 onTemplateLoad={loadTemplate}
                 onRandomize={randomizeState}
                 setAppearance={setAppearance}
             />
-            <div className="flex-1 relative overflow-y-auto overflow-x-hidden">
-                <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8 pt-16 pb-20">
+            <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
+                <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8">
                     <EmailPreview ref={previewRef} state={state} />
                 </div>
                 <PreviewControls
                     activeView={deviceView}
                     onViewChange={setDeviceView}
-                    onDownload={() => previewRef.current?.handleDownload()}
+                    onDownload={() => setDownloadModalOpen(true)}
                     onCopy={() => previewRef.current?.handleCopy()}
                 />
             </div>
+            <DownloadModal 
+                previewRef={previewRef.current?.getRef() || { current: null }}
+            />
         </div>
     );
 };

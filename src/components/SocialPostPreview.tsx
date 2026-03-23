@@ -7,11 +7,10 @@ import { FacebookPost } from './social/FacebookPost';
 import { RedditPost } from './social/RedditPost';
 import { Download, Copy, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import html2canvas from 'html2canvas';
-import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabase';
 import { Watermark } from '@/components/Watermark';
+import { exportAsImage, copyToClipboard } from '@/lib/export-utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 interface SocialPostPreviewProps {
     state: SocialPostState;
@@ -20,15 +19,17 @@ interface SocialPostPreviewProps {
 export interface SocialPostPreviewRef {
     handleDownload: () => Promise<void>;
     handleCopy: () => Promise<void>;
+    getRef: () => React.RefObject<HTMLDivElement>;
 }
 
 export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPostPreviewProps>(({ state }, ref) => {
     const previewRef = useRef<HTMLDivElement>(null);
-    const { user, plan, downloadsUsed, setAuthModalOpen, setUpgradeModalOpen } = useAuth();
+    const { user, plan, downloadsUsed, setAuthModalOpen, setUpgradeModalOpen, incrementDownloads } = useAuth();
 
     React.useImperativeHandle(ref, () => ({
         handleDownload,
-        handleCopy
+        handleCopy,
+        getRef: () => previewRef
     }));
 
     const getPlatformComponent = (platform: SocialPlatform) => {
@@ -51,38 +52,22 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
         }
         
         // Tiered download limits
-        if (plan === 'free' && downloadsUsed >= 5) {
-            toast.error("You've reached your free download limit (5/month). Please upgrade to continue.");
+        if (plan === 'free' && (3 - downloadsUsed) <= 0) {
+            toast.error("You've reached your free export limit! Please upgrade to continue.");
             setUpgradeModalOpen(true);
             return;
         }
 
         if (!previewRef.current) return;
         try {
-            const canvas = await html2canvas(previewRef.current, {
-                backgroundColor: state.config.transparentBackground ? null : (state.config.theme === 'dark' ? '#000000' : '#ffffff'),
+            await exportAsImage(previewRef.current, {
                 scale: 2,
+                filename: `veily-${state.platform}-post-${Date.now()}.png`
             });
-            const link = document.createElement('a');
-            link.download = `veily-${state.platform}-post.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            
-            // Securely track usage on backend
-            const { data: { session } } = await supabase.auth.getSession();
-            await fetch('/api/track-usage', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`
-                },
-                body: JSON.stringify({ type: 'download' })
-            });
-            
-            toast.success(plan === 'free' ? `Downloaded (Usage: ${downloadsUsed + 1}/5)` : "Image downloaded successfully!");
+            await incrementDownloads();
+            toast.success("Mockup downloaded!");
         } catch (err) {
             toast.error("Failed to download image");
-            console.error(err);
         }
     };
 
@@ -94,18 +79,9 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
 
         if (!previewRef.current) return;
         try {
-            const canvas = await html2canvas(previewRef.current, {
-                backgroundColor: state.config.transparentBackground ? null : (state.config.theme === 'dark' ? '#000000' : '#ffffff'),
-                scale: 2,
-            });
-            canvas.toBlob(async (blob) => {
-                if (blob) {
-                    await navigator.clipboard.write([
-                        new ClipboardItem({ 'image/png': blob })
-                    ]);
-                    toast.success("Image copied to clipboard!");
-                }
-            });
+            const success = await copyToClipboard(previewRef.current, 2);
+            if (success) toast.success("Image copied to clipboard!");
+            else toast.error("Failed to copy image");
         } catch (err) {
             toast.error("Failed to copy image");
         }

@@ -5,6 +5,8 @@ import { PreviewControls } from "@/components/PreviewControls";
 import { useChatState } from "@/hooks/useChatState";
 import { useScreenshot } from "@/hooks/useScreenshot";
 import { DeviceView } from "@/types/chat";
+import { useAuth } from "@/contexts/AuthContext";
+import { DownloadModal } from "@/components/modals/DownloadModal";
 
 const AIChat = () => {
   const {
@@ -24,6 +26,8 @@ const AIChat = () => {
     randomizeState,
   } = useChatState();
 
+  const { setDownloadModalOpen } = useAuth();
+
   // Set default to ChatGPT when entering AI Chat if not already an AI platform
   useEffect(() => {
     const aiPlatforms = ['chatgpt', 'claude', 'gemini', 'grok'];
@@ -34,12 +38,12 @@ const AIChat = () => {
 
   const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
   const chatPreviewRef = useRef<HTMLDivElement>(null);
-  const { downloadScreenshot, copyScreenshot } = useScreenshot(chatPreviewRef);
+  const { copyScreenshot } = useScreenshot(chatPreviewRef);
 
   const activePerson = chatState.people.find(p => p.id === 'user') || null;
 
   return (
-    <div className="flex bg-background animate-in fade-in duration-300 h-full overflow-hidden">
+    <div className="flex bg-background animate-in fade-in duration-300 h-[calc(100vh-64px)] overflow-hidden">
       <Sidebar
         chatState={chatState}
         mode="ai"
@@ -58,8 +62,8 @@ const AIChat = () => {
         onRandomize={randomizeState}
       />
 
-      <main className="flex-1 relative overflow-y-auto overflow-x-hidden">
-        <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8 pt-32 pb-20">
+      <main className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
+        <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8">
           <ChatPreview
             ref={chatPreviewRef}
             platform={chatState.platform}
@@ -79,13 +83,13 @@ const AIChat = () => {
         <PreviewControls
           activeView={deviceView}
           onViewChange={setDeviceView}
-          onDownload={() => downloadScreenshot(`mockly-${chatState.platform}`)}
+          onDownload={() => setDownloadModalOpen(true)}
           onCopy={copyScreenshot}
         />
       </main>
+      <DownloadModal previewRef={chatPreviewRef} />
     </div>
   );
 };
 
 export default AIChat;
-

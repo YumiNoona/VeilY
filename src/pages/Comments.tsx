@@ -4,6 +4,8 @@ import { CommentsSidebar } from '@/components/CommentsSidebar';
 import { CommentsPreview, CommentsPreviewRef } from '@/components/CommentsPreview';
 import { PreviewControls } from '@/components/PreviewControls';
 import { DeviceView } from '@/types/chat';
+import { useAuth } from '@/contexts/AuthContext';
+import { DownloadModal } from '@/components/modals/DownloadModal';
 
 const Comments = () => {
     const {
@@ -21,6 +23,8 @@ const Comments = () => {
         randomizeState,
     } = useCommentState();
 
+    const { setDownloadModalOpen } = useAuth();
+
     // Set document title
     useEffect(() => {
         document.title = 'Veily | Comments Generator';
@@ -30,7 +34,7 @@ const Comments = () => {
     const previewRef = useRef<CommentsPreviewRef>(null);
 
     return (
-        <div className="flex h-full overflow-hidden bg-background relative animate-in fade-in duration-300">
+        <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-background relative animate-in fade-in duration-300">
             <CommentsSidebar
                 state={state}
                 setPlatform={setPlatform}
@@ -45,17 +49,20 @@ const Comments = () => {
                 onTemplateLoad={loadTemplate}
                 onRandomize={randomizeState}
             />
-            <div className="flex-1 relative overflow-y-auto overflow-x-hidden">
-                <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8 pt-32 pb-20">
+            <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
+                <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8">
                     <CommentsPreview ref={previewRef} state={state} />
                 </div>
                 <PreviewControls
                     activeView={deviceView}
                     onViewChange={setDeviceView}
-                    onDownload={() => previewRef.current?.handleDownload()}
+                    onDownload={() => setDownloadModalOpen(true)}
                     onCopy={() => previewRef.current?.handleCopy()}
                 />
             </div>
+            <DownloadModal 
+                previewRef={previewRef.current?.getRef() || { current: null }}
+            />
         </div>
     );
 };

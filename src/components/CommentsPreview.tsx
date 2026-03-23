@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
 import { useCommentState } from '@/hooks/useCommentState';
 import { Button } from '@/components/ui/button';
-import { Download, Copy } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { exportAsImage, copyToClipboard } from '@/lib/export-utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 import { InstagramComments } from './comments/InstagramComments';
 import { TikTokComments } from './comments/TikTokComments';
@@ -17,58 +18,59 @@ interface CommentsPreviewProps {
 export interface CommentsPreviewRef {
     handleDownload: () => Promise<void>;
     handleCopy: () => Promise<void>;
+    getRef: () => React.RefObject<HTMLDivElement>;
 }
 
 export const CommentsPreview = React.forwardRef<CommentsPreviewRef, CommentsPreviewProps>(({ state }, ref) => {
     const previewRef = useRef<HTMLDivElement>(null);
+    const { user, plan, downloadsUsed, setAuthModalOpen, setUpgradeModalOpen, incrementDownloads } = useAuth();
 
     React.useImperativeHandle(ref, () => ({
         handleDownload,
-        handleCopy
+        handleCopy,
+        getRef: () => previewRef
     }));
 
     const handleDownload = async () => {
+        if (!user) {
+            setAuthModalOpen(true);
+            return;
+        }
+
+        if (plan === 'free' && (3 - downloadsUsed) <= 0) {
+            toast.error("You've reached your free export limit!");
+            setUpgradeModalOpen(true);
+            return;
+        }
+
         if (!previewRef.current) return;
 
         try {
-            const canvas = await html2canvas(previewRef.current, {
-                backgroundColor: null,
-                scale: 2, // Retain high quality
+            await exportAsImage(previewRef.current, {
+                scale: 2,
+                filename: `veily-comments-${state.platform}-${Date.now()}.png`
             });
-
-            const link = document.createElement('a');
-            link.download = `veily-comments-${state.platform}-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png'); // Using toDataURL for browser download
-            link.click();
+            await incrementDownloads();
+            toast.success("Mockup downloaded!");
         } catch (err) {
-            console.error("Download failed:", err);
+            toast.error("Download failed");
         }
     };
 
     const handleCopy = async () => {
+        if (!user) {
+            setAuthModalOpen(true);
+            return;
+        }
+
         if (!previewRef.current) return;
 
         try {
-            const canvas = await html2canvas(previewRef.current, {
-                backgroundColor: null,
-                scale: 2,
-            });
-
-            canvas.toBlob(async (blob) => {
-                if (!blob) return;
-                try {
-                    await navigator.clipboard.write([
-                        new ClipboardItem({ 'image/png': blob })
-                    ]);
-                    // Could add toast notification here
-                    alert("Copied to clipboard!");
-                } catch (err) {
-                    console.error("Copy failed:", err);
-                    alert("Failed to copy.");
-                }
-            });
+            const success = await copyToClipboard(previewRef.current, 2);
+            if (success) toast.success("Copied to clipboard!");
+            else toast.error("Failed to copy image");
         } catch (err) {
-            console.error("Copy generation failed:", err);
+            toast.error("Copy failed");
         }
     };
 

@@ -673,24 +673,98 @@ export const STORIES_TEMPLATES = {
     timeAgo: '2h',
     slides: [
       { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80' },
-      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&q=80' }
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&q=80' },
+      { id: 's3', imageUrl: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80' }
     ],
     activeSlideIndex: 0,
     postedAt: new Date().toISOString().slice(0, 16),
-    appearance: { theme: 'dark' }
+    appearance: createChatAppearance(true)
   } as StoriesState,
   
+  productLaunch: {
+    platform: 'instagram',
+    username: 'tech_gear_daily',
+    verified: true,
+    timeAgo: '45m',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(false)
+  } as StoriesState,
+
   snapchatVibe: {
     platform: 'snapchat',
     username: 'chill_vibes',
     verified: false,
     timeAgo: 'Just now',
     slides: [
-      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1499566727020-88026dc6a0de?w=800&q=80' }
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1499566727020-88026dc6a0de?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1518833559746-12128bd35c5c?w=800&q=80' }
     ],
     activeSlideIndex: 0,
     postedAt: new Date().toISOString().slice(0, 16),
-    appearance: { theme: 'light' }
+    appearance: createChatAppearance(false)
+  } as StoriesState,
+
+  dayInLife: {
+    platform: 'instagram',
+    username: 'sara_vlogs',
+    verified: false,
+    timeAgo: '5h',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1494390648447-380ff9822a10?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80' },
+      { id: 's3', imageUrl: 'https://images.unsplash.com/photo-1511385348-a52b4a160dc2?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(true)
+  } as StoriesState,
+
+  morningCoffee: {
+    platform: 'instagram',
+    username: 'cozy_mornings',
+    verified: false,
+    timeAgo: '2h',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(false)
+  } as StoriesState,
+
+  gymSession: {
+    platform: 'instagram',
+    username: 'fitness_junkie',
+    verified: true,
+    timeAgo: '45m',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(true)
+  } as StoriesState,
+
+  travelJournal: {
+    platform: 'snapchat',
+    username: 'globetrotter',
+    verified: false,
+    timeAgo: '12h',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80' },
+      { id: 's3', imageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(false)
   } as StoriesState,
 };
 
@@ -719,19 +793,121 @@ export const EMAIL_TEMPLATES = {
     ]
   } as EmailState,
   
-  newsletter: {
-    subject: 'Weekly Product Updates',
+  newsletterBoost: {
+    subject: 'Breaking: Our Biggest Update Yet 🚀',
     attachment: '',
     participants: [
-      { id: 'p1', name: 'Product Team', email: 'updates@product.io', redactName: false, redactEmail: false },
-      { id: 'p2', name: 'User', email: 'user@example.com', redactName: false, redactEmail: false }
+      { id: 'p1', name: 'Veily Alpha', email: 'hello@veily.app', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'James Wilson', email: 'james@designco.com', redactName: false, redactEmail: false }
     ],
     emails: [
       {
         id: 'e1',
         fromParticipantId: 'p1',
-        dateTime: 'Today at 8:00 AM',
-        body: 'Hey there!\n\nWe just shipped some highly requested features:\n- Dark mode support\n- Export to PDF\n- Team collaboration\n\nCheck out the dashboard to see them in action!'
+        dateTime: 'Today at 8:45 AM',
+        body: 'Hi James,\n\nWe just launched the 4K export engine! As an early supporter, you get 50% off for life.\n\nCheck out the new dashboard and let us know what you think.\n\nCheers,\nThe Veily Team'
+      }
+    ]
+  } as EmailState,
+
+  jobOffer: {
+    subject: 'Offer Letter: Senior Product Designer at Veily',
+    attachment: 'Veily_Offer_Details.pdf',
+    participants: [
+      { id: 'p1', name: 'Alex Rivera', email: 'alex@veily.io', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'Jordan Smith', email: 'jordan.smith@gmail.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: 'Yesterday at 3:15 PM',
+        body: 'Dear Jordan,\n\nFollowing our interviews, we are thrilled to offer you the position of Senior Product Designer. Your portfolio was exceptional.\n\nPlease find the attached offer letter and benefits summary.\n\nWelcome to the team!'
+      }
+    ]
+  } as EmailState,
+
+  securityAlert: {
+    subject: 'Security Alert: New Sign-in Detected',
+    attachment: '',
+    participants: [
+      { id: 'p1', name: 'Veily Security', email: 'security@veily.app', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'You', email: 'user@example.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: 'January 15, 2024 at 11:42 PM',
+        body: 'Security Alert\n\nWe detected a new sign-in from a Chrome browser on a Windows device in San Jose, CA.\n\nIf this was not you, please reset your password immediately.'
+      }
+    ]
+  } as EmailState,
+  
+  partnershipInquiry: {
+    subject: 'Partnership Opportunity: Veily x CreativeCloud',
+    attachment: 'Veily_Partnership_Deck.pdf',
+    participants: [
+      { id: 'p1', name: 'Mark Thompson', email: 'mark@creativecloud.com', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'Sarah Chen', email: 'sarah@veily.app', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: 'Oct 14, 2023 at 2:00 PM',
+        body: 'Hi Sarah,\n\nWe have been following Veily\'s growth and would love to discuss a potential partnership. Your mockup engine is exactly what our users have been asking for.\n\nAre you available for a brief call next Tuesday?'
+      }
+    ]
+  } as EmailState,
+
+  weeklyReview: {
+    subject: 'Project Update: Week 12 Milestone Reached 🎯',
+    attachment: 'Weekly_Report_W12.pdf',
+    participants: [
+      { id: 'p1', name: 'Leo Martinez', email: 'leo.m@agency.com', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'Client Team', email: 'team@client.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: 'Friday at 4:30 PM',
+        body: 'Team,\n\nI am happy to report that we have hit all milestones for Week 12. The beta version is now ready for internal testing.\n\nHighlights:\n- Full responsive UI complete\n- Backend integration finalized\n- 4K export engine optimized'
+      }
+    ]
+  } as EmailState,
+
+  customerSupport: {
+    subject: 'Case #49201 - Refund Request Resolution',
+    attachment: '',
+    participants: [
+      { id: 'p1', name: 'Veily Support', email: 'support@veily.app', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'Customer', email: 'customer@gmail.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: 'Dec 05, 2023 at 10:15 AM',
+        body: 'Hello,\n\nThank you for reaching out. We have processed your refund request for the Premium annual plan. You should see the funds in your account within 5-7 business days.\n\nWe would love to know how we can improve. If you have a moment, please share your feedback.'
+      }
+    ]
+  } as EmailState,
+
+  networkingInvite: {
+    subject: 'Grab a coffee? ☕️',
+    attachment: '',
+    participants: [
+      { id: 'p1', name: 'David Lee', email: 'david.lee@startup.io', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'You', email: 'me@work.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: '9:30 AM',
+        body: 'Hi,\n\nI saw your recent post on LinkedIn about the future of SaaS mockups. Really insightful stuff!\n\nI am in town next week and would love to grab a quick coffee and pick your brain. Do you have 20 mins?'
       }
     ]
   } as EmailState,

@@ -4,15 +4,21 @@ import { useStoriesState } from '@/hooks/useStoriesState';
 import { Image as ImageIcon, X, MoreHorizontal, Signal, Wifi } from 'lucide-react';
 import { Watermark } from '@/components/Watermark';
 
+import { exportAsImage, copyToClipboard } from '@/lib/export-utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+
 type StoriesState = ReturnType<typeof useStoriesState>['state'];
 
 interface StoriesPreviewProps {
     state: StoriesState;
+    onSlideChange?: (index: number) => void;
 }
 
 export interface StoriesPreviewRef {
     handleDownload: () => Promise<void>;
     handleCopy: () => Promise<void>;
+    getRef: () => React.RefObject<HTMLDivElement>;
 }
 
 /** Status bar mirrors ChatPreview's DeviceStatusBar */
@@ -32,34 +38,62 @@ const StatusBar = () => (
     </div>
 );
 
-const StoryFrame: React.FC<{ state: StoriesState }> = ({ state }) => {
+const StoryFrame: React.FC<{ state: StoriesState; onSlideChange?: (index: number) => void }> = ({ state, onSlideChange }) => {
     const slide = state.slides[state.activeSlideIndex];
     const isSnap = state.platform === 'snapchat';
 
+    const handleNext = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (state.activeSlideIndex < state.slides.length - 1) {
+            onSlideChange?.(state.activeSlideIndex + 1);
+        }
+    };
+
+    const handlePrev = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (state.activeSlideIndex > 0) {
+            onSlideChange?.(state.activeSlideIndex - 1);
+        }
+    };
+
     return (
         // Same dimensions + border as Chat: w-[375px] h-[812px] rounded-[40px] border-[8px] border-black
-        <div className="w-[375px] h-[812px] overflow-hidden shadow-2xl rounded-[40px] border-[8px] border-black bg-black relative select-none">
+        <div className="w-[375px] h-[812px] overflow-hidden shadow-2xl rounded-[40px] border-[8px] border-black bg-black relative select-none group/frame">
             <div className="w-full h-full rounded-[32px] overflow-hidden relative">
 
                 <StatusBar />
 
                 {/* Story progress bars */}
-                <div className="absolute top-7 left-0 right-0 z-20 flex gap-1 px-3">
+                <div className="absolute top-7 left-0 right-0 z-50 flex gap-1 px-3">
                     {state.slides.map((_, i) => (
-                        <div key={i} className="flex-1 h-[2px] rounded-full bg-white/30 overflow-hidden">
+                        <button
+                            key={i}
+                            className="flex-1 h-1 rounded-full bg-white/30 overflow-hidden relative cursor-pointer group-hover/frame:h-2 transition-all duration-200"
+                            onClick={(e) => { e.stopPropagation(); onSlideChange?.(i); }}
+                        >
                             <div
                                 className="h-full bg-white rounded-full"
                                 style={{
                                     width: i < state.activeSlideIndex ? '100%'
-                                        : i === state.activeSlideIndex ? '40%' : '0%'
+                                        : i === state.activeSlideIndex ? '100%' : '0%', // Simplified for manual nav
+                                    opacity: i === state.activeSlideIndex ? '1' : '0.5'
                                 }}
                             />
-                        </div>
+                        </button>
                     ))}
                 </div>
 
+                {/* Click Areas for Navigation */}
+                <div 
+                    data-html2canvas-ignore="true"
+                    className="absolute inset-0 z-30 flex"
+                >
+                    <div className="flex-1 h-full cursor-pointer" onClick={handlePrev} />
+                    <div className="flex-1 h-full cursor-pointer" onClick={handleNext} />
+                </div>
+
                 {/* Story header */}
-                <div className="absolute top-11 left-0 right-0 z-20 flex items-center justify-between px-3">
+                <div className="absolute top-11 left-0 right-0 z-40 flex items-center justify-between px-3">
                     <div className="flex items-center gap-2">
                         {isSnap ? (
                             <div className="w-9 h-9 rounded-full bg-yellow-400 flex items-center justify-center border-2 border-white">
@@ -85,7 +119,7 @@ const StoryFrame: React.FC<{ state: StoriesState }> = ({ state }) => {
                 {/* Full-bleed story background */}
                 <div className="absolute inset-0 bg-black">
                     {slide?.imageUrl ? (
-                        <img src={slide.imageUrl} className="w-full h-full object-cover" alt="Story" />
+                        <img src={slide.imageUrl} className="w-full h-full object-cover select-none" alt="Story" />
                     ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-white/30">
                             <ImageIcon className="w-14 h-14" />
@@ -94,11 +128,11 @@ const StoryFrame: React.FC<{ state: StoriesState }> = ({ state }) => {
                     )}
                 </div>
 
-                {/* Watermark */}
+                {/* Watermark/Badge */}
                 <Watermark />
 
                 {/* Bottom message bar */}
-                <div className="absolute bottom-8 left-0 right-0 z-20 px-4 flex items-center gap-3">
+                <div className="absolute bottom-8 left-0 right-0 z-40 px-4 flex items-center gap-3">
                     <div className="flex-1 border border-white/40 rounded-full px-4 py-2.5">
                         <span className="text-white/50 text-[13px]">Send message...</span>
                     </div>
@@ -112,31 +146,56 @@ const StoryFrame: React.FC<{ state: StoriesState }> = ({ state }) => {
     );
 };
 
-export const StoriesPreview = React.forwardRef<StoriesPreviewRef, StoriesPreviewProps>(({ state }, ref) => {
+export const StoriesPreview = React.forwardRef<StoriesPreviewRef, StoriesPreviewProps>(({ state, onSlideChange }, ref) => {
     const captureRef = useRef<HTMLDivElement>(null);
+    const { user, plan, downloadsUsed, setAuthModalOpen, setUpgradeModalOpen, incrementDownloads } = useAuth();
 
     React.useImperativeHandle(ref, () => ({
         handleDownload: async () => {
+            if (!user) {
+                setAuthModalOpen(true);
+                return;
+            }
+
+            if (plan === 'free' && (3 - downloadsUsed) <= 0) {
+                toast.error("You've reached your free export limit!");
+                setUpgradeModalOpen(true);
+                return;
+            }
+
             if (!captureRef.current) return;
-            const canvas = await html2canvas(captureRef.current, { scale: 2, backgroundColor: null });
-            const link = document.createElement('a');
-            link.download = `veily-story-${state.platform}-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            try {
+                await exportAsImage(captureRef.current, {
+                    scale: 2,
+                    filename: `veily-story-${state.platform}-${Date.now()}.png`
+                });
+                await incrementDownloads();
+                toast.success("Mockup downloaded!");
+            } catch (err) {
+                toast.error("Download failed");
+            }
         },
         handleCopy: async () => {
+            if (!user) {
+                setAuthModalOpen(true);
+                return;
+            }
+
             if (!captureRef.current) return;
-            const canvas = await html2canvas(captureRef.current, { scale: 2, backgroundColor: null });
-            canvas.toBlob(async blob => {
-                if (!blob) return;
-                try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]); } catch { }
-            });
+            try {
+                const success = await copyToClipboard(captureRef.current, 2);
+                if (success) toast.success("Copied to clipboard!");
+                else toast.error("Failed to copy image");
+            } catch (err) {
+                toast.error("Copy failed");
+            }
         },
+        getRef: () => captureRef
     }));
 
     return (
         <div ref={captureRef} className="inline-block">
-            <StoryFrame state={state} />
+            <StoryFrame state={state} onSlideChange={onSlideChange} />
         </div>
     );
 });

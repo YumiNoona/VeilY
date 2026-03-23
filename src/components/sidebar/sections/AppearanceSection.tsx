@@ -45,7 +45,7 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                 {/* Toggle Options */}
                 <div className="space-y-2">
                     <div className="flex items-center justify-between py-1">
-                        <Label htmlFor="dark-mode" className="text-xs font-normal">Dark mode</Label>
+                        <Label htmlFor="dark-mode">Dark mode</Label>
                         <Switch
                             id="dark-mode"
                             checked={appearance.darkMode}
@@ -53,7 +53,7 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                         />
                     </div>
                     <div className="flex items-center justify-between py-1">
-                        <Label htmlFor="show-timestamps" className="text-xs font-normal">Show timestamps</Label>
+                        <Label htmlFor="show-timestamps">Show timestamps</Label>
                         <Switch
                             id="show-timestamps"
                             checked={appearance.showTimestamps}
@@ -61,7 +61,7 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                         />
                     </div>
                     <div className="flex items-center justify-between py-1">
-                        <Label htmlFor="show-status" className="text-xs font-normal">Show status</Label>
+                        <Label htmlFor="show-status">Show status</Label>
                         <Switch
                             id="show-status"
                             checked={appearance.showStatus}
@@ -69,7 +69,7 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                         />
                     </div>
                     <div className="flex items-center justify-between py-1">
-                        <Label htmlFor="transparent-bg" className="text-xs font-normal">Transparent background</Label>
+                        <Label htmlFor="transparent-bg">Transparent background</Label>
                         <Switch
                             id="transparent-bg"
                             checked={appearance.transparentBackground ?? false}
@@ -77,7 +77,7 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                         />
                     </div>
                     <div className="flex items-center justify-between py-1">
-                        <Label htmlFor="time-format" className="text-xs font-normal">Time format</Label>
+                        <Label htmlFor="time-format">Time format</Label>
                         <Select
                             value={appearance.use24HourFormat ? "24h" : "12h"}
                             onValueChange={(value) => onAppearanceChange({ ...appearance, use24HourFormat: value === "24h" })}
@@ -129,7 +129,7 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                     <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Device Options</p>
                     <div className="space-y-2">
                         <div className="flex items-center justify-between py-1">
-                            <Label htmlFor="show-status-bar" className="text-xs font-normal">Show status bar</Label>
+                            <Label htmlFor="show-status-bar">Show status bar</Label>
                             <Switch
                                 id="show-status-bar"
                                 checked={appearance.showDeviceStatusBar ?? true}
@@ -137,7 +137,7 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                             />
                         </div>
                         <div className="flex items-center justify-between py-1">
-                            <Label htmlFor="show-frame" className="text-xs font-normal">Show device frame</Label>
+                            <Label htmlFor="show-frame">Show device frame</Label>
                             <Switch
                                 id="show-frame"
                                 checked={appearance.showDeviceFrame ?? true}
@@ -145,7 +145,7 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                             />
                         </div>
                         <div className="flex items-center justify-between py-1">
-                            <Label htmlFor="status-bar-time" className="text-xs font-normal">Status bar time</Label>
+                            <Label htmlFor="status-bar-time">Status bar time</Label>
                             <Input
                                 id="status-bar-time"
                                 type="text"
@@ -155,7 +155,7 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                             />
                         </div>
                         <div className="flex items-center justify-between py-1">
-                            <Label htmlFor="battery-level" className="text-xs font-normal flex items-center gap-1">
+                            <Label htmlFor="battery-level" className="flex items-center gap-1">
                                 <Battery className="w-3.5 h-3.5" />
                                 Battery
                             </Label>

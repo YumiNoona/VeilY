@@ -21,6 +21,7 @@ const Index = () => {
     handleReorderMessages,
     handleResetState,
     handleLoadTemplate,
+    randomizeState,
   } = useChatState();
 
   const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
@@ -45,6 +46,7 @@ const Index = () => {
         onReorderMessages={handleReorderMessages}
         onReset={handleResetState}
         onTemplateLoad={handleLoadTemplate}
+        onRandomize={randomizeState}
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden">

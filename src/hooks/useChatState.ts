@@ -178,6 +178,64 @@ export const useChatState = () => {
         toast.success("Template loaded successfully.");
     }, []);
 
+    const randomizeState = useCallback(() => {
+        const platforms: Platform[] = ['whatsapp', 'discord', 'imessage', 'instagram', 'messenger', 'signal', 'slack', 'telegram', 'teams', 'snapchat'];
+        const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
+        
+        const firstNames = ["James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "William", "Elizabeth"];
+        const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"];
+        
+        const randomName = () => `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+        
+        const randomMessagesPool = [
+            "Hey! How's it going?",
+            "Did you see the news today?",
+            "I'm so excited for the weekend!",
+            "Can you send me that file again?",
+            "Just finished the project, check it out! 🚀",
+            "Are we still meeting at 5?",
+            "That's hilarious! 🤣🤣",
+            "I'll be there in 10 mins.",
+            "Wow, I didn't know that.",
+            "Let's grab coffee tomorrow! ☕️",
+            "Check out this photo I took! 📸",
+            "Did you finish the sprint tasks?",
+            "Happy birthday! 🎂🎉",
+            "The new update is amazing.",
+            "I'm literally shaking right now. 😭"
+        ];
+
+        const numMessages = Math.floor(Math.random() * 5) + 3;
+        const newMessages: Message[] = [];
+        for (let i = 0; i < numMessages; i++) {
+            newMessages.push({
+                id: crypto.randomUUID(),
+                text: randomMessagesPool[Math.floor(Math.random() * randomMessagesPool.length)],
+                senderId: Math.random() > 0.5 ? 'user' : 'friend',
+                timestamp: new Date(Date.now() - (numMessages - i) * 300000),
+                isOwn: Math.random() > 0.5
+            });
+        }
+
+        const newPeople: Person[] = [
+            { id: 'friend', name: randomName(), isOnline: Math.random() > 0.3 },
+            { id: 'user', name: 'You', isOnline: true }
+        ];
+
+        setChatState(prev => ({
+            ...prev,
+            platform: randomPlatform,
+            people: newPeople,
+            messages: newMessages,
+            appearance: {
+                ...prev.appearance,
+                darkMode: Math.random() > 0.5,
+                use24HourFormat: Math.random() > 0.5
+            }
+        }));
+        toast.success("Randomized chat content!");
+    }, []);
+
     return {
         chatState,
         handlePlatformChange,
@@ -194,5 +252,6 @@ export const useChatState = () => {
         globalReplaceSenderName,
         handleResetState,
         handleLoadTemplate,
+        randomizeState,
     };
 };

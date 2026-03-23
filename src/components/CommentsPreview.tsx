@@ -8,6 +8,7 @@ import { InstagramComments } from './comments/InstagramComments';
 import { TikTokComments } from './comments/TikTokComments';
 import { TwitterComments } from './comments/TwitterComments';
 import { YouTubeComments } from './comments/YouTubeComments';
+import { Watermark } from '@/components/Watermark';
 
 interface CommentsPreviewProps {
     state: ReturnType<typeof useCommentState>['state'];
@@ -91,12 +92,7 @@ export const CommentsPreview = React.forwardRef<CommentsPreviewRef, CommentsPrev
                     style={{ padding: '2rem' }}
                 >
                     {renderPlatformPreview()}
-
-                    {state.config.showWatermark && (
-                        <div className="absolute bottom-2 right-1/2 translate-x-1/2 opacity-30 text-xs font-bold pointer-events-none">
-                            VEILY
-                        </div>
-                    )}
+                    <Watermark />
                 </div>
             </div>
         </main>

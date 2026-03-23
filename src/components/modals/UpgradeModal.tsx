@@ -1,69 +1,52 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { BadgeCheck, Loader2, Crown, Zap, Check } from 'lucide-react';
+import { Loader2, Crown, Sparkles, Check, Heart, Star, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from "@/lib/utils";
 
-const PLAN_MODAL_DATA = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: '$0',
-    description: 'Perfect for casual users',
-    features: [
-      'Limited Chat Modules',
-      'Max 5 Downloads / Month',
-      'Watermark ON',
-      'No Video Export'
-    ],
-    buttonText: 'Current Plan',
-    disabled: true,
-    highlight: false
-  },
+const PLANS = [
   {
     id: 'pro',
     name: 'Pro',
     price: '$20',
-    description: 'For content creators',
+    description: 'Perfect for getting started with clean exports.',
+    buttonText: 'Get Pro Access',
+    icon: Sparkles,
     features: [
-      'ALL Chat Modules Unlocked',
-      'No Watermarks',
-      '10 Videos / Month',
-      'Unlimited Image Downloads'
+      'Clean, watermark-free exports',
+      'Access to all social platforms',
+      'High-quality PNG/JPG downloads',
     ],
-    buttonText: 'Upgrade to Pro',
-    disabled: false,
-    highlight: true,
-    icon: Zap,
-    color: 'from-blue-600 to-indigo-600'
   },
   {
     id: 'premium',
     name: 'Premium',
     price: '$40',
-    description: 'Ultimate power & flexibility',
-    features: [
-      'Everything Unlocked',
-      'Unlimited Images',
-      'Unlimited Videos',
-      'Priority Generation'
-    ],
-    buttonText: 'Get Premium',
-    disabled: false,
-    highlight: false,
+    description: 'The ultimate toolkit for power creators.',
+    buttonText: 'Get Premium Access',
     icon: Crown,
-    color: 'from-amber-400 to-orange-500'
+    highlight: true,
+    features: [
+      'Everything in Pro plan',
+      'Unlock all premium templates',
+      'Priority feature updates',
+      'Unlimited lifetime access',
+    ],
   }
 ];
 
 export const UpgradeModal = () => {
-    const { isUpgradeModalOpen, setUpgradeModalOpen, user, plan } = useAuth();
+    const { isUpgradeModalOpen, setUpgradeModalOpen, user, setAuthModalOpen } = useAuth();
     const [loading, setLoading] = useState<string | null>(null);
 
     const handleUpgrade = async (planId: string) => {
-        if (!user) return;
+        if (!user) {
+            setUpgradeModalOpen(false);
+            setAuthModalOpen(true);
+            return;
+        }
         setLoading(planId);
         
         try {
@@ -90,85 +73,107 @@ export const UpgradeModal = () => {
 
     return (
         <Dialog open={isUpgradeModalOpen} onOpenChange={setUpgradeModalOpen}>
-            <DialogContent className="sm:max-w-[850px] p-0 overflow-hidden bg-background border-border/40 shadow-2xl">
-                <div className="flex flex-col md:flex-row h-full">
-                    {/* Main Content Area */}
-                    <div className="flex-1 p-8">
-                        <DialogHeader className="mb-8">
-                            <DialogTitle className="text-3xl font-black tracking-tight mb-2">
-                                Choose Your Tier
-                            </DialogTitle>
-                            <DialogDescription className="text-base text-muted-foreground">
-                                Join thousands of creators getting the most out of Veily.
-                            </DialogDescription>
-                        </DialogHeader>
+            <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-background border-border/40 shadow-2xl rounded-3xl">
+                <div className="flex flex-col h-full bg-white dark:bg-zinc-950 p-8">
+                    <div className="text-center mb-8">
+                        <div className="mx-auto w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
+                            <Sparkles className="w-8 h-8" />
+                        </div>
+                        <h2 className="text-2xl font-black tracking-tight mb-2">
+                            Get clean, watermark-free exports
+                        </h2>
+                        <p className="text-base text-muted-foreground">
+                            Your mockup is ready. Pick a plan to export it clean, without the watermark.
+                        </p>
+                    </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {PLAN_MODAL_DATA.map((p) => {
-                                const Icon = p.icon;
-                                const isCurrent = plan === p.id;
-                                
-                                return (
-                                    <div 
-                                        key={p.id}
-                                        className={cn(
-                                            "relative flex flex-col p-6 rounded-2xl border transition-all duration-300 group",
-                                            p.highlight 
-                                                ? "border-primary bg-primary/5 shadow-lg scale-[1.02] z-10" 
-                                                : "border-border/50 hover:border-border hover:bg-muted/30"
-                                        )}
-                                    >
-                                        {p.highlight && (
-                                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-[10px] font-black uppercase text-primary-foreground rounded-full shadow-md">
-                                                Most Popular
-                                            </div>
-                                        )}
+                    <div className="flex flex-col gap-4 mb-8">
+                        {PLANS.map((p) => {
+                            const Icon = p.icon;
+                            
+                            return (
+                                <div 
+                                    key={p.id}
+                                    className={cn(
+                                        "relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer overflow-hidden",
+                                        p.highlight 
+                                            ? "border-primary bg-primary/5 hover:border-primary/80" 
+                                            : "border-border hover:border-foreground/20 hover:bg-muted/30"
+                                    )}
+                                    onClick={() => handleUpgrade(p.id)}
+                                >
+                                    {p.highlight && (
+                                        <div className="absolute inset-0 overflow-hidden opacity-10 pointer-events-none">
+                                            <Star className="absolute -top-2 -right-2 w-16 h-16 text-primary rotate-12" />
+                                            <Heart className="absolute top-12 right-12 w-8 h-8 text-primary -rotate-12" />
+                                            <Zap className="absolute bottom-10 -left-4 w-12 h-12 text-primary rotate-45" />
+                                            <Sparkles className="absolute top-20 left-10 w-6 h-6 text-primary" />
+                                        </div>
+                                    )}
 
-                                        <div className="mb-4">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                {Icon && <Icon className={cn("w-5 h-5", p.id === 'premium' ? "text-amber-500" : "text-primary")} />}
+                                    {p.highlight && (
+                                        <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
+                                    )}
+
+                                    <div className="relative z-10">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div className="flex items-center gap-2">
+                                                {Icon && <Icon className={cn("w-5 h-5", p.highlight ? "text-primary" : "text-muted-foreground")} />}
                                                 <h3 className="font-bold text-lg">{p.name}</h3>
                                             </div>
-                                            <div className="flex items-baseline gap-1">
-                                                <span className="text-3xl font-black">{p.price}</span>
-                                                <span className="text-muted-foreground text-xs">/month</span>
-                                            </div>
-                                            <p className="text-xs text-muted-foreground mt-2 leading-tight">
-                                                {p.description}
-                                            </p>
+                                            <span className="text-xl font-black">{p.price}</span>
                                         </div>
+                                        <p className="text-sm text-muted-foreground mb-4">
+                                            {p.description}
+                                        </p>
 
-                                        <div className="flex-1 space-y-2.5 mb-6">
-                                            {p.features.map((f, i) => (
-                                                <div key={i} className="flex items-start gap-2 text-[11px] leading-tight">
-                                                    <Check className="w-3 h-3 mt-0.5 text-green-500 shrink-0" />
-                                                    <span className="text-foreground/80">{f}</span>
+                                        <div className="space-y-2 mb-6">
+                                            {p.features?.map((f, i) => (
+                                                <div key={i} className="flex items-center gap-2">
+                                                    <div className="w-4 h-4 rounded-full bg-primary/10 flex items-center justify-center">
+                                                        <Check className="w-2.5 h-2.5 text-primary" />
+                                                    </div>
+                                                    <span className="text-xs font-medium text-foreground/80">{f}</span>
                                                 </div>
                                             ))}
                                         </div>
 
                                         <Button
-                                            onClick={() => handleUpgrade(p.id)}
-                                            disabled={!!loading || p.disabled || isCurrent}
+                                            disabled={!!loading}
                                             className={cn(
-                                                "w-full h-10 rounded-xl text-xs font-bold transition-all duration-300",
+                                                "w-full h-12 rounded-xl text-sm font-bold transition-all duration-300",
                                                 p.highlight
-                                                    ? "bg-primary text-primary-foreground hover:shadow-xl"
-                                                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-                                                isCurrent && "bg-green-500/10 text-green-600 border border-green-500/20"
+                                                    ? "bg-primary text-primary-foreground hover:shadow-xl hover:-translate-y-0.5"
+                                                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                                             )}
                                         >
                                             {loading === p.id ? (
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                            ) : (
-                                                isCurrent ? "Active Plan" : p.buttonText
-                                            )}
+                                                <Loader2 className="w-5 h-5 animate-spin" />
+                                            ) : p.buttonText}
                                         </Button>
                                     </div>
-                                );
-                            })}
-                        </div>
+                                </div>
+                            );
+                        })}
                     </div>
+
+                    {!user && (
+                        <div className="text-center mt-2 pt-6 border-t border-border">
+                            <p className="text-sm text-muted-foreground">
+                                Already have an account?{" "}
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setUpgradeModalOpen(false);
+                                        setAuthModalOpen(true);
+                                    }}
+                                    className="font-bold text-primary hover:underline hover:text-primary/80 transition-colors"
+                                >
+                                    Sign In
+                                </button>
+                            </p>
+                        </div>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

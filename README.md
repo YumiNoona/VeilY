@@ -7,7 +7,7 @@
 ![Stripe](https://img.shields.io/badge/Stripe-Payments-626CD9?logo=stripe)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)
 
-[**Live Demo →**](https://veily.vercel.app/)
+[**Live Demo →**](https://veily.venusapp.in/)
 
 ## 🚀 Overview
 
@@ -91,5 +91,5 @@ Features a custom-built UX system where the editing sidebar scrolls independentl
 
 ## 🛡️ License & Credits
 
-Built with ❤️ by the **Veil**.
+Built with ❤️ by **Veil**.
 This project is licensed under the **MIT License**.

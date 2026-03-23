@@ -1,6 +1,8 @@
 import { SocialPostState, ThreadItem } from "@/hooks/useSocialPostState";
 import { ChatState, Message, Person, Platform, ChatType, AppearanceSettings } from "@/types/chat";
 import { CommentsState, Profile, Comment } from "@/hooks/useCommentState";
+import { StoriesState } from "@/hooks/useStoriesState";
+import { EmailState } from "@/hooks/useEmailState";
 
 // --- Helpers ---
 const createChatAppearance = (darkMode = false): AppearanceSettings => ({
@@ -169,6 +171,42 @@ export const SOCIAL_TEMPLATES = {
     config: { theme: 'light', transparentBackground: false },
     threadItems: []
   } as SocialPostState,
+
+  redditTheory: {
+    platform: 'reddit',
+    author: {
+      name: 'TheoryCrafter',
+      handle: 'u/TheoryCrafter',
+      avatar: 'https://www.redditstatic.com/avatars/defaults/v2/avatar_default_4.png',
+      verified: false
+    },
+    content: {
+      text: "[Deep Dive] The secret identity of the villain in the finale was hidden in the first 5 minutes. Let's look at the frame-by-frame evidence... 🧐",
+      image: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=1200&h=600&fit=crop',
+      date: new Date()
+    },
+    metrics: { likes: '24.8K', comments: '1.5K', reposts: '0', views: '0' },
+    config: { theme: 'dark', transparentBackground: false },
+    threadItems: []
+  } as SocialPostState,
+
+  xSpace: {
+    platform: 'twitter',
+    author: {
+      name: 'Startup Weekly',
+      handle: 'startup_weekly',
+      avatar: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=100&h=100&fit=crop',
+      verified: true
+    },
+    content: {
+      text: "We're LIVE! Join our Space with the founders of Veily. Talking about the future of designer tools. 🎙️✨\n\nJoin here: x.com/i/spaces/123",
+      image: null,
+      date: new Date()
+    },
+    metrics: { likes: '1.2K', comments: '45', reposts: '230', views: '45K' },
+    config: { theme: 'dark', transparentBackground: false },
+    threadItems: []
+  } as SocialPostState,
 };
 
 // --- CHAT TEMPLATES ---
@@ -233,6 +271,20 @@ export const CHAT_TEMPLATES = {
     appearance: createChatAppearance(false),
   } as ChatState,
 
+  whatsappShopping: {
+    platform: 'whatsapp',
+    chatType: 'direct',
+    people: [
+      { id: 'me', name: 'Boutique Store', isOnline: true },
+      { id: 'p1', name: 'Customer', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "Hi! Do you have the blue dress in size M?", senderId: 'p1', timestamp: new Date(Date.now() - 600000), isOwn: false },
+      { id: 'm2', text: "Yes! We just got more in stock. Would you like me to set one aside for you? ✨", senderId: 'me', timestamp: new Date(Date.now() - 500000), isOwn: true }
+    ],
+    appearance: createChatAppearance(false),
+  } as ChatState,
+
   telegramCrypto: {
     platform: 'telegram',
     chatType: 'group',
@@ -271,6 +323,166 @@ export const CHAT_TEMPLATES = {
     messages: [
        { id: 'm1', text: "$10 for the iPhone 15? I can come now.", senderId: 'p1', timestamp: new Date(Date.now() - 3600000), isOwn: false },
        { id: 'm2', text: "... No.", senderId: 'me', timestamp: new Date(Date.now() - 3500000), isOwn: true }
+    ],
+    appearance: createChatAppearance(false),
+  } as ChatState,
+
+  messengerNightOut: {
+    platform: 'messenger',
+    chatType: 'group',
+    people: [
+      { id: 'me', name: 'You', isOnline: true },
+      { id: 'p1', name: 'Tyler', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop', isOnline: true },
+      { id: 'p2', name: 'Chloe', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "Who's ready for tonight? 🍸", senderId: 'me', timestamp: new Date(Date.now() - 3600000), isOwn: true },
+      { id: 'm2', text: "Me! Just need to finish this report first. 😭", senderId: 'p2', timestamp: new Date(Date.now() - 3500000), isOwn: false },
+      { id: 'm3', text: "I'll be there by 8. Save me a seat!", senderId: 'p1', timestamp: new Date(Date.now() - 3400000), isOwn: false }
+    ],
+    appearance: createChatAppearance(false),
+  } as ChatState,
+
+  discordCommunity: {
+    platform: 'discord',
+    chatType: 'group',
+    people: [
+      { id: 'me', name: 'Mod', isOnline: true },
+      { id: 'p1', name: 'Gamer123', avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=100&h=100&fit=crop', isOnline: true },
+      { id: 'p2', name: 'NoobMaster', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "Anyone for a raid? Need 2 more.", senderId: 'p1', timestamp: new Date(Date.now() - 600000), isOwn: false },
+      { id: 'm2', text: "I'm in! Let's go.", senderId: 'me', timestamp: new Date(Date.now() - 540000), isOwn: true }
+    ],
+    appearance: createChatAppearance(true),
+  } as ChatState,
+
+  discordGaming: {
+    platform: 'discord',
+    chatType: 'group',
+    people: [
+      { id: 'me', name: 'SlayerX', isOnline: true },
+      { id: 'p1', name: 'Healer99', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop', isOnline: true },
+      { id: 'p2', name: 'TankPro', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "Everyone on Discord? Boss fight in 5 mins! ⚔️", senderId: 'me', timestamp: new Date(Date.now() - 300000), isOwn: true },
+      { id: 'm2', text: "Mana is full. Let's do this.", senderId: 'p1', timestamp: new Date(Date.now() - 240000), isOwn: false },
+      { id: 'm3', text: "Wait for me! Just logging in. 😅", senderId: 'p2', timestamp: new Date(Date.now() - 180000), isOwn: false }
+    ],
+    appearance: createChatAppearance(true),
+  } as ChatState,
+
+  slackWorkspace: {
+    platform: 'slack',
+    chatType: 'group',
+    people: [
+      { id: 'me', name: 'Lead Dev', isOnline: true },
+      { id: 'p1', name: 'CTO', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "The production server is stable. 🚀", senderId: 'me', timestamp: new Date(Date.now() - 1000000), isOwn: true },
+      { id: 'm2', text: "Great work team. Let's finish the sprint.", senderId: 'p1', timestamp: new Date(Date.now() - 900000), isOwn: false }
+    ],
+    appearance: createChatAppearance(false),
+  } as ChatState,
+
+  slackGeneral: {
+    platform: 'slack',
+    chatType: 'group',
+    people: [
+      { id: 'me', name: 'You', isOnline: true },
+      { id: 'p1', name: 'HR Dept', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop', isOnline: true }
+    ],
+    messages: [
+        { id: 'm1', text: "Reminder: Free pizza in the kitchen at 12 PM! 🍕", senderId: 'p1', timestamp: new Date(Date.now() - 3600000), isOwn: false },
+        { id: 'm2', text: "Best news of the week! See you there. 🙌", senderId: 'me', timestamp: new Date(Date.now() - 3500000), isOwn: true }
+    ],
+    appearance: createChatAppearance(false),
+  } as ChatState,
+
+  lineBusiness: {
+    platform: 'line',
+    chatType: 'direct',
+    people: [
+      { id: 'me', name: 'Support', isOnline: true },
+      { id: 'p1', name: 'Yuki Morita', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "Is the store open on holidays?", senderId: 'p1', timestamp: new Date(Date.now() - 3600000), isOwn: false },
+      { id: 'm2', text: "Yes! We are open from 10 AM to 6 PM. Check our coupons! 🎫", senderId: 'me', timestamp: new Date(Date.now() - 3500000), isOwn: true }
+    ],
+    appearance: createChatAppearance(false),
+  } as ChatState,
+
+  signalSecure: {
+    platform: 'signal',
+    chatType: 'direct',
+    people: [
+      { id: 'me', name: 'Echo', isOnline: true },
+      { id: 'p1', name: 'Ghost', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "Did you clear the logs?", senderId: 'p1', timestamp: new Date(Date.now() - 60000), isOwn: false },
+      { id: 'm2', text: "Encrypted and destroyed. We're clean.", senderId: 'me', timestamp: new Date(Date.now() - 30000), isOwn: true }
+    ],
+    appearance: createChatAppearance(true),
+  } as ChatState,
+
+  teamsMeeting: {
+    platform: 'teams',
+    chatType: 'group',
+    people: [
+      { id: 'me', name: 'Project Lead', isOnline: true },
+      { id: 'p1', name: 'Sarah (PM)', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop', isOnline: true },
+      { id: 'p2', name: 'Dave (Eng)', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop', isOnline: false }
+    ],
+    messages: [
+      { id: 'm1', text: "Let's sync on the Q4 roadmap tomorrow at 10 AM.", senderId: 'p1', timestamp: new Date(Date.now() - 300000), isOwn: false },
+      { id: 'm2', text: "@Dave can you present the tech debt summary?", senderId: 'me', timestamp: new Date(Date.now() - 240000), isOwn: true }
+    ],
+    appearance: createChatAppearance(false),
+  } as ChatState,
+
+  snapchatDaily: {
+    platform: 'snapchat',
+    chatType: 'direct',
+    people: [
+      { id: 'me', name: 'You', isOnline: true },
+      { id: 'p1', name: 'Lily', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "Look at this view! 🌅", senderId: 'p1', timestamp: new Date(Date.now() - 120000), isOwn: false },
+      { id: 'm2', text: "Omg so jealous! Where are you?", senderId: 'me', timestamp: new Date(Date.now() - 60000), isOwn: true }
+    ],
+    appearance: createChatAppearance(false),
+  } as ChatState,
+
+  tinderMatch: {
+    platform: 'tinder',
+    chatType: 'direct',
+    people: [
+      { id: 'me', name: 'You', isOnline: true },
+      { id: 'p1', name: 'Sophia', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "Hey! Love your bio. Do you actually like hiking or is that just for the app? 😂", senderId: 'me', timestamp: new Date(Date.now() - 600000), isOwn: true },
+      { id: 'm2', text: "Hahaha okay okay, you caught me. Only if there's a pizza at the end of the trail! 🍕", senderId: 'p1', timestamp: new Date(Date.now() - 300000), isOwn: false }
+    ],
+    appearance: createChatAppearance(false),
+  } as ChatState,
+
+  wechatFamily: {
+    platform: 'wechat',
+    chatType: 'group',
+    people: [
+      { id: 'me', name: 'Kevin', isOnline: true },
+      { id: 'p1', name: 'Mom', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "Did you eat yet? I sent some red envelopes! 🧧", senderId: 'p1', timestamp: new Date(Date.now() - 1000000), isOwn: false },
+      { id: 'm2', text: "Thanks Mom! Happy New Year! 🎉", senderId: 'me', timestamp: new Date(Date.now() - 900000), isOwn: true }
     ],
     appearance: createChatAppearance(false),
   } as ChatState,
@@ -367,6 +579,21 @@ export const AI_CHAT_TEMPLATES = {
     appearance: createChatAppearance(true),
     aiModel: 'grok-2'
   } as ChatState,
+
+  geminiBusiness: {
+    platform: 'gemini',
+    chatType: 'direct',
+    people: [
+      { id: 'me', name: 'Manager', isOnline: true },
+      { id: 'ai', name: 'Gemini', avatar: 'https://images.unsplash.com/photo-1675271591211-126ad94c495d?w=100&h=100&fit=crop', isOnline: true }
+    ],
+    messages: [
+      { id: 'm1', text: "Draft a Q3 summary for the stakeholders.", senderId: 'me', timestamp: new Date(Date.now() - 120000), isOwn: true },
+      { id: 'm2', text: "Here's a draft focusing on the 15% revenue growth and new market entry in Japan...", senderId: 'ai', timestamp: new Date(Date.now() - 60000), isOwn: false }
+    ],
+    appearance: createChatAppearance(false),
+    aiModel: 'gemini-1.5-pro'
+  } as ChatState,
 };
 
 // --- COMMENT TEMPLATES ---
@@ -422,4 +649,90 @@ export const COMMENT_TEMPLATES = {
     ],
     config: { theme: 'light', showWatermark: false }
   } as CommentsState,
+
+  tiktokRecipe: {
+    platform: 'tiktok',
+    profiles: [
+        { id: 'c', name: 'Chef Mario', handle: 'chef_mario', avatar: 'https://images.unsplash.com/photo-1583394238712-92d139ca3211?w=50&h=50&fit=crop', verified: true, isCreator: true },
+        { id: 'p1', name: 'Foodie Lover', handle: 'foodie', avatar: '', verified: false }
+    ],
+    comments: [
+        { id: 'm1', userId: 'p1', text: "This pesto looks so fresh! Definitely trying this tonight.", likes: '15K', timeAgo: '4h', replies: [] },
+        { id: 'm2', userId: 'c', text: "Make sure to toast the pine nuts first! It makes a huge difference.", likes: '8.2K', timeAgo: '3h', replies: [] }
+    ],
+    config: { theme: 'dark', showWatermark: false }
+  } as CommentsState,
+};
+
+// --- STORIES TEMPLATES ---
+export const STORIES_TEMPLATES = {
+  influencerDay: {
+    platform: 'instagram',
+    username: 'travel_diaries',
+    verified: true,
+    timeAgo: '2h',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: { theme: 'dark' }
+  } as StoriesState,
+  
+  snapchatVibe: {
+    platform: 'snapchat',
+    username: 'chill_vibes',
+    verified: false,
+    timeAgo: 'Just now',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1499566727020-88026dc6a0de?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: { theme: 'light' }
+  } as StoriesState,
+};
+
+// --- EMAIL TEMPLATES ---
+export const EMAIL_TEMPLATES = {
+  businessMeeting: {
+    subject: 'Q3 Marketing Strategy Review',
+    attachment: 'Q3_Strategy_V2.pdf',
+    participants: [
+      { id: 'p1', name: 'Sarah Jenkins', email: 's.jenkins@company.com', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'David Chen', email: 'd.chen@company.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p2',
+        dateTime: 'Oct 12, 2023 at 9:15 AM',
+        body: 'Hi Sarah,\n\nI have attached the revised Q3 marketing strategy for your review. Please let me know your thoughts before the board meeting tomorrow.\n\nBest,\nDavid'
+      },
+      {
+        id: 'e2',
+        fromParticipantId: 'p1',
+        dateTime: 'Oct 12, 2023 at 10:30 AM',
+        body: 'Thanks David. I will review this shortly and get back to you.'
+      }
+    ]
+  } as EmailState,
+  
+  newsletter: {
+    subject: 'Weekly Product Updates',
+    attachment: '',
+    participants: [
+      { id: 'p1', name: 'Product Team', email: 'updates@product.io', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'User', email: 'user@example.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: 'Today at 8:00 AM',
+        body: 'Hey there!\n\nWe just shipped some highly requested features:\n- Dark mode support\n- Export to PDF\n- Team collaboration\n\nCheck out the dashboard to see them in action!'
+      }
+    ]
+  } as EmailState,
 };

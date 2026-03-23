@@ -12,6 +12,9 @@ const SocialPost = lazy(() => import("./pages/SocialPost"));
 const Comments = lazy(() => import("./pages/Comments"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const UpgradeSuccess = lazy(() => import("./pages/UpgradeSuccess"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Stories = lazy(() => import("./pages/Stories"));
+const Email = lazy(() => import("./pages/Email"));
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
@@ -29,7 +32,10 @@ const App = () => {
                   <Route path="/ai-chat" element={<AIChat />} />
                   <Route path="/social" element={<SocialPost />} />
                   <Route path="/comments" element={<Comments />} />
+                  <Route path="/stories" element={<Stories />} />
+                  <Route path="/email" element={<Email />} />
                   <Route path="/upgrade/success" element={<UpgradeSuccess />} />
+                  <Route path="/auth" element={<Auth />} />
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>

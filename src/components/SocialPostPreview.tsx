@@ -11,6 +11,7 @@ import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { Watermark } from '@/components/Watermark';
 
 interface SocialPostPreviewProps {
     state: SocialPostState;
@@ -124,12 +125,7 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
                     }}
                 >
                     <PostComponent state={state} />
-
-                    {plan === 'free' && (
-                        <div className="absolute bottom-3 right-4 opacity-60 pointer-events-none">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mix-blend-difference drop-shadow-md">Veily.app</span>
-                        </div>
-                    )}
+                    <Watermark />
                 </div>
             </div>
         </main>

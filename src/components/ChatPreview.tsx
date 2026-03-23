@@ -2,6 +2,7 @@ import { Message, Person, Platform, ChatType, DeviceView } from "@/types/chat";
 import { cn } from "@/lib/utils";
 import { PLATFORM_CHAT_MAP } from "./platforms/index";
 import { forwardRef, useMemo } from "react";
+import { Watermark } from "@/components/Watermark";
 import { AppearanceSettings } from "@/types/chat";
 import { Signal, Wifi } from "lucide-react";
 
@@ -78,9 +79,10 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
       >
         <div className={cn("w-full h-full overflow-hidden flex flex-col", showFrame ? "rounded-[32px]" : "rounded-xl")}>
           {showStatusBar && <DeviceStatusBar appearance={appearance} />}
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden relative">
             <PlatformChat {...chatProps} />
           </div>
+          <Watermark />
         </div>
       </div>
     );

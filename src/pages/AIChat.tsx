@@ -21,6 +21,7 @@ const AIChat = () => {
     handleAiModelChange,
     handleResetState,
     handleLoadTemplate,
+    randomizeState,
   } = useChatState();
 
   // Set default to ChatGPT when entering AI Chat if not already an AI platform
@@ -54,6 +55,7 @@ const AIChat = () => {
         onAiModelChange={handleAiModelChange}
         onReset={handleResetState}
         onTemplateLoad={handleLoadTemplate}
+        onRandomize={randomizeState}
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden">

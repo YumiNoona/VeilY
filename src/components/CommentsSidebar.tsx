@@ -21,7 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Twitter, Instagram, Linkedin, Facebook, Youtube, Plus, Trash2, Upload, MessageSquare, Heart, Clock, RotateCcw } from 'lucide-react';
+import { Twitter, Instagram, Linkedin, Facebook, Youtube, Plus, Trash2, Upload, MessageSquare, Heart, Clock, RotateCcw, Wand2, Users, Palette, MessageCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { COMMENT_TEMPLATES } from '@/lib/templates';
 
@@ -42,6 +42,7 @@ interface CommentsSidebarProps {
     deleteComment: (id: string) => void;
     onReset?: () => void;
     onTemplateLoad?: (template: any) => void;
+    onRandomize?: () => void;
 }
 
 export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
@@ -56,6 +57,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     deleteComment,
     onReset,
     onTemplateLoad,
+    onRandomize,
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -178,6 +180,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                                 <SelectGroup>
                                     <SelectLabel>TikTok</SelectLabel>
                                     <SelectItem value="tiktokViral">Viral Video</SelectItem>
+                                    <SelectItem value="tiktokRecipe">Cooking Tips</SelectItem>
                                 </SelectGroup>
                                 <SelectGroup>
                                     <SelectLabel>X (Twitter)</SelectLabel>
@@ -191,17 +194,31 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                         </Select>
                     </div>
 
-                    {onReset && (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-xs font-medium h-8 text-muted-foreground gap-1.5"
-                            onClick={onReset}
-                        >
-                            <RotateCcw className="w-3 h-3" />
-                            Reset
-                        </Button>
-                    )}
+                    <div className="flex items-center gap-1">
+                        {onReset && (
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground"
+                                onClick={onReset}
+                                title="Reset All"
+                            >
+                                <RotateCcw className="w-4 h-4" />
+                            </Button>
+                        )}
+                        
+                        {onRandomize && (
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                                onClick={onRandomize}
+                                title="Randomize Content"
+                            >
+                                <Wand2 className="w-4 h-4" />
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 <Tabs
@@ -224,9 +241,16 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                 <Accordion type="single" collapsible defaultValue="comments" className="w-full">
 
                     {/* PEOPLE SECTION */}
-                    <AccordionItem value="people">
-                        <AccordionTrigger>People</AccordionTrigger>
-                        <AccordionContent className="pt-2 space-y-4">
+                    <AccordionItem value="people" className="border rounded-xl bg-card shadow-sm overflow-hidden">
+                        <AccordionTrigger className="hover:no-underline px-3 py-3 hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <Users className="w-3.5 h-3.5 text-primary" />
+                                </div>
+                                <span className="font-semibold text-sm">People</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-2 space-y-4 px-3 pb-3">
                             {state.profiles.map((profile, index) => (
                                 <div key={profile.id} className="bg-muted/30 p-3 rounded-lg border border-border">
                                     <div className="flex items-start gap-3">
@@ -287,9 +311,16 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                     </AccordionItem>
 
                     {/* COMMENTS SECTION */}
-                    <AccordionItem value="comments">
-                        <AccordionTrigger>Comments</AccordionTrigger>
-                        <AccordionContent className="pt-2">
+                    <AccordionItem value="comments" className="border rounded-xl bg-card shadow-sm overflow-hidden">
+                        <AccordionTrigger className="hover:no-underline px-3 py-3 hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <MessageCircle className="w-3.5 h-3.5 text-primary" />
+                                </div>
+                                <span className="font-semibold text-sm">Comments</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-2 px-3 pb-3">
                             {state.comments.map(comment => renderCommentEditor(comment))}
                             <Button className="w-full mt-4" onClick={() => addComment()}>
                                 <Plus className="w-4 h-4 mr-2" /> Add New Comment
@@ -298,9 +329,16 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                     </AccordionItem>
 
                     {/* APPEARANCE SECTION */}
-                    <AccordionItem value="appearance">
-                        <AccordionTrigger>Appearance</AccordionTrigger>
-                        <AccordionContent className="pt-2 space-y-4">
+                    <AccordionItem value="appearance" className="border rounded-xl bg-card shadow-sm overflow-hidden">
+                        <AccordionTrigger className="hover:no-underline px-3 py-3 hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <Palette className="w-3.5 h-3.5 text-primary" />
+                                </div>
+                                <span className="font-semibold text-sm">Appearance</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-2 space-y-4 px-3 pb-3">
                             <div className="flex items-center justify-between">
                                 <Label>Dark Mode</Label>
                                 <Switch

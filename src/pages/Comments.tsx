@@ -18,6 +18,7 @@ const Comments = () => {
         deleteComment,
         handleResetState,
         loadTemplate,
+        randomizeState,
     } = useCommentState();
 
     // Set document title
@@ -42,6 +43,7 @@ const Comments = () => {
                 deleteComment={deleteComment}
                 onReset={handleResetState}
                 onTemplateLoad={loadTemplate}
+                onRandomize={randomizeState}
             />
             <div className="flex-1 relative overflow-y-auto overflow-x-hidden">
                 <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8 pt-32 pb-20">

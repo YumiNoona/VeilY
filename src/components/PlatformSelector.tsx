@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Platform } from "@/types/chat";
+import { useAuth } from "@/contexts/AuthContext";
+import { Crown } from "lucide-react";
 
 interface PlatformSelectorProps {
   selected: Platform;
@@ -133,23 +135,34 @@ const PlatformIcon = ({ platform, className }: { platform: Platform; className?:
 };
 
 export function PlatformSelector({ selected, onSelect }: PlatformSelectorProps) {
+  const { plan, setUpgradeModalOpen } = useAuth();
+  const lockedPlatforms = ['imessage', 'snapchat'];
+
   return (
     <div className="flex flex-wrap gap-2">
       {platforms.map((platform) => {
         const isActive = selected === platform.id;
+        const isLocked = lockedPlatforms.includes(platform.id) && plan === 'free';
 
         return (
           <button
             key={platform.id}
-            onClick={() => onSelect(platform.id)}
+            onClick={() => {
+                if (isLocked) {
+                    setUpgradeModalOpen(true);
+                } else {
+                    onSelect(platform.id);
+                }
+            }}
             className={cn(
-              "inline-flex items-center justify-center grow gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border",
+              "inline-flex relative items-center justify-center grow gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border",
               "hover:shadow-md hover:-translate-y-0.5",
               isActive ? platform.activeColor : platform.color
             )}
           >
             <PlatformIcon platform={platform.id} />
             <span>{platform.name}</span>
+            {isLocked && <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1 drop-shadow-sm" />}
           </button>
         );
       })}

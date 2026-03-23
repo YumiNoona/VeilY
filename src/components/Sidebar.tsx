@@ -2,7 +2,7 @@ import * as React from "react";
 import { ChatState, ChatType, Person, AppearanceSettings } from "@/types/chat";
 import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
+import { Wand2, RotateCcw } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSection } from "./sidebar/sections/AppSection";
 import { TypeSection } from "./sidebar/sections/TypeSection";
@@ -37,6 +37,7 @@ interface SidebarProps {
   onTemplateLoad?: (template: any) => void;
   onReorderMessages?: (newMessages: ChatState['messages']) => void;
   onReset?: () => void;
+  onRandomize?: () => void;
 }
 
 export function Sidebar({
@@ -55,6 +56,7 @@ export function Sidebar({
   onTemplateLoad,
   onReorderMessages,
   onReset,
+  onRandomize,
 }: SidebarProps) {
 
   return (
@@ -70,7 +72,7 @@ export function Sidebar({
                 onTemplateLoad(template as any);
               }
             }}>
-              <SelectTrigger className="w-[140px] h-8 text-xs font-medium">
+              <SelectTrigger className="w-[110px] h-8 text-xs font-medium">
                 <SelectValue placeholder="Templates" />
               </SelectTrigger>
               <SelectContent>
@@ -89,6 +91,7 @@ export function Sidebar({
                     <SelectGroup>
                       <SelectLabel>Google</SelectLabel>
                       <SelectItem value="geminiTokyo">Gemini Travel</SelectItem>
+                      <SelectItem value="geminiBusiness">Gemini Business</SelectItem>
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>xAI</SelectLabel>
@@ -106,12 +109,33 @@ export function Sidebar({
                       <SelectLabel>Meta</SelectLabel>
                       <SelectItem value="whatsappHoliday">WhatsApp Friends</SelectItem>
                       <SelectItem value="whatsappCustomer">WhatsApp Support</SelectItem>
+                      <SelectItem value="whatsappShopping">WhatsApp Shop</SelectItem>
                       <SelectItem value="messengerMarket">Messenger Deal</SelectItem>
+                      <SelectItem value="messengerNightOut">Messenger Plan</SelectItem>
+                    </SelectGroup>
+                    <SelectGroup>
+                      <SelectLabel>Community</SelectLabel>
+                      <SelectItem value="discordCommunity">Discord Raid</SelectItem>
+                      <SelectItem value="discordGaming">Discord Gaming</SelectItem>
+                      <SelectItem value="slackWorkspace">Slack Sync</SelectItem>
+                      <SelectItem value="slackGeneral">Slack Pizza</SelectItem>
+                      <SelectItem value="teamsMeeting">Teams Sync</SelectItem>
+                    </SelectGroup>
+                    <SelectGroup>
+                      <SelectLabel>Social & Dating</SelectLabel>
+                      <SelectItem value="snapchatDaily">Snapchat Daily</SelectItem>
+                      <SelectItem value="tinderMatch">Tinder Match</SelectItem>
+                    </SelectGroup>
+                    <SelectGroup>
+                      <SelectLabel>Regional</SelectLabel>
+                      <SelectItem value="lineBusiness">LINE Business</SelectItem>
+                      <SelectItem value="wechatFamily">WeChat Family</SelectItem>
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Privacy</SelectLabel>
                       <SelectItem value="telegramCrypto">Telegram Whale</SelectItem>
                       <SelectItem value="telegramSecret">Telegram Secret</SelectItem>
+                      <SelectItem value="signalSecure">Signal Secure</SelectItem>
                     </SelectGroup>
                   </>
                 )}
@@ -119,17 +143,31 @@ export function Sidebar({
             </Select>
           </div>
 
-          {onReset && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs font-medium h-8 text-muted-foreground gap-1.5"
-              onClick={onReset}
-            >
-              <RotateCcw className="w-3 h-3" />
-              Reset
-            </Button>
-          )}
+          <div className="flex items-center gap-1">
+            {onReset && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground"
+                onClick={onReset}
+                title="Reset All"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </Button>
+            )}
+            
+            {onRandomize && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                onClick={onRandomize}
+                title="Randomize Content"
+              >
+                <Wand2 className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-2.5 space-y-2 scrollbar-thin">

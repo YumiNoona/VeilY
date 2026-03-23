@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'sonner';
 
 export type CommentPlatform = 'instagram' | 'tiktok' | 'twitter' | 'youtube';
 
@@ -29,7 +30,6 @@ export interface CommentsState {
     comments: Comment[];
     config: {
         theme: 'light' | 'dark';
-        showWatermark: boolean;
     };
 }
 
@@ -96,7 +96,6 @@ export const useCommentState = () => {
         comments: INITIAL_COMMENTS,
         config: {
             theme: 'light',
-            showWatermark: true,
         }
     });
 
@@ -219,13 +218,60 @@ export const useCommentState = () => {
             comments: INITIAL_COMMENTS,
             config: {
                 theme: 'light',
-                showWatermark: true,
             }
         });
     };
 
     const loadTemplate = (template: CommentsState) => {
         setState(template);
+    };
+
+    const randomizeState = () => {
+        const platforms: CommentPlatform[] = ['instagram', 'tiktok', 'twitter', 'youtube'];
+        const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
+        
+        const firstNames = ["James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "William", "Elizabeth"];
+        const randomName = () => firstNames[Math.floor(Math.random() * firstNames.length)] + Math.floor(Math.random() * 99);
+        
+        const randomCommentsPool = [
+            "Best content ever! 🔥",
+            "I totally agree with this.",
+            "Can you explain more about point 2?",
+            "This changed my life, thank you!",
+            "First! lol",
+            "Imagine not liking this video... 💀",
+            "Pure gold. More please!",
+            "I've been looking for this for ages.",
+            "Standard reached! 🚀",
+            "This is so underrated."
+        ];
+
+        const newProfiles = state.profiles.map(p => ({
+            ...p,
+            name: randomName(),
+            handle: randomName().toLowerCase(),
+            verified: Math.random() > 0.8
+        }));
+
+        const newComments = state.comments.map(c => ({
+            ...c,
+            text: randomCommentsPool[Math.floor(Math.random() * randomCommentsPool.length)],
+            likes: Math.floor(Math.random() * 5000).toString(),
+            timeAgo: Math.floor(Math.random() * 23 + 1) + 'h',
+            isLikedByAuthor: Math.random() > 0.5
+        }));
+
+        setState(prev => ({
+            ...prev,
+            platform: randomPlatform,
+            profiles: newProfiles,
+            comments: newComments,
+            config: {
+                ...prev.config,
+                theme: Math.random() > 0.5 ? 'dark' : 'light'
+            }
+        }));
+        toast.success("Randomized comments content!");
     };
 
     return {
@@ -242,5 +288,6 @@ export const useCommentState = () => {
         globalReplaceProfileName,
         handleResetState,
         loadTemplate,
+        randomizeState,
     };
 };

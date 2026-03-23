@@ -17,7 +17,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Upload, X, Twitter, Instagram, Linkedin, Facebook, MessageSquare, Wand2, ChevronDown, ChevronRight, RotateCcw } from 'lucide-react';
+import { Crown, Upload, X, Twitter, Instagram, Linkedin, Facebook, MessageSquare, Wand2, ChevronDown, ChevronRight, RotateCcw, User, FileText, MessageCircle, BarChart2, Palette } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface SocialPostSidebarProps {
@@ -45,7 +45,7 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
     randomizeState,
     handleResetState
 }) => {
-    const { setUpgradeModalOpen } = useAuth();
+    const { plan, setUpgradeModalOpen } = useAuth();
     const [collapsedThreads, setCollapsedThreads] = React.useState<Record<string, boolean>>({});
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'avatar' | 'image') => {
@@ -122,68 +122,93 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
             <div className="pt-5 px-3 pb-2 border-b border-sidebar-border">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-1.5 flex-1">
-                        <Button 
-                            variant="outline" 
-                            size="icon" 
+                        <Select onValueChange={(val) => {
+                            const template = SOCIAL_TEMPLATES[val as keyof typeof SOCIAL_TEMPLATES];
+                            if (template) loadTemplate(template);
+                        }}>
+                            <SelectTrigger className="w-[110px] h-8 text-xs font-medium">
+                                <SelectValue placeholder="Templates" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>X (Twitter)</SelectLabel>
+                                    <SelectItem value="viralTweet">Growth Playbook</SelectItem>
+                                    <SelectItem value="techNewsX">Tech News</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                    <SelectLabel>Instagram</SelectLabel>
+                                    <SelectItem value="instagramAesthetic">Aesthetic Vibe</SelectItem>
+                                    <SelectItem value="instagramBrand">Brand Post</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                    <SelectLabel>LinkedIn</SelectLabel>
+                                    <SelectItem value="linkedinHired">New Job</SelectItem>
+                                    <SelectItem value="linkedinAdvice">Expert Advice</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                    <SelectLabel>Other</SelectLabel>
+                                    <SelectItem value="redditAITA">Reddit AITA</SelectItem>
+                                    <SelectItem value="redditTheory">Reddit Theory</SelectItem>
+                                    <SelectItem value="facebookMarketplace">Facebook Sale</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                    <SelectLabel>X Spaces</SelectLabel>
+                                    <SelectItem value="xSpace">X Space Live</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                        <Button
+                            variant="outline"
+                            size="icon"
                             className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                             onClick={handleResetState}
                             title="Reset All"
                         >
                             <RotateCcw className="h-4 w-4" />
                         </Button>
-                        <Button 
-                            variant="outline" 
-                            size="icon" 
+                        <Button
+                            variant="outline"
+                            size="icon"
                             className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
                             onClick={randomizeState}
                             title="Randomize Content"
                         >
                             <Wand2 className="h-4 w-4" />
                         </Button>
-                        <Select onValueChange={(val) => {
-                            const template = SOCIAL_TEMPLATES[val as keyof typeof SOCIAL_TEMPLATES];
-                            if (template) loadTemplate(template);
-                        }}>
-                        <SelectTrigger className="w-[120px] h-8 text-xs font-medium ml-1">
-                            <SelectValue placeholder="Templates" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectLabel>X (Twitter)</SelectLabel>
-                                <SelectItem value="viralTweet">Growth Playbook</SelectItem>
-                                <SelectItem value="techNewsX">Tech News</SelectItem>
-                                <SelectItem value="redditAITA">Reddit AITA</SelectItem>
-                            </SelectGroup>
-                            <SelectGroup>
-                                <SelectLabel>Instagram</SelectLabel>
-                                <SelectItem value="instagramAesthetic">Aesthetic Vibe</SelectItem>
-                                <SelectItem value="instagramBrand">Brand Post</SelectItem>
-                            </SelectGroup>
-                            <SelectGroup>
-                                <SelectLabel>LinkedIn</SelectLabel>
-                                <SelectItem value="linkedinHired">New Job</SelectItem>
-                                <SelectItem value="linkedinAdvice">Expert Advice</SelectItem>
-                            </SelectGroup>
-                            <SelectGroup>
-                                <SelectLabel>Facebook</SelectLabel>
-                                <SelectItem value="facebookMarketplace">Marketplace Sale</SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
                     </div>
                 </div>
 
                 <Tabs
                     value={state.platform}
-                    onValueChange={(val) => setPlatform(val as SocialPlatform)}
+                    onValueChange={(val) => {
+                        if (['linkedin', 'facebook', 'reddit'].includes(val)) {
+                            if (plan === 'free') {
+                                setUpgradeModalOpen(true);
+                                return;
+                            }
+                        }
+                        setPlatform(val as SocialPlatform);
+                    }}
                     className="w-full"
                 >
                     <TabsList className="grid w-full grid-cols-5 h-10">
                         <TabsTrigger value="twitter"><Twitter className="w-4 h-4" /></TabsTrigger>
                         <TabsTrigger value="instagram"><Instagram className="w-4 h-4" /></TabsTrigger>
-                        <TabsTrigger value="linkedin"><Linkedin className="w-4 h-4" /></TabsTrigger>
-                        <TabsTrigger value="facebook"><Facebook className="w-4 h-4" /></TabsTrigger>
-                        <TabsTrigger value="reddit"><MessageSquare className="w-4 h-4" /></TabsTrigger>
+                        <TabsTrigger value="linkedin" className="relative">
+                            <Linkedin className="w-4 h-4" />
+                            {plan === 'free' && <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />}
+                        </TabsTrigger>
+                        <TabsTrigger value="facebook" className="relative">
+                            <Facebook className="w-4 h-4" />
+                            {plan === 'free' && <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />}
+                        </TabsTrigger>
+                        <TabsTrigger value="reddit" className="relative">
+                            <MessageSquare className="w-4 h-4" />
+                            {plan === 'free' && <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />}
+                        </TabsTrigger>
                     </TabsList>
                 </Tabs>
             </div>
@@ -192,9 +217,16 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                 <Accordion type="multiple" defaultValue={["author", "content"]} className="w-full">
 
                     {/* AUTHOR SECTION */}
-                    <AccordionItem value="author">
-                        <AccordionTrigger>Main Author</AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-2">
+                    <AccordionItem value="author" className="border rounded-xl bg-card shadow-sm overflow-hidden">
+                        <AccordionTrigger className="hover:no-underline px-3 py-3 hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <User className="w-3.5 h-3.5 text-primary" />
+                                </div>
+                                <span className="font-semibold text-sm">Main Author</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
                             <div className="grid gap-2">
                                 <Label>Display Name</Label>
                                 <Input
@@ -245,9 +277,16 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                     </AccordionItem>
 
                     {/* CONTENT SECTION */}
-                    <AccordionItem value="content">
-                        <AccordionTrigger>Post Content</AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-2">
+                    <AccordionItem value="content" className="border rounded-xl bg-card shadow-sm overflow-hidden">
+                        <AccordionTrigger className="hover:no-underline px-3 py-3 hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <FileText className="w-3.5 h-3.5 text-primary" />
+                                </div>
+                                <span className="font-semibold text-sm">Post Content</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
                             <div className="grid gap-2">
                                 <Label>Text / Caption</Label>
                                 <Textarea
@@ -290,9 +329,16 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                     </AccordionItem>
 
                     {/* THREADS / COMMENTS SECTION */}
-                    <AccordionItem value="threads">
-                        <AccordionTrigger>Thread & Comments</AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-2">
+                    <AccordionItem value="threads" className="border rounded-xl bg-card shadow-sm overflow-hidden">
+                        <AccordionTrigger className="hover:no-underline px-3 py-3 hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <MessageCircle className="w-3.5 h-3.5 text-primary" />
+                                </div>
+                                <span className="font-semibold text-sm">Thread & Comments</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex gap-2 flex-wrap">
                                     <Button size="sm" variant="outline" className="text-xs h-8" onClick={() => addThreadItem('comment')}>+ Comment</Button>
@@ -402,9 +448,16 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                     </AccordionItem>
 
                     {/* METRICS SECTION */}
-                    <AccordionItem value="metrics">
-                        <AccordionTrigger>Post Metrics</AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-2">
+                    <AccordionItem value="metrics" className="border rounded-xl bg-card shadow-sm overflow-hidden">
+                        <AccordionTrigger className="hover:no-underline px-3 py-3 hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <BarChart2 className="w-3.5 h-3.5 text-primary" />
+                                </div>
+                                <span className="font-semibold text-sm">Post Metrics</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
                                     <Label>Likes / Upvotes</Label>
@@ -447,9 +500,16 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                     </AccordionItem>
 
                     {/* APPEARANCE SECTION */}
-                    <AccordionItem value="appearance">
-                        <AccordionTrigger>Appearance</AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-2">
+                    <AccordionItem value="appearance" className="border rounded-xl bg-card shadow-sm overflow-hidden">
+                        <AccordionTrigger className="hover:no-underline px-3 py-3 hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <Palette className="w-3.5 h-3.5 text-primary" />
+                                </div>
+                                <span className="font-semibold text-sm">Appearance</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
                             <div className="flex items-center justify-between">
                                 <Label>Dark Mode</Label>
                                 <Switch

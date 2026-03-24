@@ -23,6 +23,7 @@ export interface EmailState {
     attachment: string;
     participants: EmailParticipant[];
     emails: EmailEntry[];
+    provider: 'generic' | 'gmail' | 'outlook';
     appearance: AppearanceSettings;
 }
 
@@ -57,6 +58,7 @@ const INITIAL_STATE: EmailState = {
     attachment: 'file.pdf',
     participants: INITIAL_PARTICIPANTS,
     emails: INITIAL_EMAILS,
+    provider: 'generic',
     appearance: {
         darkMode: false,
         showTimestamps: true,
@@ -143,6 +145,9 @@ export const useEmailState = () => {
         loadTemplate(randomTemplate);
     };
 
+    const setProvider = (provider: EmailState['provider']) =>
+        setState(prev => ({ ...prev, provider }));
+
     const setAppearance = (updates: Partial<EmailState['appearance']>) => {
         setState(prev => ({ ...prev, appearance: { ...prev.appearance, ...updates } }));
     };
@@ -151,6 +156,7 @@ export const useEmailState = () => {
         state,
         setSubject,
         setAttachment,
+        setProvider,
         addParticipant,
         updateParticipant,
         removeParticipant,

@@ -93,15 +93,17 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
             <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
                 <div
                     ref={previewRef}
-                    className="transition-all duration-300 ease-in-out p-8 rounded-xl relative"
+                    className="transition-all duration-300 ease-in-out p-8 rounded-xl"
                     style={{
                         backgroundColor: state.config.transparentBackground
                             ? 'transparent'
                             : (state.config.theme === 'dark' ? '#09090b' : '#ffffff') // Zinc-950 or White backdrop
                     }}
                 >
-                    <PostComponent state={state} />
-                    <Watermark />
+                    <div className="relative">
+                        <PostComponent state={state} />
+                        <Watermark isDark={state.config.theme === 'dark'} />
+                    </div>
                 </div>
             </div>
         </main>

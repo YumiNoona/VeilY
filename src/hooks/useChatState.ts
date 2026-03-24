@@ -38,9 +38,9 @@ const initialChatState: ChatState = {
     aiModel: 'gpt-4o',
 };
 
-const loadStateFromLocalStorage = (): ChatState => {
+const loadStateFromLocalStorage = (storageKey: string): ChatState => {
     try {
-        const serializedState = localStorage.getItem(CHAT_STATE_STORAGE_KEY);
+        const serializedState = localStorage.getItem(storageKey);
         if (serializedState === null) {
             return initialChatState;
         }
@@ -63,17 +63,17 @@ const loadStateFromLocalStorage = (): ChatState => {
     }
 };
 
-export const useChatState = () => {
-    const [chatState, setChatState] = useState<ChatState>(loadStateFromLocalStorage);
+export const useChatState = (storageKey: string = 'chatState') => {
+    const [chatState, setChatState] = useState<ChatState>(() => loadStateFromLocalStorage(storageKey));
 
     useEffect(() => {
         try {
             const serializedState = JSON.stringify(chatState);
-            localStorage.setItem(CHAT_STATE_STORAGE_KEY, serializedState);
+            localStorage.setItem(storageKey, serializedState);
         } catch (error) {
             console.error("Error saving state to localStorage:", error);
         }
-    }, [chatState]);
+    }, [chatState, storageKey]);
 
     const handlePlatformChange = useCallback((platform: Platform) => {
         setChatState(prev => ({ ...prev, platform }));
@@ -164,9 +164,9 @@ export const useChatState = () => {
 
     const handleResetState = useCallback(() => {
         setChatState(initialChatState);
-        localStorage.removeItem(CHAT_STATE_STORAGE_KEY);
+        localStorage.removeItem(storageKey);
         toast.success("Chat state reset to defaults.");
-    }, []);
+    }, [storageKey]);
 
     const handleLoadTemplate = useCallback((template: ChatState) => {
         // Revive timestamps

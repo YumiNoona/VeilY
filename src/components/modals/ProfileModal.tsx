@@ -64,6 +64,8 @@ export const ProfileModal = () => {
 
         try {
             const fileName = `${user?.id}/avatar.png`;
+            
+            // Upload to storage
             const { error: uploadError } = await supabase.storage
                 .from('avatars')
                 .upload(fileName, file, { 
@@ -73,14 +75,19 @@ export const ProfileModal = () => {
 
             if (uploadError) throw uploadError;
 
+            // Get the URL
             const { data: { publicUrl } } = supabase.storage
                 .from('avatars')
                 .getPublicUrl(fileName);
 
             const cacheBustedUrl = `${publicUrl}?t=${Date.now()}`;
+            
+            // Update the profile in DB and metadata
             await updateProfile({ avatar_url: cacheBustedUrl });
+            
             toast.success("Avatar updated!", { id: uploadToast });
         } catch (error: any) {
+            console.error("Avatar upload process failed:", error);
             toast.error(error.message || "Upload failed", { id: uploadToast });
         } finally {
             setIsUploading(false);

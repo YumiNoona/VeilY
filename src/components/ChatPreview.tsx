@@ -77,12 +77,12 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
           deviceStyles
         )}
       >
-        <div className={cn("w-full h-full overflow-hidden flex flex-col", showFrame ? "rounded-[32px]" : "rounded-xl")}>
+        <div className={cn("w-full h-full overflow-hidden flex flex-col relative", showFrame ? "rounded-[32px]" : "rounded-xl")}>
           {showStatusBar && <DeviceStatusBar appearance={appearance} />}
           <div className="flex-1 overflow-hidden relative">
             <PlatformChat {...chatProps} />
           </div>
-          <Watermark />
+          <Watermark isDark={appearance.darkMode} />
         </div>
       </div>
     );

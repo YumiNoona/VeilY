@@ -9,9 +9,16 @@ interface PreviewControlsProps {
   onViewChange: (view: DeviceView) => void;
   onDownload: () => void;
   onCopy?: () => void;
+  showDeviceToggle?: boolean;
 }
 
-export function PreviewControls({ activeView, onViewChange, onDownload, onCopy }: PreviewControlsProps) {
+export function PreviewControls({ 
+  activeView, 
+  onViewChange, 
+  onDownload, 
+  onCopy,
+  showDeviceToggle = true 
+}: PreviewControlsProps) {
   const views: { id: DeviceView; icon: React.ElementType; label: string }[] = [
     { id: 'desktop', icon: Monitor, label: 'Desktop' },
     { id: 'mobile', icon: Smartphone, label: 'Mobile' },
@@ -19,28 +26,31 @@ export function PreviewControls({ activeView, onViewChange, onDownload, onCopy }
 
   return (
     <div className="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 bg-card border border-border rounded-full py-4 px-2 shadow-lg z-50">
-      <div className="flex flex-col items-center bg-secondary rounded-full p-1 gap-1">
-        {views.map((view) => {
-          const Icon = view.icon;
-          return (
-            <button
-              key={view.id}
-              onClick={() => onViewChange(view.id)}
-              className={cn(
-                "p-2 rounded-full transition-all duration-200",
-                activeView === view.id
-                  ? "bg-card shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              title={view.label}
-            >
-              <Icon className="w-4 h-4" />
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="w-6 h-px bg-border" />
+      {showDeviceToggle && (
+        <>
+          <div className="flex flex-col items-center bg-secondary rounded-full p-1 gap-1">
+            {views.map((view) => {
+              const Icon = view.icon;
+              return (
+                <button
+                  key={view.id}
+                  onClick={() => onViewChange(view.id)}
+                  className={cn(
+                    "p-2 rounded-full transition-all duration-200",
+                    activeView === view.id
+                      ? "bg-card shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                  title={view.label}
+                >
+                  <Icon className="w-4 h-4" />
+                </button>
+              );
+            })}
+          </div>
+          <div className="w-6 h-px bg-border" />
+        </>
+      )}
 
       <div className="flex flex-col gap-2">
         {onCopy && (

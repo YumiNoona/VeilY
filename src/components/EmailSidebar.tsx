@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Trash2, ChevronDown, ChevronRight, RotateCcw, Wand2, FileText, Users, MessageCircle } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronRight, RotateCcw, Wand2, FileText, Users, MessageCircle, Mail } from 'lucide-react';
 import { useEmailState } from '@/hooks/useEmailState';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -22,6 +22,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AppearanceSection } from './sidebar/sections/AppearanceSection';
 import { cn } from '@/lib/utils';
 import { EMAIL_TEMPLATES } from '@/lib/templates';
@@ -33,6 +34,7 @@ interface EmailSidebarProps {
     state: EmailState;
     setSubject: (v: string) => void;
     setAttachment: (v: string) => void;
+    setProvider: (v: EmailState['provider']) => void;
     addParticipant: () => void;
     updateParticipant: (id: string, updates: any) => void;
     removeParticipant: (id: string) => void;
@@ -46,7 +48,7 @@ interface EmailSidebarProps {
 }
 
 export const EmailSidebar: React.FC<EmailSidebarProps> = ({
-    state, setSubject, setAttachment,
+    state, setSubject, setAttachment, setProvider,
     addParticipant, updateParticipant, removeParticipant,
     addEmail, updateEmail, removeEmail,
     handleReset, onTemplateLoad, onRandomize, setAppearance
@@ -82,10 +84,14 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                                 <SelectGroup>
                                     <SelectLabel>Business</SelectLabel>
                                     <SelectItem value="businessMeeting">Meeting Strategy</SelectItem>
+                                    <SelectItem value="projectKickoff">Project Kickoff</SelectItem>
+                                    <SelectItem value="invoiceReminder">Invoice Reminder</SelectItem>
+                                    <SelectItem value="formalGreeting">Formal Intro</SelectItem>
                                 </SelectGroup>
                                 <SelectGroup>
                                     <SelectLabel>Newsletters</SelectLabel>
-                                    <SelectItem value="newsletter">Product Update</SelectItem>
+                                    <SelectItem value="newsletterBoost">Product Update</SelectItem>
+                                    <SelectItem value="supportWelcome">Support Welcome</SelectItem>
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
@@ -117,6 +123,24 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                         )}
                     </div>
                 </div>
+
+                <Tabs
+                    value={state.provider}
+                    onValueChange={(val) => setProvider(val as any)}
+                    className="w-full"
+                >
+                    <TabsList className="grid w-full grid-cols-3 h-10">
+                        <TabsTrigger value="generic">
+                            <Mail className="w-4 h-4" />
+                        </TabsTrigger>
+                        <TabsTrigger value="gmail">
+                            <svg viewBox="0 0 24 24" className="w-4 h-4"><path fill="#EA4335" d="M24 4.5v15c0 .85-.65 1.5-1.5 1.5H21V7.39l-9 6.58-9-6.58V21H1.5C.65 21 0 20.35 0 19.5v-15c0-1.21 1.36-1.93 2.36-1.24L12 10.32l9.64-7.06c1-.69 2.36.03 2.36 1.24z"/></svg>
+                        </TabsTrigger>
+                        <TabsTrigger value="outlook">
+                            <svg viewBox="0 0 24 24" className="w-4 h-4"><path fill="#0078D4" d="M22 4H2C.9 4 0 4.9 0 6v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM2 6h20v.5L12 13 2 6.5V6zm0 12V8.5L12 15l10-6.5V18H2z"/></svg>
+                        </TabsTrigger>
+                    </TabsList>
+                </Tabs>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-6">

@@ -60,6 +60,7 @@ const Stories = () => {
                     onViewChange={setDeviceView}
                     onDownload={() => setDownloadModalOpen(true)}
                     onCopy={() => previewRef.current?.handleCopy()}
+                    showDeviceToggle={false}
                 />
             </div>
             <DownloadModal 

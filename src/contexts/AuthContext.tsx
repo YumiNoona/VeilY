@@ -24,6 +24,7 @@ interface AuthContextType {
     updateProfile: (updates: { avatar_url?: string; full_name?: string }) => Promise<void>;
     incrementDownloads: () => Promise<void>;
     incrementVideos: () => Promise<void>;
+    loginWithAdmin: (email: string, pass: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -47,6 +48,7 @@ const AuthContext = createContext<AuthContextType>({
     updateProfile: async () => {},
     incrementDownloads: async () => {},
     incrementVideos: async () => {},
+    loginWithAdmin: async () => false,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -75,28 +77,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const fetchUserStatus = async (currentUser: User) => {
+        // Set initial state from metadata if available
+        if (currentUser.user_metadata?.full_name && !fullName) {
+            setFullName(currentUser.user_metadata.full_name);
+        }
+        if (currentUser.user_metadata?.avatar_url && !avatarUrl) {
+            setAvatarUrl(currentUser.user_metadata.avatar_url);
+        }
+
         // 3-count retry loop for async database trigger lag logic
         for (let i = 0; i < 3; i++) {
             if (!isMounted.current) return;
             
-            const { data } = await supabase
+            const { data, error } = await supabase
                 .from('users')
                 .select('plan, downloads_used, videos_used, avatar_url, full_name')
                 .eq('id', currentUser.id)
                 .single();
 
-            if (data !== null) {
+            if (!error && data !== null) {
                 if (isMounted.current) {
                     setPlan(data.plan as 'free' | 'pro' | 'premium');
                     setDownloadsUsed(data.downloads_used || 0);
                     setVideosUsed(data.videos_used || 0);
-                    setAvatarUrl(data.avatar_url || null);
-                    setFullName(data.full_name || null);
+                    // DB values take precedence if they exist
+                    if (data.avatar_url) setAvatarUrl(data.avatar_url);
+                    if (data.full_name) setFullName(data.full_name);
                 }
                 return;
             }
             
-            await new Promise(r => setTimeout(r, 300));
+            await new Promise(r => setTimeout(r, 500));
         }
     };
 
@@ -112,6 +123,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setPlan('free');
         setDownloadsUsed(0);
         setVideosUsed(0);
+        setFullName(null);
+        setAvatarUrl(null);
         toast.success("Successfully logged out");
     };
 
@@ -137,27 +150,77 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (!error) setVideosUsed(newVal);
     };
 
+    const loginWithAdmin = async (email: string, pass: string) => {
+        const hash = async (str: string) => {
+            const msgUint8 = new TextEncoder().encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        };
+
+        const eHash = await hash(email);
+        const pHash = await hash(pass);
+
+        // Provided hashes for admin login
+        const TARGET_E = '9e504b26ed173aa4d02db96b4ae478254df4df86a6e37410843ff8f813327fcc';
+        const TARGET_P = '899b3e44f37138b58efeeccbe7444ea725fbe56463e3c59c689ef23e82f494dc';
+
+        if (eHash === TARGET_E && pHash === TARGET_P) {
+            const adminUser: User = {
+                id: 'admin_rushikesh_2001',
+                email: email,
+                user_metadata: { full_name: 'Rushikesh Ingale (Admin)' },
+                app_metadata: {},
+                aud: 'authenticated',
+                created_at: new Date().toISOString()
+            } as User;
+
+            setUser(adminUser);
+            setPlan('premium');
+            setFullName('Rushikesh Ingale (Admin)');
+            setDownloadsUsed(0);
+            setVideosUsed(0);
+            setAuthModalOpen(false);
+            return true;
+        }
+        return false;
+    };
+
     const updateProfile = async (updates: { avatar_url?: string; full_name?: string }) => {
         if (!user) throw new Error("No user found");
 
-        // Use upsert instead of update to handle cases where the profile row might be missing
-        const { error: dbError } = await supabase
-            .from('users')
-            .upsert({
-                id: user.id,
-                email: user.email,
-                avatar_url: updates.avatar_url !== undefined ? updates.avatar_url : (avatarUrl || ""),
-                full_name: updates.full_name !== undefined ? updates.full_name : (fullName || ""),
-                updated_at: new Date().toISOString(),
-            }, {
-                onConflict: 'id'
+        try {
+            // Update Auth Metadata first as it's faster and acts as a fallback
+            const { error: authError } = await supabase.auth.updateUser({
+                data: {
+                    full_name: updates.full_name !== undefined ? updates.full_name : fullName,
+                    avatar_url: updates.avatar_url !== undefined ? updates.avatar_url : avatarUrl,
+                }
             });
-        
-        if (dbError) throw dbError;
+            if (authError) console.warn("Auth metadata update failed:", authError);
 
-        if (updates.avatar_url !== undefined) setAvatarUrl(updates.avatar_url);
-        if (updates.full_name !== undefined) setFullName(updates.full_name);
-        toast.success("Profile updated!");
+            // Use upsert on the users table
+            const { error: dbError } = await supabase
+                .from('users')
+                .upsert({
+                    id: user.id,
+                    email: user.email,
+                    avatar_url: updates.avatar_url !== undefined ? updates.avatar_url : (avatarUrl || ""),
+                    full_name: updates.full_name !== undefined ? updates.full_name : (fullName || ""),
+                    updated_at: new Date().toISOString(),
+                }, {
+                    onConflict: 'id'
+                });
+            
+            if (dbError) throw dbError;
+
+            if (updates.avatar_url !== undefined) setAvatarUrl(updates.avatar_url);
+            if (updates.full_name !== undefined) setFullName(updates.full_name);
+            toast.success("Profile updated!");
+        } catch (err: any) {
+            console.error("Profile update failed:", err);
+            throw err;
+        }
     };
 
     useEffect(() => {
@@ -224,7 +287,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isProfileModalOpen, setProfileModalOpen,
             isDownloadModalOpen, setDownloadModalOpen,
             refetchUserStatus, signOut, updateProfile,
-            incrementDownloads, incrementVideos
+            incrementDownloads, incrementVideos, loginWithAdmin
         }}>
             {children}
         </AuthContext.Provider>

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { STORIES_TEMPLATES } from '@/lib/templates';
 import { AppearanceSettings } from '@/types/chat';
 
-export type StoryPlatform = 'instagram' | 'snapchat';
+export type StoryPlatform = 'instagram' | 'snapchat' | 'whatsapp' | 'messenger';
 
 export interface StorySlide {
     id: string;

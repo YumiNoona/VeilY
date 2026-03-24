@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Loader2, Crown, Sparkles, Check, Heart, Star, Zap } from 'lucide-react';
+import { Loader2, Crown, Sparkles, Check, Heart, Star, Zap, ArrowRight, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from "@/lib/utils";
+import { DoodleBackground } from '@/components/icons/DoodleBackground';
 
 const PLANS = [
   {
@@ -73,67 +74,78 @@ export const UpgradeModal = () => {
 
     return (
         <Dialog open={isUpgradeModalOpen} onOpenChange={setUpgradeModalOpen}>
-            <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-background border-border/40 shadow-2xl rounded-3xl">
-                <div className="flex flex-col h-full bg-white dark:bg-zinc-950 p-8">
-                    <div className="text-center mb-8">
-                        <div className="mx-auto w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
-                            <Sparkles className="w-8 h-8" />
-                        </div>
-                        <h2 className="text-2xl font-black tracking-tight mb-2">
-                            Get clean, watermark-free exports
-                        </h2>
-                        <p className="text-base text-muted-foreground">
-                            Your mockup is ready. Pick a plan to export it clean, without the watermark.
-                        </p>
+            <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-2xl">
+                <div className="relative flex flex-col h-full bg-white max-h-[90vh] overflow-y-auto scrollbar-hide">
+                    
+                    {/* Doodle Background */}
+                    <div className="absolute inset-0 z-0 text-zinc-950 opacity-[0.08]">
+                        <DoodleBackground />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/60 to-white/95" />
                     </div>
 
-                    <div className="flex flex-col gap-4 mb-8">
-                        {PLANS.map((p) => {
-                            const Icon = p.icon;
-                            
-                            return (
-                                <div 
-                                    key={p.id}
-                                    className={cn(
-                                        "relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer overflow-hidden",
-                                        p.highlight 
-                                            ? "border-primary bg-primary/5 hover:border-primary/80" 
-                                            : "border-border hover:border-foreground/20 hover:bg-muted/30"
-                                    )}
-                                    onClick={() => handleUpgrade(p.id)}
-                                >
-                                    {p.highlight && (
-                                        <div className="absolute inset-0 overflow-hidden opacity-10 pointer-events-none">
-                                            <Star className="absolute -top-2 -right-2 w-16 h-16 text-primary rotate-12" />
-                                            <Heart className="absolute top-12 right-12 w-8 h-8 text-primary -rotate-12" />
-                                            <Zap className="absolute bottom-10 -left-4 w-12 h-12 text-primary rotate-45" />
-                                            <Sparkles className="absolute top-20 left-10 w-6 h-6 text-primary" />
-                                        </div>
-                                    )}
+                    <div className="relative z-10 p-8 space-y-8">
+                        {/* Header */}
+                        <div className="flex flex-col items-center text-center space-y-4">
+                            <div className="w-16 h-16 bg-zinc-950 flex items-center justify-center rounded-2xl shadow-xl shadow-zinc-200 rotate-6">
+                                <Sparkles className="w-9 h-9 text-white fill-white" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <h2 className="text-2xl font-black tracking-tight text-zinc-900 leading-tight">
+                                    Unlock the full potential
+                                </h2>
+                                <p className="text-sm text-zinc-500 font-medium max-w-[320px] mx-auto leading-relaxed">
+                                    Pick a plan to export watermark-free and access ultra-high resolution.
+                                </p>
+                            </div>
+                        </div>
 
-                                    {p.highlight && (
-                                        <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
-                                    )}
-
-                                    <div className="relative z-10">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div className="flex items-center gap-2">
-                                                {Icon && <Icon className={cn("w-5 h-5", p.highlight ? "text-primary" : "text-muted-foreground")} />}
-                                                <h3 className="font-bold text-lg">{p.name}</h3>
+                        {/* Plans */}
+                        <div className="space-y-4">
+                            {PLANS.map((p) => {
+                                const Icon = p.icon;
+                                return (
+                                    <div 
+                                        key={p.id}
+                                        className={cn(
+                                            "relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer group",
+                                            p.highlight 
+                                                ? "border-zinc-900 bg-zinc-50/50 shadow-sm" 
+                                                : "border-zinc-100 bg-white hover:border-zinc-200"
+                                        )}
+                                        onClick={() => handleUpgrade(p.id)}
+                                    >
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn(
+                                                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500",
+                                                    p.highlight ? "bg-zinc-900 text-white rotate-6 shadow-lg shadow-zinc-200" : "bg-zinc-50 text-zinc-400 group-hover:-rotate-6"
+                                                )}>
+                                                    {Icon && <Icon className="w-5 h-5" />}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-bold text-lg text-zinc-900 tracking-tight">{p.name}</h3>
+                                                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{p.price} LIFETIME ACCESS</p>
+                                                </div>
                                             </div>
-                                            <span className="text-xl font-black">{p.price}</span>
+                                            {p.highlight && (
+                                                <div className="bg-orange-100 text-orange-700 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tight">BEST VALUE</div>
+                                            )}
                                         </div>
-                                        <p className="text-sm text-muted-foreground mb-4">
+
+                                        <p className="text-sm text-zinc-500 mb-6 leading-relaxed">
                                             {p.description}
                                         </p>
 
-                                        <div className="space-y-2 mb-6">
+                                        <div className="space-y-3 mb-6">
                                             {p.features?.map((f, i) => (
-                                                <div key={i} className="flex items-center gap-2">
-                                                    <div className="w-4 h-4 rounded-full bg-primary/10 flex items-center justify-center">
-                                                        <Check className="w-2.5 h-2.5 text-primary" />
+                                                <div key={i} className="flex items-center gap-3">
+                                                    <div className={cn(
+                                                        "w-5 h-5 rounded-full flex items-center justify-center",
+                                                        p.highlight ? "bg-zinc-900/10 text-zinc-900" : "bg-zinc-50 text-zinc-400"
+                                                    )}>
+                                                        <Check className="w-3 h-3 stroke-[3]" />
                                                     </div>
-                                                    <span className="text-xs font-medium text-foreground/80">{f}</span>
+                                                    <span className="text-xs font-semibold text-zinc-600">{f}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -141,39 +153,44 @@ export const UpgradeModal = () => {
                                         <Button
                                             disabled={!!loading}
                                             className={cn(
-                                                "w-full h-12 rounded-xl text-sm font-bold transition-all duration-300",
+                                                "w-full h-12 rounded-xl text-sm font-bold transition-all duration-300 active:scale-[0.98] group/btn",
                                                 p.highlight
-                                                    ? "bg-primary text-primary-foreground hover:shadow-xl hover:-translate-y-0.5"
-                                                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                                                    ? "bg-zinc-900 text-white hover:bg-zinc-800"
+                                                    : "bg-zinc-100 text-zinc-950 hover:bg-zinc-200"
                                             )}
                                         >
                                             {loading === p.id ? (
                                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                            ) : p.buttonText}
+                                            ) : (
+                                                <span className="flex items-center justify-center gap-2">
+                                                    {p.buttonText}
+                                                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                                </span>
+                                            )}
                                         </Button>
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    {!user && (
-                        <div className="text-center mt-2 pt-6 border-t border-border">
-                            <p className="text-sm text-muted-foreground">
-                                Already have an account?{" "}
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setUpgradeModalOpen(false);
-                                        setAuthModalOpen(true);
-                                    }}
-                                    className="font-bold text-primary hover:underline hover:text-primary/80 transition-colors"
-                                >
-                                    Sign In
-                                </button>
-                            </p>
+                                );
+                            })}
                         </div>
-                    )}
+
+                        {!user && (
+                            <div className="text-center pt-2">
+                                <p className="text-sm text-zinc-400">
+                                    Already have an account?{" "}
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setUpgradeModalOpen(false);
+                                            setAuthModalOpen(true);
+                                        }}
+                                        className="font-bold text-zinc-900 hover:text-black transition-colors hover:underline"
+                                    >
+                                        Sign In
+                                    </button>
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

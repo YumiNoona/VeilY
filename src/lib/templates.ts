@@ -766,6 +766,146 @@ export const STORIES_TEMPLATES = {
     postedAt: new Date().toISOString().slice(0, 16),
     appearance: createChatAppearance(false)
   } as StoriesState,
+
+  natureEscape: {
+    platform: 'instagram',
+    username: 'nature_seeker',
+    verified: true,
+    timeAgo: '1h',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(false)
+  } as StoriesState,
+
+  urbanVibe: {
+    platform: 'instagram',
+    username: 'city_scout',
+    verified: false,
+    timeAgo: '3h',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(true)
+  } as StoriesState,
+
+  petLove: {
+    platform: 'instagram',
+    username: 'paws_n_claws',
+    verified: false,
+    timeAgo: '15m',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(false)
+  } as StoriesState,
+
+  foodieHeaven: {
+    platform: 'instagram',
+    username: 'chef_secrets',
+    verified: true,
+    timeAgo: '4h',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(false)
+  } as StoriesState,
+
+  techSetup: {
+    platform: 'instagram',
+    username: 'code_lab',
+    verified: true,
+    timeAgo: '6h',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(true)
+  } as StoriesState,
+
+  minimalFashion: {
+    platform: 'instagram',
+    username: 'style_edit',
+    verified: false,
+    timeAgo: '2h',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(false)
+  } as StoriesState,
+
+  modernArch: {
+    platform: 'instagram',
+    username: 'lines_n_space',
+    verified: false,
+    timeAgo: '8h',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1449156001437-3a1411dfca19?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(false)
+  } as StoriesState,
+
+  beachDay: {
+    platform: 'snapchat',
+    username: 'island_hopper',
+    verified: false,
+    timeAgo: 'Just now',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(false)
+  } as StoriesState,
+
+  cityNight: {
+    platform: 'snapchat',
+    username: 'neon_vibes',
+    verified: false,
+    timeAgo: '10m',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1514525253344-f2526019485b?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(true)
+  } as StoriesState,
+
+  luxuryDrive: {
+    platform: 'snapchat',
+    username: 'auto_elite',
+    verified: true,
+    timeAgo: '5m',
+    slides: [
+      { id: 's1', imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80' },
+      { id: 's2', imageUrl: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80' }
+    ],
+    activeSlideIndex: 0,
+    postedAt: new Date().toISOString().slice(0, 16),
+    appearance: createChatAppearance(true)
+  } as StoriesState,
 };
 
 // --- EMAIL TEMPLATES ---
@@ -908,6 +1048,74 @@ export const EMAIL_TEMPLATES = {
         fromParticipantId: 'p1',
         dateTime: '9:30 AM',
         body: 'Hi,\n\nI saw your recent post on LinkedIn about the future of SaaS mockups. Really insightful stuff!\n\nI am in town next week and would love to grab a quick coffee and pick your brain. Do you have 20 mins?'
+      }
+    ]
+  } as EmailState,
+
+  projectKickoff: {
+    subject: 'Project Kickoff: Website Redesign 2024',
+    attachment: 'Project_Timeline.xlsx',
+    participants: [
+      { id: 'p1', name: 'Emma Watson', email: 'emma@design-agency.com', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'John Doe', email: 'john@client-group.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: 'Monday at 10:00 AM',
+        body: 'Hi John,\n\nI\'m excited to kick off our website redesign project! Attached is the initial timeline for your review.\n\nLet\'s schedule a call for Thursday.'
+      }
+    ]
+  } as EmailState,
+
+  supportWelcome: {
+    subject: 'Welcome to Veily Support',
+    attachment: '',
+    participants: [
+      { id: 'p1', name: 'Veily Support', email: 'support@veily.app', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'New User', email: 'new@user.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: 'Recently',
+        body: 'Welcome to Veily!\n\nWe are here to help you create stunning mockups. If you have any questions, just hit reply!'
+      }
+    ]
+  } as EmailState,
+
+  invoiceReminder: {
+    subject: 'Invoice #INV-2024-001 Reminder',
+    attachment: 'Invoice_INV-2024-001.pdf',
+    participants: [
+      { id: 'p1', name: 'Billing Team', email: 'billing@services.com', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'Account Holder', email: 'account@company.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: '2 days ago',
+        body: 'Friendly reminder that your invoice #INV-2024-001 is due in 3 days. Please let us know if you have any questions.'
+      }
+    ]
+  } as EmailState,
+
+  formalGreeting: {
+    subject: 'Introduction: Sarah Miller from Global Tech',
+    attachment: '',
+    participants: [
+      { id: 'p1', name: 'Sarah Miller', email: 'sarah.miller@globaltech.com', redactName: false, redactEmail: false },
+      { id: 'p2', name: 'Business Owner', email: 'owner@localbiz.com', redactName: false, redactEmail: false }
+    ],
+    emails: [
+      {
+        id: 'e1',
+        fromParticipantId: 'p1',
+        dateTime: 'Yesterday',
+        body: 'Dear Business Owner,\n\nI am reaching out to introduce myself and Global Tech. We provide cutting-edge solutions for small businesses.\n\nBest regards,\nSarah Miller'
       }
     ]
   } as EmailState,

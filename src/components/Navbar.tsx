@@ -38,6 +38,7 @@ export const Navbar = () => {
         signOut, 
         setProfileModalOpen,
         setAuthModalOpen,
+        fullName,
         avatarUrl 
     } = useAuth();
 
@@ -50,7 +51,7 @@ export const Navbar = () => {
         { id: "email", label: "Email", path: "/email", icon: AtSign },
     ];
 
-    const userInitial = user?.email?.charAt(0).toUpperCase() || 'U';
+    const userInitial = (fullName || user?.email || 'U').charAt(0).toUpperCase();
 
     return (
         <nav className="h-16 border-b border-border bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-50 shrink-0">
@@ -123,9 +124,10 @@ export const Navbar = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56 mt-1 p-1 rounded-xl shadow-xl border-border/40">
                                 <DropdownMenuLabel className="px-3 py-2">
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Account</p>
-                                        <p className="text-sm font-semibold truncate text-foreground">{user.email}</p>
+                                    <div className="flex flex-col space-y-0.5">
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60">Account</p>
+                                        <p className="text-sm font-bold truncate text-zinc-950">{fullName || user.email}</p>
+                                        {fullName && <p className="text-[10px] text-muted-foreground truncate font-medium">{user.email}</p>}
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />

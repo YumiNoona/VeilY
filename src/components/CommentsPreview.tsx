@@ -89,12 +89,14 @@ export const CommentsPreview = React.forwardRef<CommentsPreviewRef, CommentsPrev
             <div className="flex-1 overflow-auto flex items-center justify-center p-8">
                 <div
                     ref={previewRef}
-                    className="relative transition-all duration-300 ease-in-out"
+                    className="transition-all duration-300 ease-in-out"
                     // Add some spacing around the preview for export capture
                     style={{ padding: '2rem' }}
                 >
-                    {renderPlatformPreview()}
-                    <Watermark />
+                    <div className="relative">
+                        {renderPlatformPreview()}
+                        <Watermark isDark={state.config.theme === 'dark'} />
+                    </div>
                 </div>
             </div>
         </main>

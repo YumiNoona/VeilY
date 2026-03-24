@@ -24,7 +24,7 @@ const AIChat = () => {
     handleResetState,
     handleLoadTemplate,
     randomizeState,
-  } = useChatState();
+  } = useChatState('aiChatState');
 
   const { setDownloadModalOpen } = useAuth();
 

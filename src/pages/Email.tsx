@@ -13,6 +13,7 @@ const Email = () => {
         setSubject,
         setAttachment,
         updateParticipant,
+        setProvider,
         addParticipant,
         removeParticipant,
         updateEmail,
@@ -34,6 +35,7 @@ const Email = () => {
                 state={state}
                 setSubject={setSubject}
                 setAttachment={setAttachment}
+                setProvider={setProvider}
                 updateParticipant={updateParticipant}
                 addParticipant={addParticipant}
                 removeParticipant={removeParticipant}
@@ -54,6 +56,7 @@ const Email = () => {
                     onViewChange={setDeviceView}
                     onDownload={() => setDownloadModalOpen(true)}
                     onCopy={() => previewRef.current?.handleCopy()}
+                    showDeviceToggle={false}
                 />
             </div>
             <DownloadModal 

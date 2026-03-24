@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Plus, Trash2, Upload, Instagram, Ghost, Crown, RotateCcw, Wand2, User, FileText } from 'lucide-react';
+import { Plus, Trash2, Upload, Instagram, Ghost, Crown, RotateCcw, Wand2, User, FileText, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStoriesState } from '@/hooks/useStoriesState';
 import { Switch } from '@/components/ui/switch';
@@ -23,6 +23,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { AppearanceSection } from './sidebar/sections/AppearanceSection';
+import { PlatformIcon } from './icons/PlatformIcons';
 import { cn } from '@/lib/utils';
 import { STORIES_TEMPLATES } from '@/lib/templates';
 import { AppearanceSettings } from '@/types/chat';
@@ -32,7 +33,7 @@ type SetFn<T> = (val: T) => void;
 
 interface StoriesSidebarProps {
     state: StoriesState;
-    setPlatform: SetFn<'instagram' | 'snapchat'>;
+    setPlatform: SetFn<'instagram' | 'snapchat' | 'whatsapp' | 'messenger'>;
     setUsername: SetFn<string>;
     setVerified: SetFn<boolean>;
     setTimeAgo: SetFn<string>;
@@ -85,10 +86,20 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                                 <SelectGroup>
                                     <SelectLabel>Instagram</SelectLabel>
                                     <SelectItem value="influencerDay">Influencer Day</SelectItem>
+                                    <SelectItem value="natureEscape">Nature Escape</SelectItem>
+                                    <SelectItem value="urbanVibe">Urban Scout</SelectItem>
+                                    <SelectItem value="petLove">Paws & Claws</SelectItem>
+                                    <SelectItem value="foodieHeaven">Chef Secrets</SelectItem>
+                                    <SelectItem value="techSetup">Code Lab</SelectItem>
+                                    <SelectItem value="minimalFashion">Style Edit</SelectItem>
+                                    <SelectItem value="modernArch">Modern Lines</SelectItem>
                                 </SelectGroup>
                                 <SelectGroup>
                                     <SelectLabel>Snapchat</SelectLabel>
                                     <SelectItem value="snapchatVibe">Chill Vibes</SelectItem>
+                                    <SelectItem value="beachDay">Island Hopper</SelectItem>
+                                    <SelectItem value="cityNight">Neon Vibes</SelectItem>
+                                    <SelectItem value="luxuryDrive">Auto Elite</SelectItem>
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
@@ -124,21 +135,29 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                 <Tabs
                     value={state.platform}
                     onValueChange={(val) => {
-                        if (val === 'snapchat' && plan === 'free') {
+                        if ((val === 'snapchat' || val === 'whatsapp' || val === 'messenger') && plan === 'free') {
                             setUpgradeModalOpen(true);
                             return;
                         }
-                        setPlatform(val as 'instagram' | 'snapchat');
+                        setPlatform(val as 'instagram' | 'snapchat' | 'whatsapp' | 'messenger');
                     }}
                     className="w-full"
                 >
-                    <TabsList className="grid w-full grid-cols-2 h-10">
-                        <TabsTrigger value="instagram" className="flex items-center gap-2">
-                            <Instagram className="w-4 h-4" /> <span className="text-xs font-semibold">Instagram</span>
+                    <TabsList className="grid w-full grid-cols-4 h-10">
+                        <TabsTrigger value="instagram">
+                            <PlatformIcon platform="instagram" className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="snapchat" className="flex relative items-center justify-center gap-2">
-                            <Ghost className="w-4 h-4" /> <span className="text-xs font-semibold">Snapchat</span>
-                            {plan === 'free' && <Crown className="w-3 h-3 text-amber-500 absolute top-1 right-2 drop-shadow-sm" />}
+                        <TabsTrigger value="snapchat" className="relative">
+                            <PlatformIcon platform="snapchat" className="w-4 h-4" />
+                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5 drop-shadow-sm" />}
+                        </TabsTrigger>
+                        <TabsTrigger value="whatsapp" className="relative">
+                            <PlatformIcon platform="whatsapp" className="w-4 h-4" />
+                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5 drop-shadow-sm" />}
+                        </TabsTrigger>
+                        <TabsTrigger value="messenger" className="relative">
+                            <PlatformIcon platform="messenger" className="w-4 h-4" />
+                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5 drop-shadow-sm" />}
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>

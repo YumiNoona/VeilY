@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { ChatPreview } from "@/components/ChatPreview";
 import { PreviewControls } from "@/components/PreviewControls";
@@ -24,7 +24,15 @@ const Index = () => {
     handleResetState,
     handleLoadTemplate,
     randomizeState,
-  } = useChatState();
+  } = useChatState('chatState');
+
+  // Ensure standard chat defaults to WhatsApp if an AI platform was previously stored
+  useEffect(() => {
+    const aiPlatforms = ['chatgpt', 'claude', 'gemini', 'grok'];
+    if (aiPlatforms.includes(chatState.platform)) {
+      handlePlatformChange('whatsapp');
+    }
+  }, [chatState.platform, handlePlatformChange]);
 
   const { setDownloadModalOpen } = useAuth();
   const [deviceView, setDeviceView] = useState<DeviceView>('mobile');

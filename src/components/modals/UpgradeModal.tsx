@@ -8,34 +8,36 @@ import { cn } from "@/lib/utils";
 import { DoodleBackground } from '@/components/icons/DoodleBackground';
 
 const PLANS = [
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: '$20',
-    description: 'Perfect for getting started with clean exports.',
-    buttonText: 'Get Pro Access',
-    icon: Sparkles,
-    features: [
-      'Clean, watermark-free exports',
-      'Access to all social platforms',
-      'High-quality PNG/JPG downloads',
-    ],
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: '$40',
-    description: 'The ultimate toolkit for power creators.',
-    buttonText: 'Get Premium Access',
-    icon: Crown,
-    highlight: true,
-    features: [
-      'Everything in Pro plan',
-      'Unlock all premium templates',
-      'Priority feature updates',
-      'Unlimited lifetime access',
-    ],
-  }
+    {
+        id: 'pro',
+        name: 'Pro',
+        price: '$20',
+        description: 'Perfect for creators who need clean, rapid social mockups.',
+        buttonText: 'Get Pro Access',
+        icon: Sparkles,
+        features: [
+            'Clean, watermark-free exports',
+            'Access to 15+ social platforms',
+            'Basic AI Chat (ChatGPT & Gemini)',
+            'High-quality PNG/JPG downloads',
+        ],
+    },
+    {
+        id: 'premium',
+        name: 'Premium',
+        price: '$40',
+        description: 'The ultimate engine for high-fidelity chat storytelling.',
+        buttonText: 'Get Premium Access',
+        icon: Crown,
+        highlight: true,
+        features: [
+            'Everything in Pro plan',
+            'Bulk Chat Import (WA/Telegram)',
+            'Advanced AI (Claude & Grok)',
+            'Priority feature updates',
+            'Unlimited lifetime access',
+        ],
+    }
 ];
 
 export const UpgradeModal = () => {
@@ -49,22 +51,22 @@ export const UpgradeModal = () => {
             return;
         }
         setLoading(planId);
-        
+
         try {
             const response = await fetch('/api/create-checkout-session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: user.id, plan: planId })
             });
-            
+
             if (!response.ok) {
                 const errData = await response.json();
                 throw new Error(errData.error || 'Failed to initiate checkout.');
             }
-            
+
             const { url } = await response.json();
             window.location.href = url;
-            
+
         } catch (err: any) {
             toast.error(err.message || 'Failed to initiate checkout.');
         } finally {
@@ -74,14 +76,23 @@ export const UpgradeModal = () => {
 
     return (
         <Dialog open={isUpgradeModalOpen} onOpenChange={setUpgradeModalOpen}>
-            <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-2xl">
+            <DialogContent hideClose className="sm:max-w-[850px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-2xl">
                 <div className="relative flex flex-col h-full bg-white max-h-[90vh] overflow-y-auto scrollbar-hide">
-                    
+
                     {/* Doodle Background */}
                     <div className="absolute inset-0 z-0 text-zinc-950 opacity-[0.08]">
                         <DoodleBackground />
                         <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/60 to-white/95" />
                     </div>
+
+                    {/* Close Button */}
+                    <button
+                        onClick={() => setUpgradeModalOpen(false)}
+                        className="absolute top-4 right-4 z-50 p-2.5 rounded-full bg-white/80 backdrop-blur-sm border border-zinc-200 shadow-sm hover:bg-zinc-100 transition-all active:scale-95 group"
+                        title="Close"
+                    >
+                        <X className="w-5 h-5 text-zinc-500 group-hover:text-zinc-900" />
+                    </button>
 
                     <div className="relative z-10 p-8 space-y-8">
                         {/* Header */}
@@ -100,16 +111,16 @@ export const UpgradeModal = () => {
                         </div>
 
                         {/* Plans */}
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
                             {PLANS.map((p) => {
                                 const Icon = p.icon;
                                 return (
-                                    <div 
+                                    <div
                                         key={p.id}
                                         className={cn(
                                             "relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer group",
-                                            p.highlight 
-                                                ? "border-zinc-900 bg-zinc-50/50 shadow-sm" 
+                                            p.highlight
+                                                ? "border-zinc-900 bg-zinc-50/50 shadow-sm"
                                                 : "border-zinc-100 bg-white hover:border-zinc-200"
                                         )}
                                         onClick={() => handleUpgrade(p.id)}

@@ -43,6 +43,12 @@ Generate clean, professional email previews for:
 - **Outlook**: Corporate-grade modern layout.
 - **Generic (Legal/Classic)**: Serif-based, redaction-heavy layout for official documentation.
 
+### 📂 Bulk Import Engine (Premium)
+Accelerate your workflow with one-click data ingestion:
+- **Smart Parsers**: Automatically extract history from WhatsApp (`.txt`) and Telegram (`.json`) exports.
+- **Identity Mapping**: Intelligently maps participant names to visual avatars and IDs.
+- **One-Click Render**: Instantly transform years of raw chat logs into high-fidelity visual mockups.
+
 ---
 
 ## 🛠️ The Tech Stack
@@ -120,39 +126,12 @@ VEILY uses a tiered access model to balance platform accessibility with premium 
 
 ## 🚀 Future Roadmap: The Vision for VEILY
 
-### 📂 Bulk Import Engine (Planned)
-The most requested feature for power users. This will allow users to:
-1.  **Upload Exports**: Drag and drop a `.txt` from WhatsApp or a `.json` from Telegram.
-2.  **Auto-Parsing**: The engine will automatically extract sender names, timestamps, and message sequences.
-3.  **Instant Rendering**: Instantly transform years of chat history into a high-fidelity visual preview.
-
 ### 🎥 Motion & Video Studio
 - **Typing Animations**: Export "Live" mockups showing the typing bubbles appearing in sequence.
 - **Scroll Captures**: Record vertical scrolling interactions for long-form conversations.
 
 ### 🤖 AI Conversation Generator
 - **Smart Fill**: Describe a scenario (e.g., "A funny argument about pizza") and have LLM technology instantly generate the entire message history for you.
-
----
-
-## 📂 Guide: How to Export Real Chat Data
-
-To prepare for the **Bulk Import** feature (Premium), follow these steps to get your raw data:
-
-### 🟢 WhatsApp
-1.  Open the specific chat you wish to export on your phone.
-2.  Tap the **Contact Name / Group Subject** at the top.
-3.  Scroll to the very bottom and tap **Export Chat**.
-4.  Select **"Without Media"** (to ensure a clean `.txt` file).
-5.  Save or email the `.txt` file to yourself. This file can be uploaded directly to VEILY.
-
-### 🔵 Telegram
-1.  Open **Telegram Desktop** (Exporting is most reliable on Desktop).
-2.  Go to the chat you want to export.
-3.  Click the **three dots ⋮** in the top right corner.
-4.  Select **Export chat history**.
-5.  In the settings, ensure **JSON** is selected as the format (recommended).
-6.  Click **Export** and save the resulting file.
 
 ---
 

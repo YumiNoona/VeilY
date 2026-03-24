@@ -23,6 +23,7 @@ const AIChat = () => {
     handleAiModelChange,
     handleResetState,
     handleLoadTemplate,
+    handleBulkDataImport,
     randomizeState,
   } = useChatState('aiChatState');
 
@@ -60,6 +61,7 @@ const AIChat = () => {
         onReset={handleResetState}
         onTemplateLoad={handleLoadTemplate}
         onRandomize={randomizeState}
+        onBulkImport={handleBulkDataImport}
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
@@ -75,6 +77,7 @@ const AIChat = () => {
             appearance={chatState.appearance}
             aiModel={chatState.aiModel}
             onUpdateMessage={handleUpdateMessage}
+            onRemoveMessage={handleRemoveMessage}
             onUpdatePerson={handleUpdatePerson}
             onUpdateAppearance={handleAppearanceChange}
           />

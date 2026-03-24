@@ -117,8 +117,16 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
                     
                     <div className="absolute inset-0 z-0 text-zinc-900 opacity-[0.08]">
                         <DoodleBackground />
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/40 to-white/95" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/40 to-white/95" />
                     </div>
+
+                    {/* Close Button */}
+                    <button 
+                        onClick={() => setDownloadModalOpen(false)}
+                        className="absolute top-4 right-4 z-50 p-2 rounded-full hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-zinc-600"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
 
                     <div className="relative z-10 p-6 space-y-7">
                         {/* Header */}

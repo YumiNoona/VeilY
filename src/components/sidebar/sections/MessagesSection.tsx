@@ -1,7 +1,13 @@
 import React, { useState, useRef } from "react";
 import { Message, Person } from "@/types/chat";
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { MessageCircle, X, ImagePlus, Plus, User, Clock, Trash2, Check, Bot, GripVertical, RefreshCw } from "lucide-react";
+import { 
+    MessageCircle, X, ImagePlus, Plus, User, Clock, Trash2, 
+    Check, Bot, GripVertical, RefreshCw, FileUp, Crown 
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { parseWhatsApp, parseTelegram, ParsedChat } from "@/lib/parsers";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,6 +39,7 @@ interface MessagesSectionProps {
     onRemoveMessage: (id: string) => void;
     onUpdateMessage: (id: string, newText: string, newTimestamp?: Date, newImage?: string, isOwn?: boolean) => void;
     onReorderMessages?: (newMessages: Message[]) => void;
+    onBulkImport?: (data: ParsedChat) => void;
 }
 
 export function MessagesSection({
@@ -43,7 +50,9 @@ export function MessagesSection({
     onRemoveMessage,
     onUpdateMessage,
     onReorderMessages,
+    onBulkImport,
 }: MessagesSectionProps) {
+    const { plan, setUpgradeModalOpen, triedBulkImport, markBulkImportAsTried } = useAuth();
     const [newMessage, setNewMessage] = useState("");
     const [isOwnMessage, setIsOwnMessage] = useState(true);
     const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
@@ -51,6 +60,7 @@ export function MessagesSection({
     const [messageImage, setMessageImage] = useState<string | null>(null);
 
     const imageInputRef = useRef<HTMLInputElement>(null);
+    const bulkImportRef = useRef<HTMLInputElement>(null);
 
     // Temp state for date/time editing
     const [tempDate, setTempDate] = useState<string>("");
@@ -80,6 +90,53 @@ export function MessagesSection({
             setNewMessage("");
             setMessageImage(null);
         }
+    };
+
+    const handleBulkImportClick = () => {
+        if (plan === 'free' && triedBulkImport) {
+            setUpgradeModalOpen(true);
+            return;
+        }
+        bulkImportRef.current?.click();
+    };
+
+    const handleFileImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const content = event.target?.result as string;
+            let parsed: ParsedChat | null = null;
+            
+            try {
+                if (file.name.endsWith('.json')) {
+                    const json = JSON.parse(content);
+                    parsed = parseTelegram(json);
+                } else if (file.name.endsWith('.txt')) {
+                    parsed = parseWhatsApp(content);
+                } else {
+                    toast.error("Unsupported file format. Please use .txt or .json");
+                    return;
+                }
+
+                if (parsed && parsed.messages.length > 0) {
+                    onBulkImport?.(parsed);
+                    if (plan === 'free') {
+                        markBulkImportAsTried();
+                        toast.success("Trial used! Upgrade to Premium for unlimited imports.");
+                    } else {
+                        toast.success(`Successfully imported ${parsed.messages.length} messages.`);
+                    }
+                } else {
+                    toast.error("No valid messages found in the file.");
+                }
+            } catch (err) {
+                toast.error("Error parsing file. Ensure it's a valid WhatsApp/Telegram export.");
+                console.error(err);
+            }
+        };
+        reader.readAsText(file);
     };
 
     const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -226,6 +283,37 @@ export function MessagesSection({
                         <Button size="icon" onClick={handleSendMessage} className="flex-shrink-0 h-9 w-9">
                             <Plus className="w-4 h-4" />
                         </Button>
+                    </div>
+
+                    {/* Bulk Import Trigger */}
+                    <div className={cn(
+                        "pt-1 pb-1",
+                        mode === 'ai' && "hidden"
+                    )}>
+                        <input
+                            ref={bulkImportRef}
+                            type="file"
+                            accept=".txt,.json"
+                            className="hidden"
+                            onChange={handleFileImport}
+                        />
+                        <Button
+                            variant="outline"
+                            className="w-full h-8 text-[11px] font-bold gap-2 border-dashed border-zinc-300 hover:border-zinc-400 hover:bg-zinc-50 transition-all group overflow-hidden relative"
+                            onClick={handleBulkImportClick}
+                        >
+                            <FileUp className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-700 transition-colors" />
+                            Import Real Chat Data
+                            {plan === 'free' && (
+                                <div className="absolute top-0 right-0 bg-amber-500 text-[8px] text-white px-1.5 py-0.5 rounded-bl-md flex items-center gap-0.5 shadow-sm">
+                                    <Crown className="w-2 h-2 fill-white" />
+                                    TRIAL
+                                </div>
+                            )}
+                        </Button>
+                        {plan === 'free' && !triedBulkImport && (
+                            <p className="text-[10px] text-zinc-400 mt-1.5 text-center font-medium"> Free users can try bulk import <span className="text-zinc-600 font-bold">once</span>.</p>
+                        )}
                     </div>
                 </div>
 

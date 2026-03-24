@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react'; // Re-saved to clear runtime error
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -25,6 +25,8 @@ interface AuthContextType {
     incrementDownloads: () => Promise<void>;
     incrementVideos: () => Promise<void>;
     loginWithAdmin: (email: string, pass: string) => Promise<boolean>;
+    triedBulkImport: boolean;
+    markBulkImportAsTried: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -49,6 +51,8 @@ const AuthContext = createContext<AuthContextType>({
     incrementDownloads: async () => {},
     incrementVideos: async () => {},
     loginWithAdmin: async () => false,
+    triedBulkImport: false,
+    markBulkImportAsTried: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -59,6 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [fullName, setFullName] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [triedBulkImport, setTriedBulkImport] = useState<boolean>(false);
     
     // Global Modal States for easy triggering
     const [isAuthModalOpen, setAuthModalOpen] = useState(false);
@@ -185,6 +190,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         return false;
     };
+    
+    // Track Bulk Import trial
+    useEffect(() => {
+        const tried = localStorage.getItem('veily_tried_bulk_import') === 'true';
+        setTriedBulkImport(tried);
+    }, []);
+
+    const markBulkImportAsTried = () => {
+        setTriedBulkImport(true);
+        localStorage.setItem('veily_tried_bulk_import', 'true');
+    };
 
     const updateProfile = async (updates: { avatar_url?: string; full_name?: string }) => {
         if (!user) throw new Error("No user found");
@@ -287,7 +303,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isProfileModalOpen, setProfileModalOpen,
             isDownloadModalOpen, setDownloadModalOpen,
             refetchUserStatus, signOut, updateProfile,
-            incrementDownloads, incrementVideos, loginWithAdmin
+            incrementDownloads, incrementVideos, loginWithAdmin,
+            triedBulkImport, markBulkImportAsTried
         }}>
             {children}
         </AuthContext.Provider>

@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { ChatState, Message, Person, Platform, ChatType, AppearanceSettings } from "@/types/chat";
+import { ParsedChat } from "@/lib/parsers";
 import { toast } from "sonner";
 
 const initialMessages: Message[] = [
@@ -24,6 +25,7 @@ const initialAppearance: AppearanceSettings = {
     showDeviceFrame: false,
     statusBarTime: '9:41',
     batteryLevel: 100,
+    statusText: 'last seen today at 12:00 PM',
     transparentBackground: false,
 };
 
@@ -178,6 +180,14 @@ export const useChatState = (storageKey: string = 'chatState') => {
         toast.success("Template loaded successfully.");
     }, []);
 
+    const handleBulkDataImport = useCallback((data: ParsedChat) => {
+        setChatState(prev => ({
+            ...prev,
+            people: data.participants.length > 0 ? data.participants : prev.people,
+            messages: data.messages,
+        }));
+    }, []);
+
     const randomizeState = useCallback(() => {
         const platforms: Platform[] = ['whatsapp', 'discord', 'imessage', 'instagram', 'messenger', 'signal', 'slack', 'telegram', 'teams', 'snapchat'];
         const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
@@ -252,6 +262,7 @@ export const useChatState = (storageKey: string = 'chatState') => {
         globalReplaceSenderName,
         handleResetState,
         handleLoadTemplate,
+        handleBulkDataImport,
         randomizeState,
     };
 };

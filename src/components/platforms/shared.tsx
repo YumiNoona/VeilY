@@ -10,6 +10,7 @@ export interface PlatformChatProps {
   appearance: AppearanceSettings;
   aiModel?: string;
   onUpdateMessage?: (id: string, text: string) => void;
+  onRemoveMessage?: (id: string) => void;
   onUpdatePerson?: (person: Person) => void;
 }
 

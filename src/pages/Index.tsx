@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react"; // Re-saved to clear runtime error
 import { Sidebar } from "@/components/Sidebar";
 import { ChatPreview } from "@/components/ChatPreview";
 import { PreviewControls } from "@/components/PreviewControls";
@@ -23,6 +23,7 @@ const Index = () => {
     handleReorderMessages,
     handleResetState,
     handleLoadTemplate,
+    handleBulkDataImport,
     randomizeState,
   } = useChatState('chatState');
 
@@ -58,6 +59,7 @@ const Index = () => {
         onReset={handleResetState}
         onTemplateLoad={handleLoadTemplate}
         onRandomize={randomizeState}
+        onBulkImport={handleBulkDataImport}
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
@@ -72,6 +74,7 @@ const Index = () => {
             deviceView={deviceView}
             appearance={chatState.appearance}
             onUpdateMessage={handleUpdateMessage}
+            onRemoveMessage={handleRemoveMessage}
             onUpdatePerson={handleUpdatePerson}
             onUpdateAppearance={handleAppearanceChange}
           />

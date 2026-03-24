@@ -16,6 +16,7 @@ interface ChatPreviewProps {
   appearance: AppearanceSettings;
   aiModel?: string;
   onUpdateMessage?: (id: string, text: string) => void;
+  onRemoveMessage?: (id: string) => void;
   onUpdatePerson?: (person: Person) => void;
   onUpdateAppearance?: (appearance: AppearanceSettings) => void;
 }
@@ -45,7 +46,7 @@ const DeviceStatusBar = ({ appearance }: { appearance: AppearanceSettings }) => 
 };
 
 export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
-  ({ platform, messages, people, activePerson, chatType, deviceView, appearance, aiModel, onUpdateMessage, onUpdatePerson }, ref) => {
+  ({ platform, messages, people, activePerson, chatType, deviceView, appearance, aiModel, onUpdateMessage, onRemoveMessage, onUpdatePerson }, ref) => {
     const showFrame = appearance.showDeviceFrame ?? true;
     const showStatusBar = appearance.showDeviceStatusBar ?? true;
 
@@ -64,8 +65,9 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
       appearance,
       aiModel,
       onUpdateMessage,
+      onRemoveMessage,
       onUpdatePerson,
-    }), [messages, people, activePerson, chatType, appearance, aiModel, onUpdateMessage, onUpdatePerson]);
+    }), [messages, people, activePerson, chatType, appearance, aiModel, onUpdateMessage, onRemoveMessage, onUpdatePerson]);
 
     return (
       <div

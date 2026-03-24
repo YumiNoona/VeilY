@@ -68,6 +68,19 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                             onCheckedChange={(checked) => onAppearanceChange({ ...appearance, showStatus: checked })}
                         />
                     </div>
+                    {appearance.showStatus && (
+                        <div className="flex flex-col gap-1.5 pt-1 pb-2">
+                            <Label htmlFor="status-text" className="text-[10px] text-muted-foreground uppercase tracking-widest ml-1">Status Text</Label>
+                            <Input
+                                id="status-text"
+                                type="text"
+                                value={appearance.statusText || ""}
+                                onChange={(e) => onAppearanceChange({ ...appearance, statusText: e.target.value })}
+                                placeholder="last seen today at 12:00 PM"
+                                className="h-8 text-xs bg-zinc-50 border-zinc-100 rounded-lg focus:bg-white transition-all font-medium"
+                            />
+                        </div>
+                    )}
                     <div className="flex items-center justify-between py-1">
                         <Label htmlFor="transparent-bg">Transparent background</Label>
                         <Switch

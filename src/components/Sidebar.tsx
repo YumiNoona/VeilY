@@ -38,11 +38,12 @@ interface SidebarProps {
   onReorderMessages?: (newMessages: ChatState['messages']) => void;
   onReset?: () => void;
   onRandomize?: () => void;
+  onBulkImport?: (data: any) => void;
 }
 
 export function Sidebar({
   chatState,
-  mode = 'default', // Default to normal sidebar
+  mode = 'default',
   onPlatformChange,
   onChatTypeChange,
   onAddMessage,
@@ -57,6 +58,7 @@ export function Sidebar({
   onReorderMessages,
   onReset,
   onRandomize,
+  onBulkImport,
 }: SidebarProps) {
 
   return (
@@ -212,6 +214,7 @@ export function Sidebar({
               onRemoveMessage={onRemoveMessage}
               onUpdateMessage={onUpdateMessage}
               onReorderMessages={onReorderMessages}
+              onBulkImport={onBulkImport}
             />
 
             <AppearanceSection

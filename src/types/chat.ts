@@ -48,6 +48,7 @@ export interface AppearanceSettings {
   showDeviceFrame: boolean;
   statusBarTime: string;
   batteryLevel: number;
+  statusText?: string;
   // Wallpaper
   wallpaperUrl?: string;
   transparentBackground: boolean;

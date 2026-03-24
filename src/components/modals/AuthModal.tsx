@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Loader2, User, Mail, Lock } from 'lucide-react';
+import { Loader2, User, Mail, Lock, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -68,6 +68,14 @@ export const AuthModal = () => {
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] animate-in fade-in duration-300">
             <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-md p-8 animate-in zoom-in-95 duration-300 relative overflow-hidden">
+                {/* Close Button */}
+                <button 
+                    onClick={() => setAuthModalOpen(false)}
+                    className="absolute top-6 right-6 z-50 p-2 rounded-full hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-zinc-600"
+                >
+                    <X className="w-6 h-6" />
+                </button>
+
                 {/* Decorative background element */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none" />
                 

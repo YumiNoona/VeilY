@@ -1,9 +1,15 @@
-import { ArrowLeft, ChevronLeft, Video, Phone, Camera, Mic, Plus, CheckCheck } from "lucide-react";
+import { ArrowLeft, ChevronLeft, Video, Phone, Camera, Mic, Plus, CheckCheck, MoreVertical, Edit2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EditableText } from "@/components/ui/EditableText";
 import { PlatformChatProps, getSenderName, formatTime, isSameDay, formatDateSeparator, getWallpaperStyle } from "./shared";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-export function WhatsAppChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
+export function WhatsAppChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onRemoveMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const bgClass = appearance.darkMode ? 'bg-[#0b141a]' : 'bg-[#efeae2]';
   const headerBg = appearance.darkMode ? 'bg-[#202c33]' : 'bg-[#f6f6f6]';
@@ -29,7 +35,11 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
               />
             )}
           </h3>
-          {appearance.showStatus && <p className="text-[11px] text-[#8696a0]">{displayPerson?.isOnline ? 'online' : 'last seen today at 12:00 PM'}</p>}
+          {appearance.showStatus && (
+            <p className="text-[11px] text-[#8696a0]">
+              {appearance.statusText || (displayPerson?.isOnline ? 'online' : 'last seen today at 12:00 PM')}
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-4">
           <Video className={cn("w-6 h-6", iconColor)} />
@@ -60,23 +70,48 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
                 </div>
               )}
               <div className={cn("flex flex-col", message.isOwn ? "items-end" : "items-start")}>
-                <div className={cn(
-                  "px-2 py-1.5 rounded-lg max-w-[80%] text-[15px] shadow-sm relative",
-                  message.isOwn ? ownBubble : otherBubble
-                )} style={{ wordBreak: 'break-word' }}>
-                  {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-                  <div className="flex items-end gap-2 flex-wrap min-w-[60px] justify-between">
-                    <span className={cn("leading-[1.35] pt-0.5", appearance.darkMode ? "text-white" : "text-black")}>{message.text}</span>
-                    <span className={cn("text-[11px] flex items-center gap-0.5 ml-auto translate-y-0.5", appearance.darkMode ? "text-[#8696a0]" : "text-[#999]")}>
-                      {formatTime(message.timestamp, appearance.use24HourFormat ?? false)}
-                      {message.isOwn && (
-                        <span className="ml-0.5">
-                          <CheckCheck className={cn("w-4 h-4", "text-[#53bdeb]")} />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div className={cn(
+                      "px-2 py-1.5 rounded-lg max-w-[80%] text-[15px] shadow-sm relative cursor-pointer group hover:brightness-95 transition-all outline-none",
+                      message.isOwn ? ownBubble : otherBubble
+                    )} style={{ wordBreak: 'break-word' }}>
+                      {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
+                      <div className="flex items-end gap-2 flex-wrap min-w-[60px] justify-between">
+                        <span className={cn("leading-[1.35] pt-0.5", appearance.darkMode ? "text-white" : "text-black")}>
+                          {message.text}
                         </span>
-                      )}
-                    </span>
-                  </div>
-                </div>
+                        <span className={cn("text-[11px] flex items-center gap-0.5 ml-auto translate-y-0.5", appearance.darkMode ? "text-[#8696a0]" : "text-[#999]")}>
+                          {formatTime(message.timestamp, appearance.use24HourFormat ?? false)}
+                          {message.isOwn && (
+                            <span className="ml-0.5">
+                              <CheckCheck className={cn("w-4 h-4", "text-[#53bdeb]")} />
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align={message.isOwn ? "end" : "start"} className="w-40">
+                    <DropdownMenuItem 
+                      className="cursor-pointer gap-2"
+                      onClick={() => {
+                        const newText = prompt("Edit message:", message.text);
+                        if (newText !== null) onUpdateMessage?.(message.id, newText);
+                      }}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      <span>Edit</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      className="cursor-pointer gap-2 text-destructive focus:text-destructive"
+                      onClick={() => onRemoveMessage?.(message.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Delete</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           );

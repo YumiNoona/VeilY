@@ -1,5 +1,6 @@
 import React from 'react';
-import { Plus, Trash2, ChevronDown, ChevronRight, RotateCcw, Wand2, FileText, Users, MessageCircle, Mail } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Plus, Trash2, ChevronDown, ChevronRight, RotateCcw, Wand2, FileText, Users, MessageCircle, Mail, Crown } from 'lucide-react';
 import { useEmailState } from '@/hooks/useEmailState';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -53,7 +54,16 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
     addEmail, updateEmail, removeEmail,
     handleReset, onTemplateLoad, onRandomize, setAppearance
 }) => {
+    const { plan, setUpgradeModalOpen } = useAuth();
     const [collapsedEmails, setCollapsedEmails] = React.useState<Record<string, boolean>>({});
+
+    const handleProviderChange = (val: EmailState['provider']) => {
+        if (val === 'outlook' && plan === 'free') {
+            setUpgradeModalOpen(true);
+        } else {
+            setProvider(val);
+        }
+    };
 
     const toggleEmailCollapse = (id: string) => {
         setCollapsedEmails(prev => ({ ...prev, [id]: !prev[id] }));
@@ -126,18 +136,19 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
 
                 <Tabs
                     value={state.provider}
-                    onValueChange={(val) => setProvider(val as any)}
+                    onValueChange={(val) => handleProviderChange(val as any)}
                     className="w-full"
                 >
                     <TabsList className="grid w-full grid-cols-3 h-10">
-                        <TabsTrigger value="generic">
+                        <TabsTrigger value="generic" className="relative">
                             <Mail className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="gmail">
+                        <TabsTrigger value="gmail" className="relative">
                             <svg viewBox="0 0 24 24" className="w-4 h-4"><path fill="#EA4335" d="M24 4.5v15c0 .85-.65 1.5-1.5 1.5H21V7.39l-9 6.58-9-6.58V21H1.5C.65 21 0 20.35 0 19.5v-15c0-1.21 1.36-1.93 2.36-1.24L12 10.32l9.64-7.06c1-.69 2.36.03 2.36 1.24z"/></svg>
                         </TabsTrigger>
-                        <TabsTrigger value="outlook">
+                        <TabsTrigger value="outlook" className="relative">
                             <svg viewBox="0 0 24 24" className="w-4 h-4"><path fill="#0078D4" d="M22 4H2C.9 4 0 4.9 0 6v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM2 6h20v.5L12 13 2 6.5V6zm0 12V8.5L12 15l10-6.5V18H2z"/></svg>
+                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5" />}
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>

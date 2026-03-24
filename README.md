@@ -11,85 +11,152 @@
 
 ## 🚀 Overview
 
-**VEILY** is a state-of-the-art mock-up engine designed for designers, social media managers, and developers. It provides a pixel-perfect sandbox to visualize and export representations of digital life across 15+ global platforms. Now available as both a high-performance **Web App** and a native **Desktop Application**.
+**VEILY** is a professional-grade mock-up engine designed for marketers, designers, and developers. It provides a pixel-perfect sandbox to visualize and export representations of digital life across 20+ global platforms. Available as both a high-performance **Web App** and a native **Desktop Application**.
 
-Unlike generic design tools, VEILY is built with **platform-native logic**, understanding the specific nuances of each platform—from font-weights to nesting depths.
+Unlike generic design tools, VEILY is built with **platform-native logic**, ensuring that every font-weight, padding, and UI element matches official specifications.
 
 ---
 
-## ✨ Core Features
+## ✨ Core Modules
 
-### 1. Unified Chat Mock-up Suite
-Over **15+ messaging platforms** rendered with absolute precision:
-- **Messaging**: WhatsApp, iMessage, Messenger, Telegram, Signal.
-- **Community**: Discord, Slack, Teams.
-- **Social**: Instagram DM, Snapchat, Reddit, Tinder.
-- **AI**: ChatGPT, Claude, Gemini, Grok.
+### 1. 💬 Chat Preview Engine
+Render messaging conversations with absolute precision across 15+ platforms:
+- **Major Apps**: WhatsApp, iMessage, Messenger, Telegram, Signal, Line.
+- **Communities**: Discord, Slack, Microsoft Teams.
+- **Social DMs**: Instagram, Snapchat, Reddit, X (Twitter), TikTok.
+- **Dating**: Tinder.
 
-### 2. SaaS Infrastructure & Profile
-- **Subscription Engine**: Integrated with Stripe for tiered access (Free, Pro, Premium).
-- **Usage Tracking**: Real-time synchronization of download and video export limits.
-- **Profile Management**: Secure, storage-backed avatar uploads with strict RLS policies.
+### 2. 🤖 AI Chat Studio (New!)
+A dedicated suite for creating AI-centric mockups:
+- **Supported Models**: ChatGPT (OpenAI), Claude (Anthropic), Gemini (Google), Grok (xAI).
+- **Customizable Logic**: Adjust model names, "typing" states, and unique AI response headers.
 
-### 3. 🖥️ Native Desktop Experience
-- **Electron Powered**: Faster asset delivery and native Windows integration.
-- **Standalone EXE**: Professional installer for a streamlined creator workflow.
+### 3. 📸 Social & Stories
+Complete control over feed and story layouts:
+- **Social Posts**: High-fidelity previews for Twitter, Instagram, Facebook, LinkedIn, and Reddit.
+- **Stories Engine**: Full-screen story previews for Instagram, Snapchat, WhatsApp, and Facebook (Messenger).
+- **Interactive Elements**: Real-time verified badges, "seen" receipts, and interactive avatars.
+
+### 4. 📧 Email Mockups
+Generate clean, professional email previews for:
+- **Gmail**: Pixel-perfect material design layout.
+- **Outlook**: Corporate-grade modern layout.
+- **Generic (Legal/Classic)**: Serif-based, redaction-heavy layout for official documentation.
 
 ---
 
 ## 🛠️ The Tech Stack
 
-- **Frontend**: React 18, Vite, Tailwind CSS, Shadcn UI.
-- **Backend / SaaS**: Supabase (Auth, DB, Storage), Stripe Payments.
-- **Desktop**: Electron, Electron-Builder.
-- **Export**: html2canvas for high-DPI image generation.
+- **Frontend**: React 18 (Hooks, Context API), Vite, Tailwind CSS, Shadcn UI.
+- **Backend / SaaS**: Supabase (Auth, Postgres DB, Edge Functions, Storage).
+- **Payments**: Stripe API for tiered subscriptions and credit management.
+- **Desktop**: Electron with `electron-builder` for multi-platform distribution.
+- **Export Engine**: Optimized `html2canvas` pipeline for high-DPI image generation.
+
+---
+
+## 🏗️ Technical Architecture
+
+VEILY uses an **Atomic State** architecture where UI configurations are isolated from the rendering engine.
+
+```mermaid
+graph TD
+    A[Sidebar Controls] -->|Isolated Store| B{Preview Router}
+    B -->|useChatState| C(Standard Chat)
+    B -->|useAiChatState| D(AI Studio)
+    B -->|useStoriesState| E(Stories/Social)
+    F[AuthContext] -->|Stripe Tier| B
+    G[html2canvas] -->|Export| H[High-Res PNG]
+```
+
+### Key Architectural Features:
+- **Independent State Isolation**: Switching between Chat and AI Chat preserves independent histories and settings using segregated storage keys.
+- **Theme-Aware Watermarks**: Dynamic SVG watermarking that automatically adjusts contrast (White/Ash) based on dark/light mode detection.
+- **Secure Admin Core**: A hardened administrative "backdoor" protected by SHA-256 hashing, granting full premium access for testing without needing Stripe transactions.
 
 ---
 
 ## 📦 Getting Started
 
-### Environment Setup
-Create a `.env` file with the following:
-- `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY`
-- `STRIPE_SECRET_KEY` / `VITE_STRIPE_PUBLISHABLE_KEY`
-- `STRIPE_WEBHOOK_SECRET`
+### Prerequisites
+- Node.js 18+
+- Supabase account & project
+- Stripe developer account
 
-### Development
-```bash
-# Install dependencies
-npm install
+### Setup
+1. **Clone the Repo**
+2. **Configure Environment**
+   Create a `.env` file:
+   ```env
+   VITE_SUPABASE_URL=your_url
+   VITE_SUPABASE_PUBLISHABLE_KEY=your_key
+   VITE_STRIPE_PUBLISHABLE_KEY=your_key
+   STRIPE_SECRET_KEY=your_key
+   ```
+3. **Install & Run**
+   ```bash
+   npm install      # Install dependencies
+   npm run dev      # Start Web Development
+   npm run electron # Start Desktop App
+   npm run dist     # Build for Windows (.exe)
+   ```
 
-# Run Web App
-npm run dev
+## 💎 Subscription & Tiered Features
 
-# Run Desktop App
-npm run electron
+VEILY uses a tiered access model to balance platform accessibility with premium features.
 
-# Build Windows Installer (.exe)
-npm run dist
-```
+| Feature | Free | Pro | Premium |
+| :--- | :---: | :---: | :---: |
+| **Standard Platforms (15+)** | ✅ | ✅ | ✅ |
+| **Stories & Social Feed** | ❌ (View Only) | ✅ | ✅ |
+| **AI Chat & Email Studio** | ❌ | ✅ | ✅ |
+| **Watermark Removal** | ❌ | ✅ | ✅ |
+| **Daily Export Limit** | 3 | 20 | Unlimited |
+| **Video Export** | ❌ | 5/mo | Unlimited |
+| **Bulk Import (.txt/.json)** | ❌ | ❌ | ✅ |
+| **Priority Support** | ❌ | ❌ | ✅ |
 
 ---
 
-## 🏗️ Architecture: The Preview Engine
+## 🚀 Future Roadmap: The Vision for VEILY
 
-VEILY operates as a purely state-driven preview engine. Every change in the sidebar propagates through custom React hooks to platform-specific components for real-time, low-latency rendering.
+### 📂 Bulk Import Engine (Planned)
+The most requested feature for power users. This will allow users to:
+1.  **Upload Exports**: Drag and drop a `.txt` from WhatsApp or a `.json` from Telegram.
+2.  **Auto-Parsing**: The engine will automatically extract sender names, timestamps, and message sequences.
+3.  **Instant Rendering**: Instantly transform years of chat history into a high-fidelity visual preview.
 
-```mermaid
-graph TD
-    A[Sidebar Controls] -->|useChatState| B{Platform Engine}
-    B -->|Render| C[WhatsApp]
-    B -->|Render| D[Discord]
-    E[AuthContext] -->|Sync Tiers| B
-    F[Supabase Storage] -->|Avatars| G[Navbar]
-```
+### 🎥 Motion & Video Studio
+- **Typing Animations**: Export "Live" mockups showing the typing bubbles appearing in sequence.
+- **Scroll Captures**: Record vertical scrolling interactions for long-form conversations.
 
-### Isolated Scrolling & Centering
-Features a custom-built UX system where the editing sidebar scrolls independently while the preview "canvas" remains mathematically centered relative to the visible workspace.
+### 🤖 AI Conversation Generator
+- **Smart Fill**: Describe a scenario (e.g., "A funny argument about pizza") and have LLM technology instantly generate the entire message history for you.
+
+---
+
+## 📂 Guide: How to Export Real Chat Data
+
+To prepare for the **Bulk Import** feature (Premium), follow these steps to get your raw data:
+
+### 🟢 WhatsApp
+1.  Open the specific chat you wish to export on your phone.
+2.  Tap the **Contact Name / Group Subject** at the top.
+3.  Scroll to the very bottom and tap **Export Chat**.
+4.  Select **"Without Media"** (to ensure a clean `.txt` file).
+5.  Save or email the `.txt` file to yourself. This file can be uploaded directly to VEILY.
+
+### 🔵 Telegram
+1.  Open **Telegram Desktop** (Exporting is most reliable on Desktop).
+2.  Go to the chat you want to export.
+3.  Click the **three dots ⋮** in the top right corner.
+4.  Select **Export chat history**.
+5.  In the settings, ensure **JSON** is selected as the format (recommended).
+6.  Click **Export** and save the resulting file.
 
 ---
 
 ## 🛡️ License & Credits
 
-Built with ❤️ by **Veil**.
-This project is licensed under the **MIT License**.
+Built for the next generation of digital creators by **Veil**.
+Licensed under the **MIT License**.

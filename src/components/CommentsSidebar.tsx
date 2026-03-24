@@ -21,9 +21,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Twitter, Instagram, Linkedin, Facebook, Youtube, Plus, Trash2, Upload, MessageSquare, Heart, Clock, RotateCcw, Wand2, Users, Palette, MessageCircle } from 'lucide-react';
+import { Twitter, Instagram, Linkedin, Facebook, Youtube, Plus, Trash2, Upload, MessageSquare, Heart, Clock, RotateCcw, Wand2, Users, Palette, MessageCircle, Crown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { COMMENT_TEMPLATES } from '@/lib/templates';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Mapping TikTok icon manually or using a similar one since Lucide might not have it or it's named differently
 // For now using MessageSquare as placeholder if TikTok not available, but let's check basic icons.
@@ -59,7 +60,17 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     onTemplateLoad,
     onRandomize,
 }) => {
+    const { plan, setUpgradeModalOpen } = useAuth();
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handlePlatformChange = (val: CommentPlatform) => {
+        const isPremium = val === 'tiktok' || val === 'youtube';
+        if (isPremium && plan === 'free') {
+            setUpgradeModalOpen(true);
+        } else {
+            setPlatform(val);
+        }
+    };
 
     const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>, profileId: string) => {
         const file = e.target.files?.[0];
@@ -223,16 +234,24 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
 
                 <Tabs
                     value={state.platform}
-                    onValueChange={(val) => setPlatform(val as CommentPlatform)}
+                    onValueChange={(val) => handlePlatformChange(val as CommentPlatform)}
                     className="w-full"
                 >
                     <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="instagram"><Instagram className="w-4 h-4" /></TabsTrigger>
-                        <TabsTrigger value="tiktok">
-                            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
+                        <TabsTrigger value="instagram" className="relative">
+                            <Instagram className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="twitter"><Twitter className="w-4 h-4" /></TabsTrigger>
-                        <TabsTrigger value="youtube"><Youtube className="w-4 h-4" /></TabsTrigger>
+                        <TabsTrigger value="tiktok" className="relative">
+                            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
+                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5" />}
+                        </TabsTrigger>
+                        <TabsTrigger value="twitter" className="relative">
+                            <Twitter className="w-4 h-4" />
+                        </TabsTrigger>
+                        <TabsTrigger value="youtube" className="relative">
+                            <Youtube className="w-4 h-4" />
+                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5" />}
+                        </TabsTrigger>
                     </TabsList>
                 </Tabs>
             </div>

@@ -1,6 +1,7 @@
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bot, Sparkles, Lightbulb } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Bot, Sparkles, Lightbulb, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Platform } from "@/types/chat";
 
@@ -12,6 +13,17 @@ interface AIModelSectionProps {
 }
 
 export function AIModelSection({ platform, onPlatformChange, model, onModelChange }: AIModelSectionProps) {
+    const { plan, setUpgradeModalOpen } = useAuth();
+
+    const handlePlatformSelect = (p: Platform) => {
+        const isPremiumModel = p === 'claude' || p === 'grok';
+        if (isPremiumModel && plan === 'free') {
+            setUpgradeModalOpen(true);
+        } else {
+            onPlatformChange(p);
+        }
+    };
+
     const isChatGPT = platform === 'chatgpt';
     const isClaude = platform === 'claude';
     const isGemini = platform === 'gemini';
@@ -32,52 +44,54 @@ export function AIModelSection({ platform, onPlatformChange, model, onModelChang
                 {/* Platform Toggles - Grid Layout */}
                 <div className="grid grid-cols-2 gap-2">
                     <button
-                        onClick={() => onPlatformChange('chatgpt')}
+                        onClick={() => handlePlatformSelect('chatgpt')}
                         className={cn(
-                            "flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200",
+                            "flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200 border relative",
                             isChatGPT
-                                ? "bg-[#7447D6] text-white shadow-sm"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50"
+                                ? "bg-[#7447D6] text-white shadow-sm border-[#7447D6]"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border-border/50"
                         )}
                     >
                         <Sparkles className="w-4 h-4" />
                         ChatGPT
                     </button>
                     <button
-                        onClick={() => onPlatformChange('claude')}
+                        onClick={() => handlePlatformSelect('claude')}
                         className={cn(
-                            "flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200",
+                            "flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200 border relative",
                             isClaude
-                                ? "bg-[#D97757] text-white shadow-sm"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50"
+                                ? "bg-[#D97757] text-white shadow-sm border-[#D97757]"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border-border/50"
                         )}
                     >
                         <Bot className="w-4 h-4" />
                         Claude
+                        {plan === 'free' && <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />}
                     </button>
                     <button
-                        onClick={() => onPlatformChange('gemini')}
+                        onClick={() => handlePlatformSelect('gemini')}
                         className={cn(
-                            "flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200",
+                            "flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200 border relative",
                             isGemini
-                                ? "bg-[#8E5CF7] text-white shadow-sm"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50"
+                                ? "bg-[#8E5CF7] text-white shadow-sm border-[#8E5CF7]"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border-border/50"
                         )}
                     >
                         <Sparkles className="w-4 h-4" />
                         Gemini
                     </button>
                     <button
-                        onClick={() => onPlatformChange('grok')}
+                        onClick={() => handlePlatformSelect('grok')}
                         className={cn(
-                            "flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200",
+                            "flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200 border relative",
                             isGrok
-                                ? "bg-[#FF6B35] text-white shadow-sm"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50"
+                                ? "bg-[#FF6B35] text-white shadow-sm border-[#FF6B35]"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border-border/50"
                         )}
                     >
                         <Lightbulb className="w-4 h-4" />
                         Grok
+                        {plan === 'free' && <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />}
                     </button>
                 </div>
 

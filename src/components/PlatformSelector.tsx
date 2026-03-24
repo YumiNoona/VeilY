@@ -31,7 +31,9 @@ const platforms: { id: Platform; name: string; color: string; activeColor: strin
 
 export function PlatformSelector({ selected, onSelect }: PlatformSelectorProps) {
   const { plan, setUpgradeModalOpen } = useAuth();
-  const lockedPlatforms = ['imessage', 'snapchat'];
+  const lockedPlatforms = [
+    'imessage', 'snapchat', 'tinder', 'reddit', 'teams', 'slack'
+  ];
 
   return (
     <div className="flex flex-wrap gap-2">

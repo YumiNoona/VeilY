@@ -43,11 +43,15 @@ export async function generateSmartFill(prompt: string, platform: string): Promi
     
     // The Gemini SDK throws an opaque error object where the status code is embedded in the message string
     const message = error?.message || "";
-    const isRateLimit = message.includes("429");
-    const isServerError = message.includes("500") || message.includes("503");
+    
+    const shouldFallback = 
+      message.includes("429") || 
+      message.includes("500") || 
+      message.includes("503") ||
+      message.includes("404");
 
     // 2. Fallback to Groq if appropriate
-    if (GROQ_API_KEY && (isRateLimit || isServerError)) {
+    if (GROQ_API_KEY && shouldFallback) {
       console.info("Fallback triggered: Switching to Groq...");
       return await tryGroq(systemPrompt);
     }

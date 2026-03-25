@@ -110,13 +110,6 @@ export const ProfileModal = () => {
         <Dialog open={isProfileModalOpen} onOpenChange={setProfileModalOpen}>
             <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-white border-0 shadow-2xl rounded-3xl">
                 <div className="relative p-8 space-y-8">
-                    {/* Close Button */}
-                    <button 
-                        onClick={() => setProfileModalOpen(false)}
-                        className="absolute top-6 right-6 z-50 p-2 rounded-full hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-zinc-600"
-                    >
-                        <X className="w-6 h-6" />
-                    </button>
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black tracking-tight flex items-center gap-2">
                             <User className="w-6 h-6 text-primary" />

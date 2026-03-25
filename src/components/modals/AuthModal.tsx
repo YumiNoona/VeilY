@@ -51,12 +51,27 @@ export const AuthModal = () => {
         setError(null);
 
         try {
-            const { error: signInError } = await supabase.auth.signInWithPassword({
+            const { data, error: signInError } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
 
-            if (signInError) throw signInError;
+            if (signInError) {
+                // Bug 4: Catch "Email not confirmed" and send OTP instead
+                if (signInError.message.includes("Email not confirmed")) {
+                    const { error: otpError } = await supabase.auth.resend({
+                        type: 'signup',
+                        email: email,
+                    });
+                    if (otpError) throw otpError;
+                    
+                    setStep("otp");
+                    setCooldown(60);
+                    toast.info("Email not verified. We've sent a new 6-digit code!");
+                    return;
+                }
+                throw signInError;
+            }
             
             toast.success("Successfully logged in!");
             setAuthModalOpen(false);
@@ -76,14 +91,14 @@ export const AuthModal = () => {
         setError(null);
 
         try {
-            const { error: signUpError } = await supabase.auth.signUp({
+            // Bug 3: Remove emailRedirectTo as it conflicts with OTP
+            const { data, error: signUpError } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
                     data: {
                         full_name: fullName,
-                    },
-                    emailRedirectTo: getRedirectUrl(),
+                    }
                 }
             });
 
@@ -107,13 +122,24 @@ export const AuthModal = () => {
         setError(null);
 
         try {
-            const { error: verifyError } = await supabase.auth.verifyOtp({
+            const { data, error: verifyError } = await supabase.auth.verifyOtp({
                 email,
                 token: codeToVerify,
                 type: "signup",
             });
 
             if (verifyError) throw verifyError;
+
+            // Bug 1 Safety: Manual upsert to public.users as backup for the DB trigger
+            if (data.user) {
+                await supabase.from('users').upsert({
+                    id: data.user.id,
+                    email: data.user.email,
+                    full_name: data.user.user_metadata?.full_name || fullName,
+                    avatar_url: data.user.user_metadata?.avatar_url || "",
+                    plan: 'free'
+                }, { onConflict: 'id' });
+            }
 
             toast.success("Account verified!");
             setAuthModalOpen(false);
@@ -130,9 +156,9 @@ export const AuthModal = () => {
         verifyCode(otp);
     };
 
-    // Auto-submit when 6 digits are reached
+    // Auto-submit when code length matches common Supabase OTP lengths (6 or 8)
     useEffect(() => {
-        if (otp.length === 6 && !loading) {
+        if (otp.length === 8 && !loading) {
             verifyCode(otp);
         }
     }, [otp]);
@@ -237,11 +263,11 @@ export const AuthModal = () => {
                 ) : (
                     <form onSubmit={handleVerifyOtp} className="space-y-4 relative z-10">
                         <div className="group space-y-1.5">
-                            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">6-Digit Code</label>
+                            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Verification Code</label>
                             <Input
                                 type="text"
-                                maxLength={6}
-                                placeholder="000000"
+                                maxLength={8}
+                                placeholder="00000000"
                                 value={otp}
                                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                                 required

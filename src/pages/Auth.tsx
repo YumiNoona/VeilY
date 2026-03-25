@@ -106,9 +106,9 @@ const Auth = () => {
         verifyCode(otp);
     };
 
-    // Auto-submit when 6 digits are reached
+    // Auto-submit when code length matches (supporting 8 digits)
     useEffect(() => {
-        if (otp.length === 6 && !loading && !isLocked) {
+        if (otp.length === 8 && !loading && !isLocked) {
             verifyCode(otp);
         }
     }, [otp]);
@@ -169,8 +169,8 @@ const Auth = () => {
                                 <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-primary transition-colors" />
                                 <Input
                                     type="text"
-                                    maxLength={6}
-                                    placeholder="000000"
+                                    maxLength={8}
+                                    placeholder="00000000"
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                                     required

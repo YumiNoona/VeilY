@@ -110,7 +110,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 if (isMounted.current) {
                     setPlan(data.plan as 'free' | 'pro' | 'premium');
                     setDownloadsUsed(data.downloads_used || 0);
-                    setDownloadsUsed(data.downloads_used || 0);
                     setVideosUsed(data.videos_used || 0);
 
                     // Daily AI Limit Reset Logic

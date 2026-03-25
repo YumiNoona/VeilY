@@ -3,9 +3,7 @@ logs
 *.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
 # Dependencies
 node_modules
@@ -15,9 +13,12 @@ dist
 dist-ssr
 dist_electron
 
-# Environment variables (CRITICAL)
+# Env (CRITICAL)
 .env
 .env.*
+.env.local
+.env.production
+.env.development
 *.local
 
 # Editor
@@ -44,3 +45,9 @@ _agent/
 *.njsproj
 *.sln
 *.sw?
+*.tsbuildinfo
+coverage
+
+# Vercel
+.vercel
+api/node_modules/

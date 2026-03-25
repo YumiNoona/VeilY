@@ -26,10 +26,11 @@ Render messaging conversations with absolute precision across 15+ platforms:
 - **Social DMs**: Instagram, Snapchat, Reddit, X (Twitter), TikTok.
 - **Dating**: Tinder.
 
-### 2. 🤖 AI Chat Studio (New!)
+### 2. 🤖 AI Chat Studio & Smart Fill (New!)
 A dedicated suite for creating AI-centric mockups:
 - **Supported Models**: ChatGPT (OpenAI), Claude (Anthropic), Gemini (Google), Grok (xAI).
 - **Customizable Logic**: Adjust model names, "typing" states, and unique AI response headers.
+- **AI Smart Fill**: Describe a scenario (e.g., "A funny argument about pizza") and the engine will instantly generate the entire message history using a secure Vercel Serverless Function architecture (`gemini-1.5-flash` primary with Groq fallback).
 
 ### 3. 📸 Social & Stories
 Complete control over feed and story layouts:
@@ -55,6 +56,7 @@ Accelerate your workflow with one-click data ingestion:
 
 - **Frontend**: React 18 (Hooks, Context API), Vite, Tailwind CSS, Shadcn UI.
 - **Backend / SaaS**: Supabase (Auth, Postgres DB, Edge Functions, Storage).
+- **AI Infrastructure**: Vercel Serverless Functions (`/api`), enforcing strict IP rate-limiting, DB quotas, prompt clamping, and `gemini-1.5-flash` to Groq fallback.
 - **Payments**: Stripe API for tiered subscriptions and credit management.
 - **Desktop**: Electron with `electron-builder` for multi-platform distribution.
 - **Export Engine**: Optimized `html2canvas` pipeline for high-DPI image generation.
@@ -78,11 +80,13 @@ Accelerate your workflow with one-click data ingestion:
    VITE_SUPABASE_PUBLISHABLE_KEY=your_key
    VITE_STRIPE_PUBLISHABLE_KEY=your_key
    STRIPE_SECRET_KEY=your_key
+   GEMINI_API_KEY=your_gemini_key
+   GROQ_API_KEY=your_groq_key
    ```
 3. **Install & Run**
    ```bash
    npm install      # Install dependencies
-   npm run dev      # Start Web Development
+   npx vercel dev   # Start Web Development (Vite + Vercel /api routes)
    npm run electron # Start Desktop App
    npm run dist     # Build for Windows (.exe)
    ```
@@ -91,12 +95,9 @@ Accelerate your workflow with one-click data ingestion:
 
 ## 🚀 Future Roadmap: The Vision for VEILY
 
-### 🎥 Motion & Video Studio
+### 🎥 Motion & Video Studio (In Progress)
 - **Typing Animations**: Export "Live" mockups showing the typing bubbles appearing in sequence.
 - **Scroll Captures**: Record vertical scrolling interactions for long-form conversations.
-
-### 🤖 AI Conversation Generator
-- **Smart Fill**: Describe a scenario (e.g., "A funny argument about pizza") and have LLM technology instantly generate the entire message history for you.
 
 ---
 

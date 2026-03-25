@@ -25,7 +25,7 @@ interface SmartFillModalProps {
 }
 
 export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFillModalProps) {
-    const { plan, aiFillsUsed, incrementAIFills } = useAuth();
+    const { plan, aiFillsUsed, refetchUserStatus } = useAuth();
     const [prompt, setPrompt] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
@@ -52,7 +52,7 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
         setIsLoading(true);
         try {
             const data = await generateSmartFill(prompt, platform);
-            await incrementAIFills(); // Sync usage to backend
+            await refetchUserStatus(); // Sync the newly incremented usage from the backend
             onSuccess(data);
             onClose();
             setPrompt("");

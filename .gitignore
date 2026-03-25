@@ -12,6 +12,10 @@ node_modules
 dist
 dist-ssr
 dist_electron
+*.exe
+*.dmg
+*.zip
+dev-app-update.yml
 
 # Env (CRITICAL)
 .env

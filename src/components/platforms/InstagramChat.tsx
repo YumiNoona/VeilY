@@ -8,6 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { EditMessageModal } from "@/components/modals/EditMessageModal";
+import { useState } from "react";
 
 export function InstagramChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onRemoveMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
@@ -15,9 +17,10 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
   const textColor = appearance.darkMode ? 'text-white' : 'text-black';
   const subtextColor = appearance.darkMode ? 'text-[#a8a8a8]' : 'text-[#8e8e8e]';
   const otherBubble = appearance.darkMode ? 'bg-[#262626]' : 'bg-[#efefef]';
+  const [editingMessage, setEditingMessage] = useState<{ id: string, text: string } | null>(null);
 
   return (
-    <div className={cn("flex flex-col h-full", bgColor)}>
+    <div className={cn("flex flex-col h-full font-instagram", bgColor)}>
       <div className={cn("px-3 py-2 flex items-center shadow-sm z-10", bgColor)}>
         <button className="p-1"><ArrowLeft className={cn("w-6 h-6", textColor)} /></button>
         <div className="ml-2 flex items-center gap-3 flex-1">
@@ -76,8 +79,7 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
                     <DropdownMenuItem 
                       className="cursor-pointer gap-2"
                       onClick={() => {
-                        const newText = prompt("Edit message:", message.text);
-                        if (newText !== null) onUpdateMessage?.(message.id, newText);
+                        setEditingMessage({ id: message.id, text: message.text });
                       }}
                     >
                       <Edit2 className="w-4 h-4" />
@@ -108,6 +110,15 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
           </div>
         </div>
       </div>
+      {/* Edit Modal */}
+      <EditMessageModal
+        isOpen={!!editingMessage}
+        onClose={() => setEditingMessage(null)}
+        initialText={editingMessage?.text || ""}
+        onSave={(newText) => {
+          if (editingMessage) onUpdateMessage?.(editingMessage.id, newText);
+        }}
+      />
     </div>
   );
 }

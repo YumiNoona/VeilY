@@ -69,69 +69,68 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
 
     return (
         <aside className="w-full lg:w-[450px] bg-sidebar-bg border-r border-sidebar-border h-full flex flex-col overflow-hidden">
-            {/* App selection Header block */}
-            <div className="pt-5 px-3 pb-2 border-b border-sidebar-border">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1.5 flex-1">
-                        <Select onValueChange={(val) => {
-                            if (onTemplateLoad) {
-                                const template = STORIES_TEMPLATES[val as keyof typeof STORIES_TEMPLATES];
-                                if (template) onTemplateLoad(template);
-                            }
-                        }}>
-                            <SelectTrigger className="w-[140px] h-8 text-xs font-medium">
-                                <SelectValue placeholder="Templates" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>Instagram</SelectLabel>
-                                    <SelectItem value="influencerDay">Influencer Day</SelectItem>
-                                    <SelectItem value="natureEscape">Nature Escape</SelectItem>
-                                    <SelectItem value="urbanVibe">Urban Scout</SelectItem>
-                                    <SelectItem value="petLove">Paws & Claws</SelectItem>
-                                    <SelectItem value="foodieHeaven">Chef Secrets</SelectItem>
-                                    <SelectItem value="techSetup">Code Lab</SelectItem>
-                                    <SelectItem value="minimalFashion">Style Edit</SelectItem>
-                                    <SelectItem value="modernArch">Modern Lines</SelectItem>
-                                </SelectGroup>
-                                <SelectGroup>
-                                    <SelectLabel>Snapchat</SelectLabel>
-                                    <SelectItem value="snapchatVibe">Chill Vibes</SelectItem>
-                                    <SelectItem value="beachDay">Island Hopper</SelectItem>
-                                    <SelectItem value="cityNight">Neon Vibes</SelectItem>
-                                    <SelectItem value="luxuryDrive">Auto Elite</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                        {handleReset && (
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground"
-                                onClick={handleReset}
-                                title="Reset All"
-                            >
-                                <RotateCcw className="w-4 h-4" />
-                            </Button>
-                        )}
-                        
-                        {onRandomize && (
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                                onClick={onRandomize}
-                                title="Randomize Content"
-                            >
-                                <Wand2 className="w-4 h-4" />
-                            </Button>
-                        )}
-                    </div>
+            <div className="flex items-center justify-between px-3 pt-5 pb-2 border-b border-sidebar-border shrink-0 min-h-[64px]">
+                <div className="flex items-center gap-1.5 flex-1">
+                    <Select onValueChange={(val) => {
+                        if (onTemplateLoad) {
+                            const template = STORIES_TEMPLATES[val as keyof typeof STORIES_TEMPLATES];
+                            if (template) onTemplateLoad(template);
+                        }
+                    }}>
+                        <SelectTrigger className="w-[140px] h-8 text-xs font-medium">
+                            <SelectValue placeholder="Templates" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Instagram</SelectLabel>
+                                <SelectItem value="influencerDay">Influencer Day</SelectItem>
+                                <SelectItem value="natureEscape">Nature Escape</SelectItem>
+                                <SelectItem value="urbanVibe">Urban Scout</SelectItem>
+                                <SelectItem value="petLove">Paws & Claws</SelectItem>
+                                <SelectItem value="foodieHeaven">Chef Secrets</SelectItem>
+                                <SelectItem value="techSetup">Code Lab</SelectItem>
+                                <SelectItem value="minimalFashion">Style Edit</SelectItem>
+                                <SelectItem value="modernArch">Modern Lines</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>Snapchat</SelectLabel>
+                                <SelectItem value="snapchatVibe">Chill Vibes</SelectItem>
+                                <SelectItem value="beachDay">Island Hopper</SelectItem>
+                                <SelectItem value="cityNight">Neon Vibes</SelectItem>
+                                <SelectItem value="luxuryDrive">Auto Elite</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
                 </div>
 
+                <div className="flex items-center gap-1">
+                    {handleReset && (
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground"
+                            onClick={handleReset}
+                            title="Reset All"
+                        >
+                            <RotateCcw className="w-4 h-4" />
+                        </Button>
+                    )}
+                    
+                    {onRandomize && (
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                            onClick={onRandomize}
+                            title="Randomize Content"
+                        >
+                            <Wand2 className="w-4 h-4" />
+                        </Button>
+                    )}
+                </div>
+            </div>
+
+            <div className="px-3 py-2.5 border-b border-sidebar-border shrink-0 flex items-center justify-center min-h-[56px]">
                 <Tabs
                     value={state.platform}
                     onValueChange={(val) => {
@@ -163,8 +162,8 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                 </Tabs>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                <Accordion type="multiple" defaultValue={["profile", "content"]} className="w-full">
+            <div className="flex-1 overflow-y-auto p-2.5 space-y-2 scrollbar-thin">
+                <Accordion type="multiple" defaultValue={["profile", "content"]} className="space-y-2">
 
                     {/* PROFILE SECTION */}
                     <AccordionItem value="profile" className="border rounded-xl bg-card shadow-sm overflow-hidden">
@@ -177,23 +176,24 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
-                            <div className="grid gap-2">
-                                <Label>Username</Label>
+                            <div className="grid gap-2 mt-1">
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Username</Label>
                                 <Input
                                     value={state.username}
                                     onChange={e => setUsername(e.target.value)}
                                     placeholder="username"
+                                    className="h-10 text-base font-medium bg-background border-zinc-200"
                                 />
                             </div>
                             <div className="flex items-center justify-between">
-                                <Label>Verified Badge</Label>
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Verified Badge</Label>
                                 <Switch checked={state.verified} onCheckedChange={setVerified} />
                             </div>
                         </AccordionContent>
                     </AccordionItem>
 
                     {/* CONTENT SECTION */}
-                    <AccordionItem value="content" className="border rounded-xl bg-card shadow-sm overflow-hidden mt-3">
+                    <AccordionItem value="content" className="border rounded-xl bg-card shadow-sm overflow-hidden">
                         <AccordionTrigger className="hover:no-underline px-3 py-3 hover:bg-muted/50 transition-colors">
                             <div className="flex items-center gap-2.5">
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -205,8 +205,8 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                         <AccordionContent className="space-y-6 pt-2 px-3 pb-3">
                             
                             {/* Slides navigator */}
-                            <div className="grid gap-2">
-                                <Label>Slides</Label>
+                            <div className="grid gap-2 mt-1">
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Slides</Label>
                                 <div className="flex items-center gap-2 flex-wrap">
                                     {state.slides.map((slide, i) => (
                                         <button
@@ -245,7 +245,7 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
 
                             {/* Active Slide Image Upload */}
                             <div className="grid gap-2">
-                                <Label>Slide {state.activeSlideIndex + 1} Image</Label>
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Slide {state.activeSlideIndex + 1} Image</Label>
                                 <input
                                     ref={fileInputRef}
                                     type="file"
@@ -275,17 +275,19 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label>Posted At</Label>
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Posted At</Label>
                                 <Input
                                     type="datetime-local"
                                     value={state.postedAt}
                                     onChange={e => setPostedAt(e.target.value)}
+                                    className="h-10 text-base font-medium bg-background border-zinc-200"
                                 />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label>Time Label (shown on preview)</Label>
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Time Label (shown on preview)</Label>
                                 <Input
+                                    className="h-10 text-base font-medium bg-background border-zinc-200"
                                     value={state.timeAgo}
                                     onChange={e => setTimeAgo(e.target.value)}
                                     placeholder="e.g. 3 months"

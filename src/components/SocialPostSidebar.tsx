@@ -17,8 +17,10 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Crown, Upload, X, Twitter, Instagram, Linkedin, Facebook, MessageSquare, Wand2, ChevronDown, ChevronRight, RotateCcw, User, FileText, MessageCircle, BarChart2, Palette } from 'lucide-react';
+import { Crown, Upload, X, Twitter, Instagram, Linkedin, Facebook, MessageSquare, Wand2, ChevronDown, ChevronRight, RotateCcw, User, FileText, MessageCircle, BarChart2, Palette, Sparkles } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { SmartFillModal } from './modals/SmartFillModal';
+import { ParsedChat } from '@/lib/parsers';
 
 interface SocialPostSidebarProps {
     state: ReturnType<typeof useSocialPostState>['state'];
@@ -47,6 +49,57 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
 }) => {
     const { plan, setUpgradeModalOpen } = useAuth();
     const [collapsedThreads, setCollapsedThreads] = React.useState<Record<string, boolean>>({});
+    const [isSmartFillOpen, setIsSmartFillOpen] = React.useState(false);
+
+    const handleSmartFillClick = () => {
+        if (plan === 'free') {
+            setUpgradeModalOpen(true);
+            return;
+        }
+        setIsSmartFillOpen(true);
+    };
+
+    const handleSmartFillSuccess = (data: ParsedChat) => {
+        if (data.participants && data.participants.length > 0) {
+            const firstPerson = data.participants[0] as any;
+            setAuthor({
+                name: firstPerson.name,
+                handle: firstPerson.handle || firstPerson.name.toLowerCase().replace(/\s+/g, ''),
+                avatar: firstPerson.avatar || ''
+            });
+        }
+
+        if (data.messages && data.messages.length > 0) {
+            const firstMsg = data.messages[0];
+            setContent({ text: firstMsg.text });
+
+            // If there's more than one message, treat them as thread items
+            if (data.messages.length > 1) {
+                const threadItems: ThreadItem[] = data.messages.slice(1).map((msg, idx) => {
+                    const author = (data.participants?.[idx + 1] || data.participants?.[0] || { name: 'User', handle: 'user', avatar: '' }) as any;
+                    return {
+                        id: msg.id,
+                        parentId: idx === 0 ? null : data.messages[idx].id,
+                        author: {
+                            name: author.name,
+                            handle: author.handle || author.name.toLowerCase().replace(/\s+/g, ''),
+                            avatar: author.avatar || '',
+                            verified: false
+                        },
+                        content: {
+                            text: msg.text,
+                            image: null,
+                            date: new Date()
+                        },
+                        metrics: {
+                            likes: Math.floor(Math.random() * 100).toString()
+                        }
+                    };
+                });
+                setThreadItems(threadItems);
+            }
+        }
+    };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'avatar' | 'image') => {
         const file = e.target.files?.[0];
@@ -119,68 +172,86 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
 
     return (
         <aside className="w-full lg:w-[450px] bg-sidebar-bg border-r border-sidebar-border h-full flex flex-col overflow-hidden">
-            <div className="pt-5 px-3 pb-2 border-b border-sidebar-border">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1.5 flex-1">
-                        <Select onValueChange={(val) => {
-                            const template = SOCIAL_TEMPLATES[val as keyof typeof SOCIAL_TEMPLATES];
-                            if (template) loadTemplate(template);
-                        }}>
-                            <SelectTrigger className="w-[110px] h-8 text-xs font-medium">
-                                <SelectValue placeholder="Templates" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>X (Twitter)</SelectLabel>
-                                    <SelectItem value="viralTweet">Growth Playbook</SelectItem>
-                                    <SelectItem value="techNewsX">Tech News</SelectItem>
-                                </SelectGroup>
-                                <SelectGroup>
-                                    <SelectLabel>Instagram</SelectLabel>
-                                    <SelectItem value="instagramAesthetic">Aesthetic Vibe</SelectItem>
-                                    <SelectItem value="instagramBrand">Brand Post</SelectItem>
-                                </SelectGroup>
-                                <SelectGroup>
-                                    <SelectLabel>LinkedIn</SelectLabel>
-                                    <SelectItem value="linkedinHired">New Job</SelectItem>
-                                    <SelectItem value="linkedinAdvice">Expert Advice</SelectItem>
-                                </SelectGroup>
-                                <SelectGroup>
-                                    <SelectLabel>Other</SelectLabel>
-                                    <SelectItem value="redditAITA">Reddit AITA</SelectItem>
-                                    <SelectItem value="redditTheory">Reddit Theory</SelectItem>
-                                    <SelectItem value="facebookMarketplace">Facebook Sale</SelectItem>
-                                </SelectGroup>
-                                <SelectGroup>
-                                    <SelectLabel>X Spaces</SelectLabel>
-                                    <SelectItem value="xSpace">X Space Live</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </div>
+            <div className="flex items-center justify-between px-3 pt-5 pb-2 border-b border-sidebar-border shrink-0 min-h-[64px]">
+                <div className="flex items-center gap-1.5 flex-1 line-clamp-1">
+                    <Select onValueChange={(val) => {
+                        const template = SOCIAL_TEMPLATES[val as keyof typeof SOCIAL_TEMPLATES];
+                        if (template) loadTemplate(template);
+                    }}>
+                        <SelectTrigger className="w-[110px] h-8 text-xs font-medium">
+                            <SelectValue placeholder="Templates" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>X (Twitter)</SelectLabel>
+                                <SelectItem value="viralTweet">Growth Playbook</SelectItem>
+                                <SelectItem value="techNewsX">Tech News</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>Instagram</SelectLabel>
+                                <SelectItem value="instagramAesthetic">Aesthetic Vibe</SelectItem>
+                                <SelectItem value="instagramBrand">Brand Post</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>LinkedIn</SelectLabel>
+                                <SelectItem value="linkedinHired">New Job</SelectItem>
+                                <SelectItem value="linkedinAdvice">Expert Advice</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>Other</SelectLabel>
+                                <SelectItem value="redditAITA">Reddit AITA</SelectItem>
+                                <SelectItem value="redditTheory">Reddit Theory</SelectItem>
+                                <SelectItem value="facebookMarketplace">Facebook Sale</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>X Spaces</SelectLabel>
+                                <SelectItem value="xSpace">X Space Live</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
 
-                    <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                        onClick={handleResetState}
+                        title="Reset All"
+                    >
+                        <RotateCcw className="h-4 w-4" />
+                    </Button>
+                    {randomizeState && (
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                            onClick={handleResetState}
-                            title="Reset All"
-                        >
-                            <RotateCcw className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                             onClick={randomizeState}
                             title="Randomize Content"
                         >
-                            <Wand2 className="h-4 w-4" />
+                            <Wand2 className="w-4 h-4" />
                         </Button>
-                    </div>
-                </div>
+                    )}
 
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                        onClick={handleSmartFillClick}
+                        title="AI Smart Fill (Premium)"
+                    >
+                        <Sparkles className="w-4 h-4 fill-amber-500/20" />
+                    </Button>
+                </div>
+            </div>
+
+            <SmartFillModal
+                isOpen={isSmartFillOpen}
+                onClose={() => setIsSmartFillOpen(false)}
+                onSuccess={handleSmartFillSuccess}
+                platform="social_post"
+            />
+            <div className="px-3 py-2.5 border-b border-sidebar-border shrink-0 flex items-center justify-center min-h-[56px]">
                 <Tabs
                     value={state.platform}
                     onValueChange={(val) => {
@@ -213,8 +284,8 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                 </Tabs>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                <Accordion type="multiple" defaultValue={["author", "content"]} className="w-full">
+            <div className="flex-1 overflow-y-auto p-2.5 space-y-2 scrollbar-thin">
+                <Accordion type="multiple" defaultValue={["author", "content"]} className="space-y-2">
 
                     {/* AUTHOR SECTION */}
                     <AccordionItem value="author" className="border rounded-xl bg-card shadow-sm overflow-hidden">
@@ -227,20 +298,21 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
-                            <div className="grid gap-2">
-                                <Label>Display Name</Label>
+                            <div className="grid gap-2 mt-1">
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Display Name</Label>
                                 <Input
                                     value={state.author.name}
                                     onChange={(e) => setAuthor({ name: e.target.value })}
+                                    className="h-10 text-base font-medium bg-background border-zinc-200"
                                 />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label>Handle / Username (Subreddit for Reddit)</Label>
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Handle / Username (Subreddit for Reddit)</Label>
                                 <div className="relative">
-                                    <span className="absolute left-3 top-2.5 text-muted-foreground">{state.platform === 'reddit' ? 'r/' : '@'}</span>
+                                    <span className="absolute left-3 top-2.5 text-muted-foreground font-medium">{state.platform === 'reddit' ? 'r/' : '@'}</span>
                                     <Input
-                                        className="pl-7"
+                                        className="pl-8 h-10 text-base font-medium bg-background border-zinc-200"
                                         value={state.author.handle}
                                         onChange={(e) => setAuthor({ handle: e.target.value })}
                                     />
@@ -287,17 +359,17 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
-                            <div className="grid gap-2">
-                                <Label>Text / Caption</Label>
+                            <div className="grid gap-2 mt-1">
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Text / Caption</Label>
                                 <Textarea
-                                    className="min-h-[100px]"
+                                    className="min-h-[120px] text-base font-medium bg-background border-zinc-200 leading-relaxed"
                                     value={state.content.text}
                                     onChange={(e) => setContent({ text: e.target.value })}
                                 />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label>Post Image</Label>
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Post Image</Label>
                                 <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:bg-muted/50 transition-colors cursor-pointer relative">
                                     {state.content.image ? (
                                         <div className="relative">
@@ -458,18 +530,20 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4 mt-1">
                                 <div className="grid gap-2">
-                                    <Label>Likes / Upvotes</Label>
+                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Likes / Upvotes</Label>
                                     <Input
+                                        className="h-10 text-base font-medium bg-background border-zinc-200"
                                         value={state.metrics.likes}
                                         onChange={(e) => setMetrics({ likes: e.target.value })}
                                         onBlur={(e) => setMetrics({ likes: formatMetric(e.target.value) })}
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label>Comments</Label>
+                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Comments</Label>
                                     <Input
+                                        className="h-10 text-base font-medium bg-background border-zinc-200"
                                         value={state.metrics.comments}
                                         onChange={(e) => setMetrics({ comments: e.target.value })}
                                         onBlur={(e) => setMetrics({ comments: formatMetric(e.target.value) })}
@@ -477,8 +551,9 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                 </div>
                                 {(state.platform === 'twitter' || state.platform === 'linkedin') && (
                                     <div className="grid gap-2">
-                                        <Label>Reposts</Label>
+                                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Reposts</Label>
                                         <Input
+                                            className="h-10 text-base font-medium bg-background border-zinc-200"
                                             value={state.metrics.reposts}
                                             onChange={(e) => setMetrics({ reposts: e.target.value })}
                                             onBlur={(e) => setMetrics({ reposts: formatMetric(e.target.value) })}
@@ -487,8 +562,9 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                 )}
                                 {state.platform === 'twitter' && (
                                     <div className="grid gap-2">
-                                        <Label>Views</Label>
+                                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Views</Label>
                                         <Input
+                                            className="h-10 text-base font-medium bg-background border-zinc-200"
                                             value={state.metrics.views}
                                             onChange={(e) => setMetrics({ views: e.target.value })}
                                             onBlur={(e) => setMetrics({ views: formatMetric(e.target.value) })}

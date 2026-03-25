@@ -229,12 +229,12 @@ export function MessagesSection({
                 {/* Add Message */}
                 <div className="space-y-2">
                     {mode === 'default' && (
-                        <div className="flex gap-1.5">
+                        <div className="flex gap-1.5 pt-1">
                             <button
                                 onClick={() => setIsOwnMessage(false)}
                                 className={cn(
-                                    "flex-1 py-1.5 px-2 rounded-lg text-[10px] font-medium transition-all",
-                                    !isOwnMessage ? "bg-secondary ring-2 ring-primary text-foreground" : "bg-secondary/40 text-muted-foreground hover:bg-secondary/60"
+                                    "flex-1 py-2 px-2 rounded-lg text-xs font-semibold transition-all uppercase tracking-wide",
+                                    !isOwnMessage ? "bg-[#1d2333] text-white shadow-md ring-1 ring-white/10" : "bg-secondary text-muted-foreground hover:bg-secondary/80"
                                 )}
                             >
                                 Received
@@ -242,8 +242,8 @@ export function MessagesSection({
                             <button
                                 onClick={() => setIsOwnMessage(true)}
                                 className={cn(
-                                    "flex-1 py-1.5 px-2 rounded-lg text-[10px] font-medium transition-all",
-                                    isOwnMessage ? "bg-primary text-primary-foreground" : "bg-secondary/40 text-muted-foreground hover:bg-secondary/60"
+                                    "flex-1 py-2 px-2 rounded-lg text-xs font-semibold transition-all uppercase tracking-wide",
+                                    isOwnMessage ? "bg-[#1d2333] text-white shadow-md ring-1 ring-white/10" : "bg-secondary text-muted-foreground hover:bg-secondary/80"
                                 )}
                             >
                                 Sent
@@ -329,20 +329,20 @@ export function MessagesSection({
                         />
                         <Button
                             variant="outline"
-                            className="w-full h-8 text-[11px] font-bold gap-2 border-dashed border-zinc-300 hover:border-zinc-400 hover:bg-zinc-50 transition-all group overflow-hidden relative"
+                            className="w-full h-10 text-xs font-bold gap-2 border-dashed border-zinc-300 hover:border-zinc-400 hover:bg-zinc-50 transition-all group overflow-hidden relative"
                             onClick={handleBulkImportClick}
                         >
-                            <FileUp className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-700 transition-colors" />
+                            <FileUp className="w-4 h-4 text-zinc-500 group-hover:text-zinc-700 transition-colors" />
                             Import Real Chat Data
                             {plan === 'free' && (
-                                <div className="absolute top-0 right-0 bg-amber-500 text-[8px] text-white px-1.5 py-0.5 rounded-bl-md flex items-center gap-0.5 shadow-sm">
-                                    <Crown className="w-2 h-2 fill-white" />
+                                <div className="absolute top-0 right-0 bg-amber-500 text-[9px] text-white px-2 py-0.5 rounded-bl-md flex items-center gap-1 shadow-sm uppercase tracking-tighter">
+                                    <Crown className="w-2.5 h-2.5 fill-white" />
                                     TRIAL
                                 </div>
                             )}
                         </Button>
                         {plan === 'free' && !triedBulkImport && (
-                            <p className="text-[10px] text-zinc-400 mt-1.5 text-center font-medium"> Free users can try bulk import <span className="text-zinc-600 font-bold">once</span>.</p>
+                            <p className="text-xs text-zinc-400 mt-2 text-center font-medium"> Free users can try bulk import <span className="text-zinc-600 font-bold">once</span>.</p>
                         )}
                     </div>
                 </div>

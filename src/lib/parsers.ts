@@ -17,18 +17,22 @@ export const parseWhatsApp = (text: string): ParsedChat => {
     const nameToId = new Map<string, string>();
     
     // Robust regex to handle various WhatsApp formats across regions and OS versions
-    const regex = /^\[?(\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4},?\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s*[ap]m)?)\]?\s*(?:-\s+)?([^:]+):\s*(.*)$/i;
+    const regex = /^\[?(\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4},?\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s*[ap]m)?)\]?\s*(?:-?\s+)?([^:]+):\s*(.*)$/i;
 
     lines.forEach((line) => {
         const match = line.match(regex);
         if (match) {
             const [_, timestampStr, name, msgText] = match;
+            const trimmedMsg = msgText.trim();
             
-            // Skip media omitted and known system text
-            const lowerMsg = msgText.toLowerCase();
-            if (lowerMsg.includes('<media omitted>') || 
+            // Skip media omitted, system text, and EMPTY messages
+            const lowerMsg = trimmedMsg.toLowerCase();
+            if (!trimmedMsg ||
+                lowerMsg.includes('<media omitted>') || 
                 lowerMsg.includes('messages and calls are end-to-end encrypted') ||
-                lowerMsg.includes('owner is a contact')) {
+                lowerMsg.includes('owner is a contact') ||
+                lowerMsg.includes('rent is awaited') || // Specific user context filtering
+                lowerMsg === '.' ) {
                 return;
             }
 

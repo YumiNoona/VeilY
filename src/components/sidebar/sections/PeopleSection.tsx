@@ -53,8 +53,8 @@ export function PeopleSection({
             <AccordionContent className="px-3 pb-3 pt-1 space-y-3">
                 {/* Sender Section */}
                 <div>
-                    <div className="flex items-center gap-1.5 mb-2">
-                        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Sender</span>
+                    <div className="flex items-center gap-1.5 mb-2 mt-1">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sender</span>
                         <Tooltip>
                             <TooltipTrigger>
                                 <HelpCircle className="w-3 h-3 text-muted-foreground" />
@@ -87,7 +87,7 @@ export function PeopleSection({
                             <Input
                                 value={senderPerson.name}
                                 onChange={(e) => onUpdatePerson({ ...senderPerson, name: e.target.value })}
-                                className="h-9 text-sm flex-1 bg-background"
+                                className="h-10 text-base font-medium flex-1 bg-background border-zinc-200 focus:border-primary/50"
                             />
                         </div>
                     )}
@@ -95,8 +95,8 @@ export function PeopleSection({
 
                 {/* Receiver Section */}
                 <div>
-                    <div className="flex items-center gap-1.5 mb-2">
-                        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Receiver</span>
+                    <div className="flex items-center gap-1.5 mb-2 mt-2">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Receiver</span>
                         <Tooltip>
                             <TooltipTrigger>
                                 <HelpCircle className="w-3 h-3 text-muted-foreground" />
@@ -130,7 +130,7 @@ export function PeopleSection({
                                 <Input
                                     value={person.name}
                                     onChange={(e) => onUpdatePerson({ ...person, name: e.target.value })}
-                                    className="h-9 text-sm flex-1 bg-background"
+                                    className="h-10 text-base font-medium flex-1 bg-background border-zinc-200 focus:border-primary/50"
                                 />
                                 {people.length > 2 && (
                                     <button

@@ -9,6 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { VoiceNoteBubble } from "./VoiceNoteBubble";
+import { EditMessageModal } from "@/components/modals/EditMessageModal";
+import { useState } from "react";
 
 export function WhatsAppChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onRemoveMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
@@ -19,8 +21,10 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
   const otherBubble = appearance.darkMode ? 'bg-[#202c33]' : 'bg-white';
   const iconColor = appearance.darkMode ? 'text-[#8696a0]' : 'text-[#007aff]';
 
+  const [editingMessage, setEditingMessage] = useState<{ id: string, text: string } | null>(null);
+
   return (
-    <div className={cn("flex flex-col h-full", bgClass)}>
+    <div className={cn("flex flex-col h-full font-whatsapp", bgClass)}>
       {/* Header */}
       <div className={cn("px-3 py-2 flex items-center border-b", headerBg, appearance.darkMode ? "border-[#202c33]" : "border-[#bdc1c6]")}>
         <button className={cn("p-1 flex items-center gap-1", iconColor)}>
@@ -101,7 +105,12 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
                           )}>
                             {appearance.showTimestamps && formatTime(message.timestamp, appearance.use24HourFormat ?? false)}
                             {message.isOwn && (
-                              <CheckCheck className="w-[15px] h-[15px] text-[#53bdeb] shrink-0" />
+                              <div className="flex -mb-[1px] ml-0.5 shrink-0">
+                                <svg width="15" height="10" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" className="block">
+                                  <path d="M4 8.5L1.5 6L0.5 7L4 10.5L12 1.5L11 0.5L4 8.5Z" fill="#53bdeb"/>
+                                  <path d="M8 8.5L7.5 8L6.5 9L8 10.5L16 1.5L15 0.5L8 8.5Z" fill="#53bdeb"/>
+                                </svg>
+                              </div>
                             )}
                           </span>
                         </div>
@@ -112,8 +121,7 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
                     <DropdownMenuItem 
                       className="cursor-pointer gap-2"
                       onClick={() => {
-                        const newText = prompt("Edit message:", message.text);
-                        if (newText !== null) onUpdateMessage?.(message.id, newText);
+                        setEditingMessage({ id: message.id, text: message.text });
                       }}
                     >
                       <Edit2 className="w-4 h-4" />
@@ -132,6 +140,17 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
             </div>
           );
         })}
+
+        {/* Typing Indicator as Bubble */}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2 animate-in slide-in-from-left-2 fade-in">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", otherBubble)}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Input */}
@@ -143,6 +162,15 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
         {!appearance.darkMode && <Camera className="w-6 h-6 text-[#007aff]" />}
         <Mic className="w-6 h-6 text-[#007aff]" />
       </div>
+      {/* Edit Modal */}
+      <EditMessageModal
+        isOpen={!!editingMessage}
+        onClose={() => setEditingMessage(null)}
+        initialText={editingMessage?.text || ""}
+        onSave={(newText) => {
+          if (editingMessage) onUpdateMessage?.(editingMessage.id, newText);
+        }}
+      />
     </div>
   );
 }

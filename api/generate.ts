@@ -87,12 +87,7 @@ export default async function handler(req: any, res: any) {
     premium: { min: 15, max: 30 }
   };
 
-  const ADMIN_EMAIL = "rushikeshingale2001@gmail.com";
-  let currentUserPlan = userData.plan || 'free';
-  
-  if (user.email === ADMIN_EMAIL) {
-    currentUserPlan = 'premium';
-  }
+  const currentUserPlan = userData.plan || 'free';
 
   const currentLimit = AI_LIMITS[currentUserPlan] || 0;
   const { min: minMsgs, max: maxMsgs } = MSG_LIMITS[currentUserPlan] || MSG_LIMITS.free;

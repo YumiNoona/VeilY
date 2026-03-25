@@ -8,7 +8,7 @@ export interface PlatformChatProps {
   activePerson: Person | null;
   chatType: ChatType;
   appearance: AppearanceSettings;
-  aiModel?: string;
+  isTyping?: boolean;
   onUpdateMessage?: (id: string, text: string) => void;
   onRemoveMessage?: (id: string) => void;
   onUpdatePerson?: (person: Person) => void;

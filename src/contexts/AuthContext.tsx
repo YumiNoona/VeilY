@@ -27,7 +27,6 @@ interface AuthContextType {
     incrementDownloads: () => Promise<void>;
     incrementVideos: () => Promise<void>;
     incrementAIFills: () => Promise<void>;
-    loginWithAdmin: (email: string, pass: string) => Promise<boolean>;
     triedBulkImport: boolean;
     markBulkImportAsTried: () => void;
 }
@@ -56,7 +55,6 @@ const AuthContext = createContext<AuthContextType>({
     incrementDownloads: async () => {},
     incrementVideos: async () => {},
     incrementAIFills: async () => {},
-    loginWithAdmin: async () => false,
     triedBulkImport: false,
     markBulkImportAsTried: () => {},
 });
@@ -193,42 +191,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    const loginWithAdmin = async (email: string, pass: string) => {
-        const hash = async (str: string) => {
-            const msgUint8 = new TextEncoder().encode(str);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        };
-
-        const eHash = await hash(email);
-        const pHash = await hash(pass);
-
-        // Provided hashes for admin login
-        const TARGET_E = '9e504b26ed173aa4d02db96b4ae478254df4df86a6e37410843ff8f813327fcc';
-        const TARGET_P = '899b3e44f37138b58efeeccbe7444ea725fbe56463e3c59c689ef23e82f494dc';
-
-        if (eHash === TARGET_E && pHash === TARGET_P) {
-            const adminUser: User = {
-                id: 'admin_rushikesh_2001',
-                email: email,
-                user_metadata: { full_name: 'Rushikesh Ingale (Admin)' },
-                app_metadata: {},
-                aud: 'authenticated',
-                created_at: new Date().toISOString()
-            } as User;
-
-            setUser(adminUser);
-            setPlan('premium');
-            setFullName('Rushikesh Ingale (Admin)');
-            setDownloadsUsed(0);
-            setVideosUsed(0);
-            setAiFillsUsed(0);
-            setAuthModalOpen(false);
-            return true;
-        }
-        return false;
-    };
     
     // Track Bulk Import trial
     useEffect(() => {
@@ -344,7 +306,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isProfileModalOpen, setProfileModalOpen,
             isDownloadModalOpen, setDownloadModalOpen,
             refetchUserStatus, signOut, updateProfile,
-            incrementDownloads, incrementVideos, incrementAIFills, loginWithAdmin,
+            incrementDownloads, incrementVideos, incrementAIFills,
             triedBulkImport, markBulkImportAsTried
         }}>
             {children}

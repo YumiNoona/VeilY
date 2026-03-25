@@ -34,7 +34,7 @@ const Comments = () => {
     const previewRef = useRef<CommentsPreviewRef>(null);
 
     return (
-        <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-background relative animate-in fade-in duration-300">
+        <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-background relative">
             <CommentsSidebar
                 state={state}
                 setPlatform={setPlatform}

@@ -27,6 +27,7 @@ const initialAppearance: AppearanceSettings = {
     batteryLevel: 100,
     statusText: 'last seen today at 12:00 PM',
     transparentBackground: false,
+    isTyping: false,
 };
 
 const CHAT_STATE_STORAGE_KEY = 'chatState';

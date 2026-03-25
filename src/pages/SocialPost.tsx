@@ -26,7 +26,7 @@ const SocialPost = () => {
     const previewRef = useRef<SocialPostPreviewRef>(null);
 
     return (
-        <div className="flex h-[calc(100vh-64px)] bg-background animate-in fade-in duration-300 overflow-hidden relative">
+        <div className="flex h-[calc(100vh-64px)] bg-background overflow-hidden relative">
             <SocialPostSidebar
                 state={state}
                 setPlatform={setPlatform}

@@ -1,7 +1,9 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Plus, Trash2, ChevronDown, ChevronRight, RotateCcw, Wand2, FileText, Users, MessageCircle, Mail, Crown } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronRight, RotateCcw, Wand2, FileText, Users, MessageCircle, Mail, Crown, Sparkles } from 'lucide-react';
 import { useEmailState } from '@/hooks/useEmailState';
+import { SmartFillModal } from './modals/SmartFillModal';
+import { ParsedChat } from '@/lib/parsers';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -56,6 +58,42 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
 }) => {
     const { plan, setUpgradeModalOpen } = useAuth();
     const [collapsedEmails, setCollapsedEmails] = React.useState<Record<string, boolean>>({});
+    const [isSmartFillOpen, setIsSmartFillOpen] = React.useState(false);
+
+    const handleSmartFillClick = () => {
+        if (plan === 'free') {
+            setUpgradeModalOpen(true);
+            return;
+        }
+        setIsSmartFillOpen(true);
+    };
+
+    const handleSmartFillSuccess = (data: ParsedChat) => {
+        // Map AI generated participants
+        if (data.participants && data.participants.length > 0) {
+            data.participants.forEach((p, idx) => {
+                const existing = state.participants.find(part => part.name === p.name);
+                if (!existing) {
+                    addParticipant();
+                    // Note: Update logic would go here if we could track new participant IDs
+                }
+            });
+        }
+
+        // Map AI generated messages to email body
+        if (data.messages && data.messages.length > 0) {
+            data.messages.forEach((msg, idx) => {
+                if (idx === 0 && state.emails[0]) {
+                    updateEmail(state.emails[0].id, {
+                        content: msg.text,
+                        timestamp: 'Just now'
+                    });
+                } else {
+                    addEmail();
+                }
+            });
+        }
+    };
 
     const handleProviderChange = (val: EmailState['provider']) => {
         if (val === 'outlook' && plan === 'free') {
@@ -78,62 +116,79 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
     return (
         <aside className="w-full lg:w-[450px] bg-sidebar-bg border-r border-sidebar-border h-full flex flex-col overflow-hidden">
             {/* App selection Header block */}
-            <div className="pt-5 px-3 pb-2 border-b border-sidebar-border">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1.5 flex-1">
-                        <Select onValueChange={(val) => {
-                            if (onTemplateLoad) {
-                                const template = EMAIL_TEMPLATES[val as keyof typeof EMAIL_TEMPLATES];
-                                if (template) onTemplateLoad(template);
-                            }
-                        }}>
-                            <SelectTrigger className="w-[140px] h-8 text-xs font-medium">
-                                <SelectValue placeholder="Templates" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>Business</SelectLabel>
-                                    <SelectItem value="businessMeeting">Meeting Strategy</SelectItem>
-                                    <SelectItem value="projectKickoff">Project Kickoff</SelectItem>
-                                    <SelectItem value="invoiceReminder">Invoice Reminder</SelectItem>
-                                    <SelectItem value="formalGreeting">Formal Intro</SelectItem>
-                                </SelectGroup>
-                                <SelectGroup>
-                                    <SelectLabel>Newsletters</SelectLabel>
-                                    <SelectItem value="newsletterBoost">Product Update</SelectItem>
-                                    <SelectItem value="supportWelcome">Support Welcome</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                        {handleReset && (
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground"
-                                onClick={handleReset}
-                                title="Reset All"
-                            >
-                                <RotateCcw className="w-4 h-4" />
-                            </Button>
-                        )}
-                        
-                        {onRandomize && (
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                                onClick={onRandomize}
-                                title="Randomize Content"
-                            >
-                                <Wand2 className="w-4 h-4" />
-                            </Button>
-                        )}
-                    </div>
+            <div className="flex items-center justify-between px-3 pt-5 pb-2 border-b border-sidebar-border shrink-0 min-h-[64px]">
+                <div className="flex items-center gap-1.5 flex-1">
+                    <Select onValueChange={(val) => {
+                        if (onTemplateLoad) {
+                            const template = EMAIL_TEMPLATES[val as keyof typeof EMAIL_TEMPLATES];
+                            if (template) onTemplateLoad(template);
+                        }
+                    }}>
+                        <SelectTrigger className="w-[140px] h-8 text-xs font-medium">
+                            <SelectValue placeholder="Templates" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Business</SelectLabel>
+                                <SelectItem value="businessMeeting">Meeting Strategy</SelectItem>
+                                <SelectItem value="projectKickoff">Project Kickoff</SelectItem>
+                                <SelectItem value="invoiceReminder">Invoice Reminder</SelectItem>
+                                <SelectItem value="formalGreeting">Formal Intro</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>Newsletters</SelectLabel>
+                                <SelectItem value="newsletterBoost">Product Update</SelectItem>
+                                <SelectItem value="supportWelcome">Support Welcome</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
                 </div>
 
+                <div className="flex items-center gap-1">
+                    {handleReset && (
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground"
+                            onClick={handleReset}
+                            title="Reset All"
+                        >
+                            <RotateCcw className="w-4 h-4" />
+                        </Button>
+                    )}
+                    
+                    {onRandomize && (
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                            onClick={onRandomize}
+                            title="Randomize Content"
+                        >
+                            <Wand2 className="w-4 h-4" />
+                        </Button>
+                    )}
+
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                        onClick={handleSmartFillClick}
+                        title="AI Smart Fill (Premium)"
+                    >
+                        <Sparkles className="w-4 h-4 fill-amber-500/20" />
+                    </Button>
+                </div>
+            </div>
+
+            <SmartFillModal
+                isOpen={isSmartFillOpen}
+                onClose={() => setIsSmartFillOpen(false)}
+                onSuccess={handleSmartFillSuccess}
+                platform="email_thread"
+            />
+
+            <div className="px-3 py-2.5 border-b border-sidebar-border shrink-0 flex items-center justify-center min-h-[56px]">
                 <Tabs
                     value={state.provider}
                     onValueChange={(val) => handleProviderChange(val as any)}
@@ -168,20 +223,22 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
-                            <div className="grid gap-2">
-                                <Label>Subject</Label>
+                            <div className="grid gap-2 mt-1">
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Subject</Label>
                                 <Input
                                     value={state.subject}
                                     onChange={e => setSubject(e.target.value)}
                                     placeholder="Email subject..."
+                                    className="h-10 text-base font-medium bg-background border-zinc-200"
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label>Attachment</Label>
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Attachment</Label>
                                 <Input
                                     value={state.attachment}
                                     onChange={e => setAttachment(e.target.value)}
-                                    placeholder="filename.pdf"
+                                    placeholder="file.pdf"
+                                    className="h-10 text-base font-medium bg-background border-zinc-200"
                                 />
                             </div>
                         </AccordionContent>
@@ -219,18 +276,18 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                                                 </Button>
                                             )}
                                         </div>
-                                        <div className="grid gap-2">
+                                        <div className="grid gap-3">
                                             <Input
                                                 value={p.name}
                                                 onChange={e => updateParticipant(p.id, { name: e.target.value })}
                                                 placeholder="Full Name"
-                                                className="h-8 text-sm"
+                                                className="h-10 text-base font-medium bg-background border-zinc-200"
                                             />
                                             <Input
                                                 value={p.email}
                                                 onChange={e => updateParticipant(p.id, { email: e.target.value })}
                                                 placeholder="email@example.com"
-                                                className="h-8 text-sm"
+                                                className="h-10 text-base font-medium bg-background border-zinc-200"
                                             />
                                         </div>
                                         <div className="flex gap-4">
@@ -323,7 +380,7 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                                                             value={email.fromParticipantId}
                                                             onValueChange={(val) => updateEmail(email.id, { fromParticipantId: val })}
                                                         >
-                                                            <SelectTrigger className="w-full text-sm h-9">
+                                                            <SelectTrigger className="w-full text-base font-medium h-10 bg-background border-zinc-200">
                                                                 <SelectValue placeholder="Select sender..." />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -340,7 +397,7 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                                                             type="datetime-local"
                                                             value={email.dateTime}
                                                             onChange={e => updateEmail(email.id, { dateTime: e.target.value })}
-                                                            className="h-9"
+                                                            className="h-10 text-base font-medium bg-background border-zinc-200"
                                                         />
                                                     </div>
 
@@ -350,7 +407,7 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                                                             value={email.body}
                                                             onChange={e => updateEmail(email.id, { body: e.target.value })}
                                                             placeholder="Email body... Use **text** to redact."
-                                                            className="min-h-[100px] font-mono whitespace-pre-wrap text-sm"
+                                                            className="min-h-[120px] font-mono whitespace-pre-wrap text-sm border-zinc-200 leading-relaxed"
                                                         />
                                                     </div>
                                                 </div>
@@ -362,10 +419,12 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                         </AccordionContent>
                     </AccordionItem>
 
-                    <AppearanceSection 
-                        appearance={state.appearance}
-                        onAppearanceChange={setAppearance}
-                    />
+                    <div className="mt-3">
+                        <AppearanceSection 
+                            appearance={state.appearance}
+                            onAppearanceChange={setAppearance}
+                        />
+                    </div>
 
                 </Accordion>
             </div>

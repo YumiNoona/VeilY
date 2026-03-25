@@ -45,7 +45,7 @@ const Index = () => {
   const activePerson = chatState.people.find(p => p.id === 'user') || null;
 
   return (
-    <div className="flex h-[calc(100vh-64px)] bg-background animate-in fade-in duration-300 overflow-hidden">
+    <div className="flex h-[calc(100vh-64px)] bg-background overflow-hidden">
       <Sidebar
         chatState={chatState}
         onPlatformChange={handlePlatformChange}
@@ -81,6 +81,7 @@ const Index = () => {
             onUpdatePerson={handleUpdatePerson}
             onUpdateAppearance={handleAppearanceChange}
             isAnimating={isAnimating}
+            onAnimationComplete={() => setIsAnimating(false)}
           />
         </div>
 

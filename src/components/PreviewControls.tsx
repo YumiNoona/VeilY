@@ -29,7 +29,7 @@ export function PreviewControls({
   ];
 
   return (
-    <div className="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 bg-card border border-border rounded-full py-4 px-2 shadow-lg z-50">
+    <div className="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 bg-card border border-border rounded-full py-4 px-2 shadow-lg z-50 will-change-transform transform-gpu">
       {showDeviceToggle && (
         <>
           <div className="flex flex-col items-center bg-secondary rounded-full p-1 gap-1">

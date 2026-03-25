@@ -54,6 +54,7 @@ export interface AppearanceSettings {
   // Wallpaper
   wallpaperUrl?: string;
   transparentBackground: boolean;
+  isTyping: boolean;
 }
 
 export interface ChatState {

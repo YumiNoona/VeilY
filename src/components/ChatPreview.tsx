@@ -20,6 +20,7 @@ interface ChatPreviewProps {
   onUpdatePerson?: (person: Person) => void;
   onUpdateAppearance?: (appearance: AppearanceSettings) => void;
   isAnimating?: boolean;
+  onAnimationComplete?: () => void;
 }
 
 const DeviceStatusBar = ({ appearance }: { appearance: AppearanceSettings }) => {
@@ -60,7 +61,7 @@ const TypingIndicator = ({ platform, appearance }: { platform: Platform, appeara
 };
 
 export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
-  ({ platform, messages, people, activePerson, chatType, deviceView, appearance, aiModel, onUpdateMessage, onRemoveMessage, onUpdatePerson, isAnimating }, ref) => {
+  ({ platform, messages, people, activePerson, chatType, deviceView, appearance, aiModel, onUpdateMessage, onRemoveMessage, onUpdatePerson, isAnimating, onAnimationComplete }, ref) => {
     const [visibleCount, setVisibleCount] = useState(isAnimating ? 0 : messages.length);
     const [isTyping, setIsTyping] = useState(false);
 
@@ -75,7 +76,10 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
       let current = 0;
 
       const playNext = async () => {
-        if (current >= messages.length) return;
+        if (current >= messages.length) {
+          onAnimationComplete?.();
+          return;
+        }
 
         const nextMsg = messages[current];
         
@@ -115,10 +119,11 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
       chatType,
       appearance,
       aiModel,
+      isTyping,
       onUpdateMessage,
       onRemoveMessage,
       onUpdatePerson,
-    }), [visibleMessages, people, activePerson, chatType, appearance, aiModel, onUpdateMessage, onRemoveMessage, onUpdatePerson]);
+    }), [visibleMessages, people, activePerson, chatType, appearance, aiModel, isTyping, onUpdateMessage, onRemoveMessage, onUpdatePerson]);
 
     return (
       <div
@@ -134,11 +139,6 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
           {showStatusBar && <DeviceStatusBar appearance={appearance} />}
           <div className="flex-1 overflow-hidden relative">
             <PlatformChat {...chatProps} />
-            {isTyping && (
-              <div className="absolute bottom-4 left-4 z-10 animate-in slide-in-from-bottom-2 fade-in">
-                <TypingIndicator platform={platform} appearance={appearance} />
-              </div>
-            )}
           </div>
           <Watermark isDark={appearance.darkMode} />
         </div>

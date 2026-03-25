@@ -21,10 +21,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Twitter, Instagram, Linkedin, Facebook, Youtube, Plus, Trash2, Upload, MessageSquare, Heart, Clock, RotateCcw, Wand2, Users, Palette, MessageCircle, Crown } from 'lucide-react';
+import { Twitter, Instagram, Linkedin, Facebook, Youtube, Plus, Trash2, Upload, MessageSquare, Heart, Clock, RotateCcw, Wand2, Users, Palette, MessageCircle, Crown, Sparkles } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { COMMENT_TEMPLATES } from '@/lib/templates';
 import { useAuth } from '@/contexts/AuthContext';
+import { SmartFillModal } from './modals/SmartFillModal';
+import { ParsedChat } from '@/lib/parsers';
 
 // Mapping TikTok icon manually or using a similar one since Lucide might not have it or it's named differently
 // For now using MessageSquare as placeholder if TikTok not available, but let's check basic icons.
@@ -61,6 +63,48 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     onRandomize,
 }) => {
     const { plan, setUpgradeModalOpen } = useAuth();
+    const [isSmartFillOpen, setIsSmartFillOpen] = React.useState(false);
+
+    const handleSmartFillClick = () => {
+        if (plan === 'free') {
+            setUpgradeModalOpen(true);
+            return;
+        }
+        setIsSmartFillOpen(true);
+    };
+
+    const handleSmartFillSuccess = (data: ParsedChat) => {
+        // Map AI generated participants to profiles
+        if (data.participants && data.participants.length > 0) {
+            data.participants.forEach((p, idx) => {
+                const existing = state.profiles.find(prof => prof.name === p.name);
+                if (!existing) {
+                    addProfile();
+                }
+            });
+        }
+
+        // Map AI generated messages to comments
+        if (data.messages && data.messages.length > 0) {
+            data.messages.forEach((msg, idx) => {
+                const author = (data.participants?.[idx] || data.participants?.[0] || { name: 'User' }) as any;
+                const profile = state.profiles.find(p => p.name === author.name);
+                
+                if (idx === 0 && state.comments[0]) {
+                    updateComment(state.comments[0].id, {
+                        userId: profile?.id || state.profiles[0]?.id || '',
+                        text: msg.text,
+                        likes: Math.floor(Math.random() * 50).toString(),
+                        timeAgo: 'Just now'
+                    });
+                } else {
+                    addComment();
+                    // Note: In a real app, we might need a way to get the ID of the newly added comment 
+                    // or batch update the state. For now, this populates the first or adds more.
+                }
+            });
+        }
+    };
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handlePlatformChange = (val: CommentPlatform) => {
@@ -94,7 +138,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                             value={comment.userId}
                             onValueChange={(val) => updateComment(comment.id, { userId: val })}
                         >
-                            <SelectTrigger className="h-8 text-xs w-[140px]">
+                            <SelectTrigger className="h-10 text-sm font-medium w-[150px] bg-background border-zinc-200">
                                 <SelectValue placeholder="Select User" />
                             </SelectTrigger>
                             <SelectContent>
@@ -104,18 +148,18 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                             </SelectContent>
                         </Select>
                         <div className="flex items-center gap-1.5 relative">
-                            <Heart className="w-3.5 h-3.5 text-muted-foreground absolute left-2 pointer-events-none" />
+                            <Heart className="w-4 h-4 text-muted-foreground absolute left-2.5 pointer-events-none" />
                             <Input
-                                className="h-8 text-xs w-[70px] pl-7"
+                                className="h-10 text-sm w-[80px] pl-8 bg-background border-zinc-200"
                                 placeholder="Likes"
                                 value={comment.likes}
                                 onChange={(e) => updateComment(comment.id, { likes: e.target.value })}
                             />
                         </div>
                         <div className="flex items-center gap-1.5 relative">
-                            <Clock className="w-3.5 h-3.5 text-muted-foreground absolute left-2 pointer-events-none" />
+                            <Clock className="w-4 h-4 text-muted-foreground absolute left-2.5 pointer-events-none" />
                             <Input
-                                className="h-8 text-xs w-[70px] pl-7"
+                                className="h-10 text-sm w-[80px] pl-8 bg-background border-zinc-200"
                                 placeholder="Time"
                                 value={comment.timeAgo}
                                 onChange={(e) => updateComment(comment.id, { timeAgo: e.target.value })}
@@ -132,7 +176,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                     </div>
 
                     <Textarea
-                        className="text-xs min-h-[60px]"
+                        className="text-sm font-medium min-h-[70px] bg-background border-zinc-200 leading-relaxed"
                         value={comment.text}
                         onChange={(e) => updateComment(comment.id, { text: e.target.value })}
                         placeholder="Comment text..."
@@ -141,19 +185,19 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                     <div className="flex items-center gap-2">
                         {/* Platform specific toggles? e.g. Liked by author */}
                         {(state.platform === 'instagram' || state.platform === 'tiktok' || state.platform === 'youtube') && (
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-2">
                                 <Switch
-                                    className="scale-75"
+                                    className="scale-90"
                                     checked={comment.isLikedByAuthor}
                                     onCheckedChange={(c) => updateComment(comment.id, { isLikedByAuthor: c })}
                                 />
-                                <span className="text-[10px] text-muted-foreground whitespace-nowrap">Liked by creator</span>
+                                <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap uppercase tracking-wide">Liked by creator</span>
                             </div>
                         )}
                         <Button
                             variant="secondary"
                             size="sm"
-                            className="h-6 text-[10px] ml-auto"
+                            className="h-8 text-xs font-bold ml-auto px-4 rounded-lg uppercase tracking-wider"
                             onClick={() => addComment(comment.id)}
                         >
                             Reply
@@ -171,73 +215,90 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
 
     return (
         <aside className="w-full lg:w-[450px] bg-sidebar-bg border-r border-sidebar-border h-full flex flex-col overflow-hidden">
-            <div className="pt-5 px-3 pb-2 border-b border-sidebar-border">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1.5 flex-1">
-                        <Select onValueChange={(val) => {
-                            if (onTemplateLoad) {
-                                const template = COMMENT_TEMPLATES[val as keyof typeof COMMENT_TEMPLATES];
-                                if (template) onTemplateLoad(template);
-                            }
-                        }}>
-                            <SelectTrigger className="w-[140px] h-8 text-xs font-medium">
-                                <SelectValue placeholder="Templates" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>Instagram</SelectLabel>
-                                    <SelectItem value="instagramHype">IG Hype</SelectItem>
-                                </SelectGroup>
-                                <SelectGroup>
-                                    <SelectLabel>TikTok</SelectLabel>
-                                    <SelectItem value="tiktokViral">Viral Video</SelectItem>
-                                    <SelectItem value="tiktokRecipe">Cooking Tips</SelectItem>
-                                </SelectGroup>
-                                <SelectGroup>
-                                    <SelectLabel>X (Twitter)</SelectLabel>
-                                    <SelectItem value="twitterRatio">Ratioed</SelectItem>
-                                </SelectGroup>
-                                <SelectGroup>
-                                    <SelectLabel>YouTube</SelectLabel>
-                                    <SelectItem value="youtubeKnowledge">Knowledge Sharing</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                        {onReset && (
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground"
-                                onClick={onReset}
-                                title="Reset All"
-                            >
-                                <RotateCcw className="w-4 h-4" />
-                            </Button>
-                        )}
-                        
-                        {onRandomize && (
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                                onClick={onRandomize}
-                                title="Randomize Content"
-                            >
-                                <Wand2 className="w-4 h-4" />
-                            </Button>
-                        )}
-                    </div>
+            <div className="flex items-center justify-between px-3 pt-5 pb-2 border-b border-sidebar-border shrink-0 min-h-[64px]">
+                <div className="flex items-center gap-1.5 flex-1">
+                    <Select onValueChange={(val) => {
+                        if (onTemplateLoad) {
+                            const template = COMMENT_TEMPLATES[val as keyof typeof COMMENT_TEMPLATES];
+                            if (template) onTemplateLoad(template);
+                        }
+                    }}>
+                        <SelectTrigger className="w-[140px] h-8 text-xs font-medium">
+                            <SelectValue placeholder="Templates" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Instagram</SelectLabel>
+                                <SelectItem value="instagramHype">IG Hype</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>TikTok</SelectLabel>
+                                <SelectItem value="tiktokViral">Viral Video</SelectItem>
+                                <SelectItem value="tiktokRecipe">Cooking Tips</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>X (Twitter)</SelectLabel>
+                                <SelectItem value="twitterRatio">Ratioed</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>YouTube</SelectLabel>
+                                <SelectItem value="youtubeKnowledge">Knowledge Sharing</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
                 </div>
 
+                <div className="flex items-center gap-1">
+                    {onReset && (
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground"
+                            onClick={onReset}
+                            title="Reset All"
+                        >
+                            <RotateCcw className="w-4 h-4" />
+                        </Button>
+                    )}
+                    
+                    {onRandomize && (
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                            onClick={onRandomize}
+                            title="Randomize Content"
+                        >
+                            <Wand2 className="w-4 h-4" />
+                        </Button>
+                    )}
+
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                        onClick={handleSmartFillClick}
+                        title="AI Smart Fill (Premium)"
+                    >
+                        <Sparkles className="w-4 h-4 fill-amber-500/20" />
+                    </Button>
+                </div>
+            </div>
+
+            <SmartFillModal
+                isOpen={isSmartFillOpen}
+                onClose={() => setIsSmartFillOpen(false)}
+                onSuccess={handleSmartFillSuccess}
+                platform="comment_thread"
+            />
+
+            <div className="px-3 py-2.5 border-b border-sidebar-border shrink-0 flex items-center justify-center min-h-[56px]">
                 <Tabs
                     value={state.platform}
                     onValueChange={(val) => handlePlatformChange(val as CommentPlatform)}
                     className="w-full"
                 >
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-4 h-10">
                         <TabsTrigger value="instagram" className="relative">
                             <Instagram className="w-4 h-4" />
                         </TabsTrigger>
@@ -256,8 +317,8 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                 </Tabs>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                <Accordion type="single" collapsible defaultValue="comments" className="w-full">
+            <div className="flex-1 overflow-y-auto p-2.5 space-y-2 scrollbar-thin">
+                <Accordion type="multiple" defaultValue={["people", "comments"]} className="space-y-2">
 
                     {/* PEOPLE SECTION */}
                     <AccordionItem value="people" className="border rounded-xl bg-card shadow-sm overflow-hidden">
@@ -266,7 +327,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <Users className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">People</span>
+                                <span className="font-semibold text-sm">People ({state.profiles.length})</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="pt-2 space-y-4 px-3 pb-3">
@@ -289,24 +350,34 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                                             </div>
                                         </div>
 
-                                        <div className="flex-1 space-y-2">
-                                            <Input
-                                                value={profile.name}
-                                                onChange={(e) => updateProfile(profile.id, { name: e.target.value })}
-                                                placeholder="Display Name"
-                                                className="h-8 text-sm"
-                                            />
-                                            <div className="flex gap-2">
+                                        <div className="flex-1 space-y-3">
+                                            <div className="grid gap-2">
+                                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Display Name</Label>
                                                 <Input
-                                                    value={profile.handle}
-                                                    onChange={(e) => updateProfile(profile.id, { handle: e.target.value })}
-                                                    placeholder="Handle"
-                                                    className="h-8 text-sm"
+                                                    value={profile.name}
+                                                    onChange={(e) => updateProfile(profile.id, { name: e.target.value })}
+                                                    placeholder="Display Name"
+                                                    className="h-10 text-base font-medium bg-background border-zinc-200"
                                                 />
-                                                <Switch
-                                                    checked={profile.verified}
-                                                    onCheckedChange={(c) => updateProfile(profile.id, { verified: c })}
-                                                />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Handle</Label>
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        value={profile.handle}
+                                                        onChange={(e) => updateProfile(profile.id, { handle: e.target.value })}
+                                                        placeholder="Handle"
+                                                        className="h-10 text-base font-medium flex-1 bg-background border-zinc-200"
+                                                    />
+                                                    <div className="flex items-center gap-2 px-2 bg-background border border-zinc-200 rounded-lg h-10">
+                                                        <Switch
+                                                            className="scale-75"
+                                                            checked={profile.verified}
+                                                            onCheckedChange={(c) => updateProfile(profile.id, { verified: c })}
+                                                        />
+                                                        <span className="text-[10px] font-bold text-muted-foreground">VERIFIED</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -323,7 +394,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                                     </div>
                                 </div>
                             ))}
-                            <Button variant="outline" className="w-full" onClick={addProfile}>
+                            <Button variant="outline" className="w-full h-10 text-xs font-bold uppercase tracking-wider" onClick={addProfile}>
                                 <Plus className="w-4 h-4 mr-2" /> Add Person
                             </Button>
                         </AccordionContent>
@@ -341,7 +412,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                         </AccordionTrigger>
                         <AccordionContent className="pt-2 px-3 pb-3">
                             {state.comments.map(comment => renderCommentEditor(comment))}
-                            <Button className="w-full mt-4" onClick={() => addComment()}>
+                            <Button className="w-full mt-4 h-12 text-sm font-bold uppercase tracking-wider bg-[#1d2333] hover:bg-[#1d2333]/90 rounded-xl" onClick={() => addComment()}>
                                 <Plus className="w-4 h-4 mr-2" /> Add New Comment
                             </Button>
                         </AccordionContent>

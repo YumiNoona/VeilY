@@ -85,10 +85,11 @@ Accelerate your workflow with one-click data ingestion:
    ```
 3. **Install & Run**
    ```bash
-   npm install      # Install dependencies
-   npx vercel dev   # Start Web Development (Vite + Vercel /api routes)
-   npm run electron # Start Desktop App
-   npm run dist     # Build for Windows (.exe)
+   npm install        # Install dependencies
+   npx vercel dev     # Web + API (Fastest for local AI dev)
+   npm run build      # Prepare web assets for Electron
+   npm run electron   # Start Desktop App (Loads from dist/)
+   npm run dist       # Package for Windows (Generates .exe)
    ```
 
 ---

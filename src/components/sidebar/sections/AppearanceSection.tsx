@@ -61,6 +61,14 @@ export function AppearanceSection({ appearance, onAppearanceChange }: Appearance
                         />
                     </div>
                     <div className="flex items-center justify-between py-1">
+                        <Label htmlFor="is-typing">Show typing indicator</Label>
+                        <Switch
+                            id="is-typing"
+                            checked={appearance.isTyping ?? false}
+                            onCheckedChange={(checked) => onAppearanceChange({ ...appearance, isTyping: checked })}
+                        />
+                    </div>
+                    <div className="flex items-center justify-between py-1">
                         <Label htmlFor="show-status">Show status</Label>
                         <Switch
                             id="show-status"

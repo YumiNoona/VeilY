@@ -21,7 +21,7 @@ interface SmartFillModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: (data: ParsedChat) => void;
-    platform: Platform;
+    platform: string;
 }
 
 export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFillModalProps) {
@@ -39,6 +39,13 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
     const currentLimit = AI_LIMITS[plan] || 0;
     const isLimitReached = aiFillsUsed >= currentLimit;
 
+    const getPlaceholder = () => {
+        if (platform === 'social_post') return "e.g., A viral tech news post about a new AI discovery, with high engagement metrics.";
+        if (platform === 'comment_thread') return "e.g., A supportive thread of comments for a marathon runner, with diverse profile names.";
+        if (platform === 'email_thread') return "e.g., A professional project kickoff email with a polite and inviting tone.";
+        return "e.g., A funny argument between roommates about whose turn it is to do the dishes, with lots of emojis.";
+    };
+
     const handleGenerate = async () => {
         if (!prompt.trim()) {
             toast.error("Please enter a scenario prompt first!");
@@ -53,14 +60,24 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
         setIsLoading(true);
         setError(null);
         try {
-            const data = await generateSmartFill(prompt, platform);
-            await refetchUserStatus(); // Sync the newly incremented usage from the backend
+            // Enhanced prompt context based on platform
+            let enhancedPrompt = prompt;
+            if (platform === 'social_post') {
+                enhancedPrompt = `[MODE: SOCIAL_POST] Generate a professional social media post with content, author, and metrics. Scenario: ${prompt}`;
+            } else if (platform === 'comment_thread') {
+                enhancedPrompt = `[MODE: COMMENT_THREAD] Generate a realistic thread of comments with names and profiles. Scenario: ${prompt}`;
+            } else if (platform === 'email_thread') {
+                enhancedPrompt = `[MODE: EMAIL_THREAD] Generate a professional email thread with subject and participants. Scenario: ${prompt}`;
+            }
+
+            const data = await generateSmartFill(enhancedPrompt, platform);
+            await refetchUserStatus(); // Sync total usage
             onSuccess(data);
             onClose();
             setPrompt("");
             toast.success("AI Generation successful!");
         } catch (err: any) {
-            const msg = err.message || "Failed to generate AI conversation.";
+            const msg = err.message || "Failed to generate AI content.";
             setError(msg);
         } finally {
             setIsLoading(false);
@@ -76,7 +93,10 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
                         AI Smart Fill
                     </DialogTitle>
                     <DialogDescription>
-                        Describe a scenario and let AI generate the entire conversation for you instantly.
+                        {platform === 'email_thread' ? "Describe your email's goal and let AI write the thread for you." :
+                         platform === 'social_post' ? "Describe your post topic and let AI craft the perfect caption." :
+                         platform === 'comment_thread' ? "Describe the vibe and let AI generate realistic feedback." :
+                         "Describe a scenario and let AI generate the entire conversation for you instantly."}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -84,7 +104,10 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
                     <div>
                         <div className="flex justify-between items-center mb-1.5">
                             <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                                Conversation Scenario
+                                {platform === 'email_thread' ? "Email Scenario" :
+                                 platform === 'social_post' ? "Post Scenario" :
+                                 platform === 'comment_thread' ? "Comment Vibe" :
+                                 "Conversation Scenario"}
                             </label>
                             <span className={cn(
                                 "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase",
@@ -94,7 +117,7 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
                             </span>
                         </div>
                         <Textarea
-                            placeholder="e.g., A funny argument between roommates about whose turn it is to do the dishes, with lots of emojis."
+                            placeholder={getPlaceholder()}
                             className={cn(
                                 "min-h-[120px] resize-none",
                                 error && "border-red-500 focus-visible:ring-red-500"
@@ -128,8 +151,6 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
                     >
                         {isLoading ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : error ? (
-                            <Wand2 className="w-4 h-4" />
                         ) : (
                             <Wand2 className="w-4 h-4" />
                         )}

@@ -10,6 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { EditMessageModal } from "@/components/modals/EditMessageModal";
+import { useState } from "react";
 
 export function TelegramChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onRemoveMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
@@ -23,6 +25,7 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
   const inputTextColor = appearance.darkMode ? 'text-white' : 'text-black';
   const headerTextColor = appearance.darkMode ? 'text-white' : 'text-[#000000]';
   const iconColor = 'text-[#6ab2f2]';
+  const [editingMessage, setEditingMessage] = useState<{ id: string, text: string } | null>(null);
   const ownBubble = appearance.darkMode ? 'bg-[#2b5278]' : 'bg-[#effdde]';
   const otherBubble = appearance.darkMode ? 'bg-[#182533]' : 'bg-white';
   const msgTextColor = appearance.darkMode ? 'text-white' : 'text-black';
@@ -30,7 +33,7 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
   const dateBadgeBg = appearance.darkMode ? 'bg-[#182533] text-[#6ab2f2]' : 'bg-[rgba(0,0,0,0.15)] text-white';
 
   return (
-    <div className={cn("flex flex-col h-full", bgClass)}>
+    <div className={cn("flex flex-col h-full font-telegram", bgClass)}>
       <div className={cn("px-3 py-2 flex items-center border-b", headerBg, appearance.darkMode ? "border-transparent" : "border-[#c8c8cc]")}>
         <button className="p-2"><ArrowLeft className={cn("w-5 h-5", iconColor)} /></button>
         {displayPerson?.avatar ? (
@@ -98,8 +101,7 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
                 <DropdownMenuItem 
                   className="cursor-pointer gap-2"
                   onClick={() => {
-                    const newText = prompt("Edit message:", message.text);
-                    if (newText !== null) onUpdateMessage?.(message.id, newText);
+                    setEditingMessage({ id: message.id, text: message.text });
                   }}
                 >
                   <Edit2 className="w-4 h-4" />
@@ -123,6 +125,15 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
         <button className={cn("p-2", iconColor)}><Plus className="w-6 h-6" /></button>
         <button className={cn("p-2", iconColor)}><Mic className="w-6 h-6" /></button>
       </div>
+      {/* Edit Modal */}
+      <EditMessageModal
+        isOpen={!!editingMessage}
+        onClose={() => setEditingMessage(null)}
+        initialText={editingMessage?.text || ""}
+        onSave={(newText) => {
+          if (editingMessage) onUpdateMessage?.(editingMessage.id, newText);
+        }}
+      />
     </div>
   );
 }

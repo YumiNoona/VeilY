@@ -16,11 +16,20 @@
   "build": {
     "appId": "com.veily.app",
     "productName": "Veily",
+    "directories": {
+      "output": "dist_electron"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
     "win": {
       "target": "nsis"
     },
-    "directories": {
-      "output": "dist_electron"
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   },
   "dependencies": {
@@ -63,6 +72,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "electron-store": "^11.0.2",
     "embla-carousel-react": "^8.6.0",
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",

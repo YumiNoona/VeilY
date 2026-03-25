@@ -14,7 +14,7 @@ export async function generateSmartFill(prompt: string, platform: string): Promi
     throw new Error("You must be logged in to use AI features.");
   }
 
-  const response = await fetch("/api/generate", {
+  const response = await fetch("https://veily.venusapp.in/api/generate", {
     method: "POST",
     headers: {
         "Content-Type": "application/json",

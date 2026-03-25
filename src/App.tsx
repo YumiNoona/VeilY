@@ -2,7 +2,8 @@ import { useState, lazy, Suspense } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route } from "react-router-dom";
+import { isElectron } from "@/lib/electron-utils";
 import { Layout } from "@/components/Layout";
 import { AuthProvider } from "@/contexts/AuthContext";
 
@@ -20,12 +21,14 @@ const GroupCall = lazy(() => import("./pages/GroupCall"));
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
 
+  const Router = isElectron() ? HashRouter : BrowserRouter;
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
           <Sonner />
-          <BrowserRouter>
+          <Router>
             <Suspense fallback={<div className="flex items-center justify-center h-screen w-full bg-background text-muted-foreground">Loading...</div>}>
               <Routes>
                 <Route element={<Layout />}>
@@ -41,7 +44,7 @@ const App = () => {
                 </Route>
               </Routes>
             </Suspense>
-          </BrowserRouter>
+          </Router>
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>

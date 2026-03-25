@@ -8,6 +8,8 @@ import { MessageSquare, Share2, Bot, MessageCircle, Crown, GalleryVerticalEnd, A
 import { AuthModal } from "@/components/modals/AuthModal";
 import { UpgradeModal } from "@/components/modals/UpgradeModal";
 import { ProfileModal } from "@/components/modals/ProfileModal";
+import { TitleBar } from "@/components/layout/TitleBar";
+import { isElectron } from "@/lib/electron-utils";
 
 export const Layout = () => {
     const location = useLocation();
@@ -31,6 +33,7 @@ export const Layout = () => {
 
     return (
         <div className="h-screen bg-[#F9FAFB] flex flex-col font-sans overflow-hidden">
+            {isElectron() && <TitleBar />}
             <AuthModal />
             <UpgradeModal />
             <ProfileModal />

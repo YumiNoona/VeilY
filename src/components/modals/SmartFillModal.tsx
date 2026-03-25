@@ -28,6 +28,7 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
     const { plan, aiFillsUsed, refetchUserStatus } = useAuth();
     const [prompt, setPrompt] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const AI_LIMITS = {
         free: 0,
@@ -50,6 +51,7 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
         }
 
         setIsLoading(true);
+        setError(null);
         try {
             const data = await generateSmartFill(prompt, platform);
             await refetchUserStatus(); // Sync the newly incremented usage from the backend
@@ -57,8 +59,9 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
             onClose();
             setPrompt("");
             toast.success("AI Generation successful!");
-        } catch (error: any) {
-            toast.error(error.message || "Failed to generate AI conversation.");
+        } catch (err: any) {
+            const msg = err.message || "Failed to generate AI conversation.";
+            setError(msg);
         } finally {
             setIsLoading(false);
         }
@@ -92,11 +95,22 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
                         </div>
                         <Textarea
                             placeholder="e.g., A funny argument between roommates about whose turn it is to do the dishes, with lots of emojis."
-                            className="min-h-[120px] resize-none"
+                            className={cn(
+                                "min-h-[120px] resize-none",
+                                error && "border-red-500 focus-visible:ring-red-500"
+                            )}
                             value={prompt}
-                            onChange={(e) => setPrompt(e.target.value)}
+                            onChange={(e) => {
+                                setPrompt(e.target.value);
+                                if (error) setError(null);
+                            }}
                             disabled={isLoading || isLimitReached}
                         />
+                        {error && (
+                            <p className="text-[11px] text-red-500 mt-1.5 font-medium flex items-center gap-1">
+                                ⚠️ {error}
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -114,10 +128,12 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
                     >
                         {isLoading ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : error ? (
+                            <Wand2 className="w-4 h-4" />
                         ) : (
                             <Wand2 className="w-4 h-4" />
                         )}
-                        {isLoading ? "Generating..." : isLimitReached ? "Daily Limit Reached" : "Generate Magic"}
+                        {isLoading ? "Generating..." : error ? "Try Again" : isLimitReached ? "Daily Limit Reached" : "Generate Magic"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

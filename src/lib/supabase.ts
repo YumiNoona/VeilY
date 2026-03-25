@@ -9,5 +9,13 @@ if (!supabaseUrl || !supabasePublishableKey) {
 
 export const supabase = createClient(
   supabaseUrl || '',
-  supabasePublishableKey || ''
+  supabasePublishableKey || '',
+  {
+    auth: {
+      persistSession: true,
+      storage: localStorage,
+      autoRefreshToken: true,
+      detectSessionInUrl: false // Required for Electron environments
+    }
+  }
 );

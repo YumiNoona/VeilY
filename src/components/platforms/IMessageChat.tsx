@@ -2,6 +2,7 @@ import { ChevronLeft, Video, Mic, Plus, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EditableText } from "@/components/ui/EditableText";
 import { PlatformChatProps, formatTime, getWallpaperStyle } from "./shared";
+import { VoiceNoteBubble } from "./VoiceNoteBubble";
 
 export function IMessageChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
@@ -36,13 +37,22 @@ export function IMessageChat({ messages, people, activePerson, chatType, appeara
             <div className={cn("max-w-[75%] px-3 py-2 rounded-[18px]", message.isOwn ? "bg-[#007aff] text-white rounded-br-[4px]" : appearance.darkMode ? "bg-[#3a3a3c] text-white rounded-bl-[4px]" : "bg-[#e9e9eb] text-black rounded-bl-[4px]")} style={{ wordBreak: 'break-word' }}>
               {chatType === 'group' && !message.isOwn && <p className="text-[11px] font-medium text-[#8e8e93] mb-0.5">{people.find(p => p.id === message.senderId)?.name}</p>}
               {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-              <p className="text-[17px] leading-[22px]">
-                <EditableText
-                  value={message.text}
-                  onSave={(newText) => onUpdateMessage?.(message.id, newText)}
-                  multiline
+              {message.isVoiceNote ? (
+                <VoiceNoteBubble
+                  duration={message.voiceDuration || "0:05"}
+                  isOwn={message.isOwn}
+                  platform="imessage"
+                  darkMode={appearance.darkMode}
                 />
-              </p>
+              ) : (
+                <p className="text-[17px] leading-[22px]">
+                  <EditableText
+                    value={message.text}
+                    onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                    multiline
+                  />
+                </p>
+              )}
             </div>
             {appearance.showTimestamps && <span className="text-[10px] text-[#8e8e93] mt-0.5 mx-2">{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
           </div>

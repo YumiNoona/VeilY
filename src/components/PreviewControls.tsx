@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Monitor, Smartphone, Download, Copy } from "lucide-react";
+import { Monitor, Smartphone, Download, Copy, Play, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DeviceView } from "@/types/chat";
 
@@ -10,6 +10,8 @@ interface PreviewControlsProps {
   onDownload: () => void;
   onCopy?: () => void;
   showDeviceToggle?: boolean;
+  isAnimating?: boolean;
+  onToggleAnimation?: () => void;
 }
 
 export function PreviewControls({ 
@@ -17,7 +19,9 @@ export function PreviewControls({
   onViewChange, 
   onDownload, 
   onCopy,
-  showDeviceToggle = true 
+  showDeviceToggle = true,
+  isAnimating = false,
+  onToggleAnimation
 }: PreviewControlsProps) {
   const views: { id: DeviceView; icon: React.ElementType; label: string }[] = [
     { id: 'desktop', icon: Monitor, label: 'Desktop' },
@@ -61,6 +65,18 @@ export function PreviewControls({
         <Button onClick={onDownload} size="icon" className="rounded-full w-10 h-10" title="Download Image">
           <Download className="w-4 h-4" />
         </Button>
+
+        {onToggleAnimation && (
+          <Button 
+            onClick={onToggleAnimation} 
+            variant={isAnimating ? "default" : "outline"}
+            size="icon" 
+            className={cn("rounded-full w-10 h-10", isAnimating && "bg-amber-500 hover:bg-amber-600")} 
+            title={isAnimating ? "Stop Animation" : "Play Typing Animation"}
+          >
+            {isAnimating ? <Square className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
+          </Button>
+        )}
       </div>
     </div>
   );

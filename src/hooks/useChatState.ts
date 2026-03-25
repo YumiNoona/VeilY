@@ -86,7 +86,7 @@ export const useChatState = (storageKey: string = 'chatState') => {
         setChatState(prev => ({ ...prev, chatType }));
     }, []);
 
-    const handleAddMessage = useCallback((text: string, isOwn: boolean, image?: string) => {
+    const handleAddMessage = useCallback((text: string, isOwn: boolean, image?: string, isVoiceNote?: boolean, voiceDuration?: string) => {
         const newMessage: Message = {
             id: crypto.randomUUID(),
             text,
@@ -94,6 +94,8 @@ export const useChatState = (storageKey: string = 'chatState') => {
             timestamp: new Date(),
             isOwn,
             image,
+            isVoiceNote,
+            voiceDuration,
         };
         setChatState(prev => ({ ...prev, messages: [...prev.messages, newMessage] }));
     }, []);
@@ -132,7 +134,7 @@ export const useChatState = (storageKey: string = 'chatState') => {
         });
     }, []); // No dependencies needed as prev state is used
 
-    const handleUpdateMessage = useCallback((id: string, newText: string, newTimestamp?: Date, newImage?: string, isOwn?: boolean) => {
+    const handleUpdateMessage = useCallback((id: string, newText: string, newTimestamp?: Date, newImage?: string, isOwn?: boolean, isVoiceNote?: boolean, voiceDuration?: string) => {
         setChatState(prev => ({
             ...prev,
             messages: prev.messages.map(m => m.id === id ? {
@@ -140,7 +142,9 @@ export const useChatState = (storageKey: string = 'chatState') => {
                 text: newText,
                 ...(newTimestamp && { timestamp: newTimestamp }),
                 ...(newImage !== undefined && { image: newImage }),
-                ...(isOwn !== undefined && { isOwn })
+                ...(isOwn !== undefined && { isOwn }),
+                ...(isVoiceNote !== undefined && { isVoiceNote }),
+                ...(voiceDuration !== undefined && { voiceDuration }),
             } : m),
         }));
     }, []);
@@ -186,6 +190,15 @@ export const useChatState = (storageKey: string = 'chatState') => {
             people: data.participants.length > 0 ? data.participants : prev.people,
             messages: data.messages,
         }));
+    }, []);
+
+    const handleSmartFill = useCallback((data: ParsedChat) => {
+        setChatState(prev => ({
+            ...prev,
+            people: data.participants.length > 0 ? data.participants : prev.people,
+            messages: data.messages,
+        }));
+        toast.success("AI Conversation generated!");
     }, []);
 
     const randomizeState = useCallback(() => {
@@ -263,6 +276,7 @@ export const useChatState = (storageKey: string = 'chatState') => {
         handleResetState,
         handleLoadTemplate,
         handleBulkDataImport,
+        handleSmartFill,
         randomizeState,
     };
 };

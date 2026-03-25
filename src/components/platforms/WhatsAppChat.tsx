@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { VoiceNoteBubble } from "./VoiceNoteBubble";
 
 export function WhatsAppChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onRemoveMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
@@ -77,19 +78,34 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
                       message.isOwn ? ownBubble : otherBubble
                     )} style={{ wordBreak: 'break-word' }}>
                       {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-                      <div className="flex items-end gap-2 flex-wrap min-w-[60px] justify-between">
-                        <span className={cn("leading-[1.35] pt-0.5", appearance.darkMode ? "text-white" : "text-black")}>
-                          {message.text}
-                        </span>
-                        <span className={cn("text-[11px] flex items-center gap-0.5 ml-auto translate-y-0.5", appearance.darkMode ? "text-[#8696a0]" : "text-[#999]")}>
-                          {formatTime(message.timestamp, appearance.use24HourFormat ?? false)}
-                          {message.isOwn && (
-                            <span className="ml-0.5">
-                              <CheckCheck className={cn("w-4 h-4", "text-[#53bdeb]")} />
-                            </span>
-                          )}
-                        </span>
-                      </div>
+                      {message.isVoiceNote ? (
+                        <VoiceNoteBubble
+                          duration={message.voiceDuration || "0:12"}
+                          isOwn={message.isOwn}
+                          platform="whatsapp"
+                          darkMode={appearance.darkMode}
+                          timestamp={appearance.showTimestamps ? formatTime(message.timestamp, appearance.use24HourFormat ?? false) : undefined}
+                          senderAvatar={people.find(p => p.id === message.senderId)?.avatar}
+                        />
+                      ) : (
+                        <div className="flex items-end gap-1.5">
+                          <span className={cn(
+                            "text-[15px] leading-[1.375] break-words whitespace-pre-wrap flex-1",
+                            appearance.darkMode ? "text-[#e9edef]" : "text-black"
+                          )}>
+                            {message.text}
+                          </span>
+                          <span className={cn(
+                            "flex items-center gap-0.5 text-[11px] leading-none shrink-0 mb-[1px]",
+                            appearance.darkMode ? "text-[#8696a0]" : "text-[#667781]"
+                          )}>
+                            {appearance.showTimestamps && formatTime(message.timestamp, appearance.use24HourFormat ?? false)}
+                            {message.isOwn && (
+                              <CheckCheck className="w-[15px] h-[15px] text-[#53bdeb] shrink-0" />
+                            )}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align={message.isOwn ? "end" : "start"} className="w-40">

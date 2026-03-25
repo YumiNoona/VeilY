@@ -24,6 +24,7 @@ const Index = () => {
     handleResetState,
     handleLoadTemplate,
     handleBulkDataImport,
+    handleSmartFill,
     randomizeState,
   } = useChatState('chatState');
 
@@ -37,6 +38,7 @@ const Index = () => {
 
   const { setDownloadModalOpen } = useAuth();
   const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
+  const [isAnimating, setIsAnimating] = useState(false);
   const chatPreviewRef = useRef<HTMLDivElement>(null);
   const { copyScreenshot } = useScreenshot(chatPreviewRef);
 
@@ -60,6 +62,7 @@ const Index = () => {
         onTemplateLoad={handleLoadTemplate}
         onRandomize={randomizeState}
         onBulkImport={handleBulkDataImport}
+        onSmartFill={handleSmartFill}
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
@@ -77,6 +80,7 @@ const Index = () => {
             onRemoveMessage={handleRemoveMessage}
             onUpdatePerson={handleUpdatePerson}
             onUpdateAppearance={handleAppearanceChange}
+            isAnimating={isAnimating}
           />
         </div>
 
@@ -85,6 +89,8 @@ const Index = () => {
           onViewChange={setDeviceView}
           onDownload={() => setDownloadModalOpen(true)}
           onCopy={copyScreenshot}
+          isAnimating={isAnimating}
+          onToggleAnimation={() => setIsAnimating(!isAnimating)}
         />
       </main>
       <DownloadModal previewRef={chatPreviewRef} />

@@ -24,6 +24,7 @@ const AIChat = () => {
     handleResetState,
     handleLoadTemplate,
     handleBulkDataImport,
+    handleSmartFill,
     randomizeState,
   } = useChatState('aiChatState');
 
@@ -38,6 +39,7 @@ const AIChat = () => {
   }, [chatState.platform, handlePlatformChange]);
 
   const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
+  const [isAnimating, setIsAnimating] = useState(false);
   const chatPreviewRef = useRef<HTMLDivElement>(null);
   const { copyScreenshot } = useScreenshot(chatPreviewRef);
 
@@ -62,6 +64,7 @@ const AIChat = () => {
         onTemplateLoad={handleLoadTemplate}
         onRandomize={randomizeState}
         onBulkImport={handleBulkDataImport}
+        onSmartFill={handleSmartFill}
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
@@ -80,6 +83,7 @@ const AIChat = () => {
             onRemoveMessage={handleRemoveMessage}
             onUpdatePerson={handleUpdatePerson}
             onUpdateAppearance={handleAppearanceChange}
+            isAnimating={isAnimating}
           />
         </div>
 
@@ -88,6 +92,8 @@ const AIChat = () => {
           onViewChange={setDeviceView}
           onDownload={() => setDownloadModalOpen(true)}
           onCopy={copyScreenshot}
+          isAnimating={isAnimating}
+          onToggleAnimation={() => setIsAnimating(!isAnimating)}
         />
       </main>
       <DownloadModal previewRef={chatPreviewRef} />

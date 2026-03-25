@@ -10,7 +10,11 @@ import { PeopleSection } from "./sidebar/sections/PeopleSection";
 import { MessagesSection } from "./sidebar/sections/MessagesSection";
 import { AppearanceSection } from "./sidebar/sections/AppearanceSection";
 import { AIModelSection } from "./sidebar/sections/AIModelSection";
+import { CallSection } from "./sidebar/sections/CallSection";
 import { CHAT_TEMPLATES, AI_CHAT_TEMPLATES } from "@/lib/templates";
+import { SmartFillModal } from "./modals/SmartFillModal";
+import { useAuth } from "@/contexts/AuthContext";
+import { Sparkles } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -23,7 +27,14 @@ import {
 
 interface SidebarProps {
   chatState: ChatState;
-  mode?: 'default' | 'ai'; // Add mode prop
+  mode?: 'default' | 'ai' | 'call'; 
+  callState?: any;
+  onCallUpdateDuration?: (d: string) => void;
+  onCallAddParticipant?: (p: any) => void;
+  onCallUpdateParticipant?: (id: string, updates: any) => void;
+  onCallRemoveParticipant?: (id: string) => void;
+  onCallToggleSignal?: () => void;
+  onCallToggleRecording?: () => void;
   onPlatformChange: (platform: ChatState['platform']) => void;
   onChatTypeChange: (type: ChatType) => void;
   onAddMessage: (text: string, isOwn: boolean, image?: string) => void;
@@ -39,6 +50,7 @@ interface SidebarProps {
   onReset?: () => void;
   onRandomize?: () => void;
   onBulkImport?: (data: any) => void;
+  onSmartFill?: (data: any) => void; // New prop for AI Smart Fill
 }
 
 export function Sidebar({
@@ -59,7 +71,25 @@ export function Sidebar({
   onReset,
   onRandomize,
   onBulkImport,
+  onSmartFill, 
+  callState,
+  onCallUpdateDuration,
+  onCallAddParticipant,
+  onCallUpdateParticipant,
+  onCallRemoveParticipant,
+  onCallToggleSignal,
+  onCallToggleRecording,
 }: SidebarProps) {
+  const { plan, setUpgradeModalOpen } = useAuth();
+  const [isSmartFillOpen, setIsSmartFillOpen] = React.useState(false);
+
+  const handleSmartFillClick = () => {
+    if (plan === 'free') {
+      setUpgradeModalOpen(true);
+      return;
+    }
+    setIsSmartFillOpen(true);
+  };
 
   return (
     <TooltipProvider>
@@ -169,19 +199,56 @@ export function Sidebar({
                 <Wand2 className="w-4 h-4" />
               </Button>
             )}
+
+            {onSmartFill && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                onClick={handleSmartFillClick}
+                title="AI Smart Fill (Premium)"
+              >
+                <Sparkles className="w-4 h-4 fill-amber-500/20" />
+              </Button>
+            )}
           </div>
         </div>
 
+        <SmartFillModal 
+          isOpen={isSmartFillOpen}
+          onClose={() => setIsSmartFillOpen(false)}
+          onSuccess={onSmartFill || (() => {})}
+          platform={chatState.platform}
+        />
+
         <div className="flex-1 overflow-y-auto p-2.5 space-y-2 scrollbar-thin">
-          <Accordion type="multiple" defaultValue={mode === 'ai' ? ["app-model", "messages", "appearance"] : ["app", "type", "people", "messages", "appearance"]} className="space-y-2">
+          <Accordion type="multiple" defaultValue={
+            mode === 'ai' ? ["app-model", "messages", "appearance"] : 
+            mode === 'call' ? ["call-participants", "app", "appearance"] :
+            ["app", "type", "people", "messages", "appearance"]
+          } className="space-y-2">
+
+            {mode === 'call' && callState && (
+              <CallSection
+                state={callState}
+                onUpdateDuration={onCallUpdateDuration || (() => {})}
+                onAddParticipant={onCallAddParticipant || (() => {})}
+                onUpdateParticipant={onCallUpdateParticipant || (() => {})}
+                onRemoveParticipant={onCallRemoveParticipant || (() => {})}
+                onToggleSignal={onCallToggleSignal || (() => {})}
+                onToggleRecording={onCallToggleRecording || (() => {})}
+              />
+            )}
+
+            {(mode === 'default' || mode === 'call') && (
+              <AppSection
+                platform={chatState.platform}
+                onPlatformChange={onPlatformChange}
+              />
+            )}
 
             {mode === 'default' && (
               <>
-                <AppSection
-                  platform={chatState.platform}
-                  onPlatformChange={onPlatformChange}
-                />
-
                 <TypeSection
                   chatType={chatState.chatType}
                   onChatTypeChange={onChatTypeChange}
@@ -206,16 +273,18 @@ export function Sidebar({
               />
             )}
 
-            <MessagesSection
-              messages={chatState.messages}
-              people={chatState.people}
-              mode={mode}
-              onAddMessage={onAddMessage}
-              onRemoveMessage={onRemoveMessage}
-              onUpdateMessage={onUpdateMessage}
-              onReorderMessages={onReorderMessages}
-              onBulkImport={onBulkImport}
-            />
+            {mode !== 'call' && (
+              <MessagesSection
+                messages={chatState.messages}
+                people={chatState.people}
+                mode={mode}
+                onAddMessage={onAddMessage}
+                onRemoveMessage={onRemoveMessage}
+                onUpdateMessage={onUpdateMessage}
+                onReorderMessages={onReorderMessages}
+                onBulkImport={onBulkImport}
+              />
+            )}
 
             <AppearanceSection
               appearance={chatState.appearance}

@@ -61,26 +61,6 @@ Accelerate your workflow with one-click data ingestion:
 
 ---
 
-## 🏗️ Technical Architecture
-
-VEILY uses an **Atomic State** architecture where UI configurations are isolated from the rendering engine.
-
-```mermaid
-graph TD
-    A[Sidebar Controls] -->|Isolated Store| B{Preview Router}
-    B -->|useChatState| C(Standard Chat)
-    B -->|useAiChatState| D(AI Studio)
-    B -->|useStoriesState| E(Stories/Social)
-    F[AuthContext] -->|Stripe Tier| B
-    G[html2canvas] -->|Export| H[High-Res PNG]
-```
-
-### Key Architectural Features:
-- **Independent State Isolation**: Switching between Chat and AI Chat preserves independent histories and settings using segregated storage keys.
-- **Theme-Aware Watermarks**: Dynamic SVG watermarking that automatically adjusts contrast (White/Ash) based on dark/light mode detection.
-- **Secure Admin Core**: A hardened administrative "backdoor" protected by SHA-256 hashing, granting full premium access for testing without needing Stripe transactions.
-
----
 
 ## 📦 Getting Started
 
@@ -106,21 +86,6 @@ graph TD
    npm run electron # Start Desktop App
    npm run dist     # Build for Windows (.exe)
    ```
-
-## 💎 Subscription & Tiered Features
-
-VEILY uses a tiered access model to balance platform accessibility with premium features.
-
-| Feature | Free | Pro | Premium |
-| :--- | :---: | :---: | :---: |
-| **Standard Platforms (15+)** | ✅ | ✅ | ✅ |
-| **Stories & Social Feed** | ❌ (View Only) | ✅ | ✅ |
-| **AI Chat & Email Studio** | ❌ | ✅ | ✅ |
-| **Watermark Removal** | ❌ | ✅ | ✅ |
-| **Daily Export Limit** | 3 | 20 | Unlimited |
-| **Video Export** | ❌ | 5/mo | Unlimited |
-| **Bulk Import (.txt/.json)** | ❌ | ❌ | ✅ |
-| **Priority Support** | ❌ | ❌ | ✅ |
 
 ---
 

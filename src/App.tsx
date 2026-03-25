@@ -15,6 +15,7 @@ const UpgradeSuccess = lazy(() => import("./pages/UpgradeSuccess"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Stories = lazy(() => import("./pages/Stories"));
 const Email = lazy(() => import("./pages/Email"));
+const GroupCall = lazy(() => import("./pages/GroupCall"));
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());

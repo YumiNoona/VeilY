@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { EditableText } from "@/components/ui/EditableText";
 import { PlatformChatProps, getSenderAvatar, getWallpaperStyle } from "./shared";
+import { VoiceNoteBubble } from "./VoiceNoteBubble";
 
 export function DiscordChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
@@ -47,13 +48,24 @@ export function DiscordChat({ messages, people, activePerson, chatType, appearan
                   {appearance.showTimestamps && <span className={cn("text-[11px]", appearance.darkMode ? "text-[#949ba4]" : "text-[#5c5e66]")}>{format(message.timestamp instanceof Date ? message.timestamp : new Date(message.timestamp), appearance.use24HourFormat ? 'MM/dd/yyyy HH:mm' : 'MM/dd/yyyy h:mm a')}</span>}
                 </div>
                 {message.image && <img src={message.image} alt="" className="max-w-[200px] rounded-lg mt-1" />}
-                <p className={cn("text-[15px] leading-[1.375rem] break-words", subtextColor)}>
-                  <EditableText
-                    value={message.text}
-                    onSave={(newText) => onUpdateMessage?.(message.id, newText)}
-                    multiline
-                  />
-                </p>
+                {message.isVoiceNote ? (
+                  <div className="mt-1">
+                    <VoiceNoteBubble
+                      duration={message.voiceDuration || "0:12"}
+                      isOwn={message.isOwn}
+                      platform="discord"
+                      darkMode={appearance.darkMode}
+                    />
+                  </div>
+                ) : (
+                  <p className={cn("text-[15px] leading-[1.375rem] break-words", subtextColor)}>
+                    <EditableText
+                      value={message.text}
+                      onSave={(newText) => onUpdateMessage?.(message.id, newText)}
+                      multiline
+                    />
+                  </p>
+                )}
               </div>
             </div>
           );

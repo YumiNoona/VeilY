@@ -3,7 +3,7 @@ import { Message, Person } from "@/types/chat";
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { 
     MessageCircle, X, ImagePlus, Plus, User, Clock, Trash2, 
-    Check, Bot, GripVertical, RefreshCw, FileUp, Crown 
+    Check, Bot, GripVertical, RefreshCw, FileUp, Crown, Mic 
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { parseWhatsApp, parseTelegram, ParsedChat } from "@/lib/parsers";
@@ -35,7 +35,7 @@ interface MessagesSectionProps {
     messages: Message[];
     people: Person[];
     mode?: 'default' | 'ai';
-    onAddMessage: (text: string, isOwn: boolean, image?: string) => void;
+    onAddMessage: (text: string, isOwn: boolean, image?: string, isVoiceNote?: boolean, voiceDuration?: string) => void;
     onRemoveMessage: (id: string) => void;
     onUpdateMessage: (id: string, newText: string, newTimestamp?: Date, newImage?: string, isOwn?: boolean) => void;
     onReorderMessages?: (newMessages: Message[]) => void;
@@ -58,6 +58,8 @@ export function MessagesSection({
     const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
     const [editingTimestampId, setEditingTimestampId] = useState<string | null>(null);
     const [messageImage, setMessageImage] = useState<string | null>(null);
+    const [isVoiceNote, setIsVoiceNote] = useState(false);
+    const [voiceDuration, setVoiceDuration] = useState("0:12");
 
     const imageInputRef = useRef<HTMLInputElement>(null);
     const bulkImportRef = useRef<HTMLInputElement>(null);
@@ -85,10 +87,17 @@ export function MessagesSection({
     };
 
     const handleSendMessage = () => {
-        if (newMessage.trim() || messageImage) {
-            onAddMessage(newMessage.trim(), isOwnMessage, messageImage || undefined);
+        if (newMessage.trim() || messageImage || isVoiceNote) {
+            onAddMessage(
+                isVoiceNote ? "" : newMessage.trim(), 
+                isOwnMessage, 
+                messageImage || undefined,
+                isVoiceNote,
+                voiceDuration
+            );
             setNewMessage("");
             setMessageImage(null);
+            setIsVoiceNote(false);
         }
     };
 
@@ -256,13 +265,22 @@ export function MessagesSection({
                     )}
 
                     <div className="flex gap-1.5">
-                        <Input
-                            placeholder={mode === 'ai' ? "Add a message..." : "Type a message..."}
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                            className="flex-1 h-9 text-sm"
-                        />
+                        {isVoiceNote ? (
+                            <Input
+                                placeholder="Duration (e.g. 0:45)"
+                                value={voiceDuration}
+                                onChange={(e) => setVoiceDuration(e.target.value)}
+                                className="flex-1 h-9 text-sm border-blue-400 focus:ring-blue-400"
+                            />
+                        ) : (
+                            <Input
+                                placeholder={mode === 'ai' ? "Add a message..." : "Type a message..."}
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                                className="flex-1 h-9 text-sm"
+                            />
+                        )}
                         <input
                             ref={imageInputRef}
                             type="file"
@@ -271,14 +289,26 @@ export function MessagesSection({
                             onChange={handleImageSelect}
                         />
                         {mode === 'default' && (
-                            <Button
-                                size="icon"
-                                variant="outline"
-                                onClick={() => imageInputRef.current?.click()}
-                                className="flex-shrink-0 h-9 w-9"
-                            >
-                                <ImagePlus className="w-4 h-4" />
-                            </Button>
+                            <div className="flex gap-1 flex-shrink-0">
+                                <Button
+                                    size="icon"
+                                    variant="outline"
+                                    onClick={() => imageInputRef.current?.click()}
+                                    className="h-9 w-9"
+                                    disabled={isVoiceNote}
+                                >
+                                    <ImagePlus className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    size="icon"
+                                    variant={isVoiceNote ? "default" : "outline"}
+                                    onClick={() => setIsVoiceNote(!isVoiceNote)}
+                                    className={cn("h-9 w-9", isVoiceNote && "bg-blue-500 hover:bg-blue-600")}
+                                    title="Voice Note"
+                                >
+                                    <Mic className="w-4 h-4" />
+                                </Button>
+                            </div>
                         )}
                         <Button size="icon" onClick={handleSendMessage} className="flex-shrink-0 h-9 w-9">
                             <Plus className="w-4 h-4" />

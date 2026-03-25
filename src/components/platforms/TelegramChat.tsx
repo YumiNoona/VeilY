@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { EditableText } from "@/components/ui/EditableText";
 import { PlatformChatProps, getSenderName, formatTime, getWallpaperStyle } from "./shared";
+import { VoiceNoteBubble } from "./VoiceNoteBubble";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,12 +76,22 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
                 <div className={cn("max-w-[85%] px-3 py-1.5 rounded-xl cursor-pointer group hover:brightness-95 transition-all outline-none relative", message.isOwn ? cn(ownBubble, "rounded-tr-[4px]") : cn(otherBubble, "rounded-tl-[4px]"))} style={{ wordBreak: 'break-word' }}>
                   {chatType === 'group' && !message.isOwn && <p className="text-[13px] font-medium text-[#6ab2f2] mb-0.5">{getSenderName(message.senderId, people)}</p>}
                   {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-                  <div className="flex items-end gap-2">
-                    <p className={cn("text-[15px] leading-[20px]", msgTextColor)}>
-                      {message.text}
-                    </p>
-                    {appearance.showTimestamps && <span className={cn("text-[11px] whitespace-nowrap", timeColor)}>{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
-                  </div>
+                  {message.isVoiceNote ? (
+                    <VoiceNoteBubble
+                      duration={message.voiceDuration || "0:06"}
+                      isOwn={message.isOwn}
+                      platform="telegram"
+                      darkMode={appearance.darkMode}
+                      timestamp={appearance.showTimestamps ? formatTime(message.timestamp, appearance.use24HourFormat ?? false) : undefined}
+                    />
+                  ) : (
+                    <div className="flex items-end gap-2">
+                      <p className={cn("text-[15px] leading-[20px]", msgTextColor)}>
+                        {message.text}
+                      </p>
+                      {appearance.showTimestamps && <span className={cn("text-[11px] whitespace-nowrap", timeColor)}>{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
+                    </div>
+                  )}
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align={message.isOwn ? "end" : "start"} className="w-40">

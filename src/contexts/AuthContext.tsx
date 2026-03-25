@@ -8,6 +8,8 @@ interface AuthContextType {
     plan: 'free' | 'pro' | 'premium';
     downloadsUsed: number;
     videosUsed: number;
+    aiFillsUsed: number;
+    lastAiFillDate: string | null;
     avatarUrl: string | null;
     fullName: string | null;
     loading: boolean;
@@ -24,6 +26,7 @@ interface AuthContextType {
     updateProfile: (updates: { avatar_url?: string; full_name?: string }) => Promise<void>;
     incrementDownloads: () => Promise<void>;
     incrementVideos: () => Promise<void>;
+    incrementAIFills: () => Promise<void>;
     loginWithAdmin: (email: string, pass: string) => Promise<boolean>;
     triedBulkImport: boolean;
     markBulkImportAsTried: () => void;
@@ -34,6 +37,8 @@ const AuthContext = createContext<AuthContextType>({
     plan: 'free',
     downloadsUsed: 0,
     videosUsed: 0,
+    aiFillsUsed: 0,
+    lastAiFillDate: null,
     avatarUrl: null,
     fullName: null,
     loading: true,
@@ -50,6 +55,7 @@ const AuthContext = createContext<AuthContextType>({
     updateProfile: async () => {},
     incrementDownloads: async () => {},
     incrementVideos: async () => {},
+    incrementAIFills: async () => {},
     loginWithAdmin: async () => false,
     triedBulkImport: false,
     markBulkImportAsTried: () => {},
@@ -60,6 +66,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [plan, setPlan] = useState<'free' | 'pro' | 'premium'>('free');
     const [downloadsUsed, setDownloadsUsed] = useState<number>(0);
     const [videosUsed, setVideosUsed] = useState<number>(0);
+    const [aiFillsUsed, setAiFillsUsed] = useState<number>(0);
+    const [lastAiFillDate, setLastAiFillDate] = useState<string | null>(null);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [fullName, setFullName] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -96,7 +104,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             
             const { data, error } = await supabase
                 .from('users')
-                .select('plan, downloads_used, videos_used, avatar_url, full_name')
+                .select('plan, downloads_used, videos_used, ai_fills_used, last_ai_fill_date, avatar_url, full_name')
                 .eq('id', currentUser.id)
                 .single();
 
@@ -104,7 +112,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 if (isMounted.current) {
                     setPlan(data.plan as 'free' | 'pro' | 'premium');
                     setDownloadsUsed(data.downloads_used || 0);
+                    setDownloadsUsed(data.downloads_used || 0);
                     setVideosUsed(data.videos_used || 0);
+
+                    // Daily AI Limit Reset Logic
+                    const today = new Date().toISOString().split('T')[0];
+                    if (data.last_ai_fill_date !== today) {
+                        setAiFillsUsed(0);
+                        setLastAiFillDate(today);
+                        // Silently update the date in DB to today
+                        supabase.from('users').update({ 
+                            last_ai_fill_date: today, 
+                            ai_fills_used: 0 
+                        }).eq('id', currentUser.id).then();
+                    } else {
+                        setAiFillsUsed(data.ai_fills_used || 0);
+                        setLastAiFillDate(data.last_ai_fill_date);
+                    }
+
                     // DB values take precedence if they exist
                     if (data.avatar_url) setAvatarUrl(data.avatar_url);
                     if (data.full_name) setFullName(data.full_name);
@@ -128,6 +153,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setPlan('free');
         setDownloadsUsed(0);
         setVideosUsed(0);
+        setAiFillsUsed(0);
+        setLastAiFillDate(null);
         setFullName(null);
         setAvatarUrl(null);
         toast.success("Successfully logged out");
@@ -153,6 +180,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             .eq('id', user.id);
         
         if (!error) setVideosUsed(newVal);
+    };
+
+    const incrementAIFills = async () => {
+        if (!user) return;
+        const { data, error } = await supabase.rpc('increment_ai_fills', { 
+            target_user_id: user.id 
+        });
+        
+        if (!error && data !== null) {
+            setAiFillsUsed(data);
+        }
     };
 
     const loginWithAdmin = async (email: string, pass: string) => {
@@ -185,6 +223,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setFullName('Rushikesh Ingale (Admin)');
             setDownloadsUsed(0);
             setVideosUsed(0);
+            setAiFillsUsed(0);
             setAuthModalOpen(false);
             return true;
         }
@@ -255,6 +294,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         setPlan('free');
                         setDownloadsUsed(0);
                         setVideosUsed(0);
+                        setAiFillsUsed(0);
                     }
                 }
             } catch (err) {
@@ -285,6 +325,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     setPlan('free');
                     setDownloadsUsed(0);
                     setVideosUsed(0);
+                    setAiFillsUsed(0);
                 }
             }
             if (isMounted.current) setLoading(false);
@@ -297,13 +338,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <AuthContext.Provider value={{ 
-            user, plan, downloadsUsed, videosUsed, avatarUrl, fullName, loading,
+            user, plan, downloadsUsed, videosUsed, aiFillsUsed, lastAiFillDate, avatarUrl, fullName, loading,
             isAuthModalOpen, setAuthModalOpen,
             isUpgradeModalOpen, setUpgradeModalOpen,
             isProfileModalOpen, setProfileModalOpen,
             isDownloadModalOpen, setDownloadModalOpen,
             refetchUserStatus, signOut, updateProfile,
-            incrementDownloads, incrementVideos, loginWithAdmin,
+            incrementDownloads, incrementVideos, incrementAIFills, loginWithAdmin,
             triedBulkImport, markBulkImportAsTried
         }}>
             {children}

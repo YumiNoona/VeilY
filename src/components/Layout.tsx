@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Share2, Bot, MessageCircle, Crown, GalleryVerticalEnd, AtSign } from "lucide-react";
+import { MessageSquare, Share2, Bot, MessageCircle, Crown, GalleryVerticalEnd, AtSign, Phone } from "lucide-react";
 import { AuthModal } from "@/components/modals/AuthModal";
 import { UpgradeModal } from "@/components/modals/UpgradeModal";
 import { ProfileModal } from "@/components/modals/ProfileModal";
@@ -20,6 +20,7 @@ export const Layout = () => {
         { id: "comments", label: "Comments", path: "/comments", icon: MessageCircle },
         { id: "stories", label: "Stories", path: "/stories", icon: GalleryVerticalEnd },
         { id: "email", label: "Email", path: "/email", icon: AtSign },
+        { id: "group-call", label: "Call", path: "/group-call", icon: Phone },
     ];
 
     // Dynamic page title per route

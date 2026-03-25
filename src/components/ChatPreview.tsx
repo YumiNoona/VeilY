@@ -1,7 +1,7 @@
 import { Message, Person, Platform, ChatType, DeviceView } from "@/types/chat";
 import { cn } from "@/lib/utils";
 import { PLATFORM_CHAT_MAP } from "./platforms/index";
-import { forwardRef, useMemo } from "react";
+import { forwardRef, useMemo, useState, useEffect } from "react";
 import { Watermark } from "@/components/Watermark";
 import { AppearanceSettings } from "@/types/chat";
 import { Signal, Wifi } from "lucide-react";
@@ -19,6 +19,7 @@ interface ChatPreviewProps {
   onRemoveMessage?: (id: string) => void;
   onUpdatePerson?: (person: Person) => void;
   onUpdateAppearance?: (appearance: AppearanceSettings) => void;
+  isAnimating?: boolean;
 }
 
 const DeviceStatusBar = ({ appearance }: { appearance: AppearanceSettings }) => {
@@ -45,8 +46,58 @@ const DeviceStatusBar = ({ appearance }: { appearance: AppearanceSettings }) => 
   );
 };
 
+const TypingIndicator = ({ platform, appearance }: { platform: Platform, appearance: AppearanceSettings }) => {
+  return (
+    <div className={cn(
+      "flex items-center gap-1 p-2 rounded-2xl w-fit animate-pulse",
+      appearance.darkMode ? "bg-zinc-800" : "bg-zinc-100"
+    )}>
+      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce [animation-delay:-0.3s]" />
+      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce [animation-delay:-0.15s]" />
+      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" />
+    </div>
+  );
+};
+
 export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
-  ({ platform, messages, people, activePerson, chatType, deviceView, appearance, aiModel, onUpdateMessage, onRemoveMessage, onUpdatePerson }, ref) => {
+  ({ platform, messages, people, activePerson, chatType, deviceView, appearance, aiModel, onUpdateMessage, onRemoveMessage, onUpdatePerson, isAnimating }, ref) => {
+    const [visibleCount, setVisibleCount] = useState(isAnimating ? 0 : messages.length);
+    const [isTyping, setIsTyping] = useState(false);
+
+    useEffect(() => {
+      if (!isAnimating) {
+        setVisibleCount(messages.length);
+        setIsTyping(false);
+        return;
+      }
+
+      setVisibleCount(0);
+      let current = 0;
+
+      const playNext = async () => {
+        if (current >= messages.length) return;
+
+        const nextMsg = messages[current];
+        
+        // Show typing indicator if it's not our own message
+        if (!nextMsg.isOwn) {
+          setIsTyping(true);
+          await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000));
+          setIsTyping(false);
+        } else {
+          await new Promise(r => setTimeout(r, 500));
+        }
+
+        setVisibleCount(prev => prev + 1);
+        current++;
+        playNext();
+      };
+
+      playNext();
+    }, [isAnimating, messages]);
+
+    const visibleMessages = useMemo(() => messages.slice(0, visibleCount), [messages, visibleCount]);
+
     const showFrame = appearance.showDeviceFrame ?? true;
     const showStatusBar = appearance.showDeviceStatusBar ?? true;
 
@@ -58,7 +109,7 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
     }, [platform]);
 
     const chatProps = useMemo(() => ({
-      messages,
+      messages: visibleMessages,
       people,
       activePerson,
       chatType,
@@ -67,7 +118,7 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
       onUpdateMessage,
       onRemoveMessage,
       onUpdatePerson,
-    }), [messages, people, activePerson, chatType, appearance, aiModel, onUpdateMessage, onRemoveMessage, onUpdatePerson]);
+    }), [visibleMessages, people, activePerson, chatType, appearance, aiModel, onUpdateMessage, onRemoveMessage, onUpdatePerson]);
 
     return (
       <div
@@ -83,6 +134,11 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
           {showStatusBar && <DeviceStatusBar appearance={appearance} />}
           <div className="flex-1 overflow-hidden relative">
             <PlatformChat {...chatProps} />
+            {isTyping && (
+              <div className="absolute bottom-4 left-4 z-10 animate-in slide-in-from-bottom-2 fade-in">
+                <TypingIndicator platform={platform} appearance={appearance} />
+              </div>
+            )}
           </div>
           <Watermark isDark={appearance.darkMode} />
         </div>

@@ -3,17 +3,19 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 
-console.group('🛡️ Supabase Debug');
-console.log('URL:', supabaseUrl);
-console.log('Key Length:', supabaseAnonKey?.length);
-console.log('Key Start:', supabaseAnonKey?.substring(0, 15));
-console.groupEnd();
+// FIX: detectSessionInUrl must be FALSE in Electron.
+// When true, Supabase tries to parse auth tokens from the URL hash.
+// In Electron the URL is file:///dist/index.html — there are no hash tokens,
+// but the parser still runs and can corrupt the auth state on startup,
+// causing sign-in to appear to succeed but the session never sticking.
+// On web this stays true so magic links / OAuth callbacks work correctly.
+const isElectron = typeof window !== 'undefined' && !!(window as any).electronAPI;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     storage: localStorage,
     autoRefreshToken: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: !isElectron,
   }
 });

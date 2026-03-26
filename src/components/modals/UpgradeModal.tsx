@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Loader2, Crown, Sparkles, Check, Heart, Star, Zap, ArrowRight, X } from 'lucide-react';
+import { Loader2, Crown, Sparkles, Check, ArrowRight, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from "@/lib/utils";
 import { DoodleBackground } from '@/components/icons/DoodleBackground';
@@ -69,7 +69,18 @@ export const UpgradeModal = () => {
             }
 
             const { url } = await response.json();
-            window.location.href = url;
+
+            // FIX: In Electron, window.location.href = url navigates the app window
+            // to stripe.com, which crashes the app (file:// → https:// navigation is
+            // blocked, or the Stripe page loads inside Electron with no way back).
+            // Use shell.openExternal so Stripe opens in the user's default browser.
+            // The will-navigate guard in main.js also catches this as a safety net.
+            if ((window as any).electronAPI?.openExternal) {
+                (window as any).electronAPI.openExternal(url);
+            } else {
+                // Web: open in new tab so user doesn't lose the app
+                window.open(url, '_blank');
+            }
 
         } catch (err: any) {
             toast.error(err.message || 'Failed to initiate checkout.');
@@ -83,13 +94,11 @@ export const UpgradeModal = () => {
             <DialogContent hideClose className="sm:max-w-[850px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-2xl">
                 <div className="relative flex flex-col h-full bg-white max-h-[90vh] overflow-y-auto scrollbar-hide">
 
-                    {/* Doodle Background */}
                     <div className="absolute inset-0 z-0 text-zinc-950 opacity-[0.08]">
                         <DoodleBackground />
                         <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/60 to-white/95" />
                     </div>
 
-                    {/* Close Button */}
                     <button
                         onClick={() => setUpgradeModalOpen(false)}
                         className="absolute top-4 right-4 z-50 p-2.5 rounded-full bg-white/80 backdrop-blur-sm border border-zinc-200 shadow-sm hover:bg-zinc-100 transition-all active:scale-95 group"
@@ -99,7 +108,6 @@ export const UpgradeModal = () => {
                     </button>
 
                     <div className="relative z-10 p-8 space-y-8">
-                        {/* Header */}
                         <div className="flex flex-col items-center text-center space-y-4">
                             <div className="w-16 h-16 bg-zinc-950 flex items-center justify-center rounded-2xl shadow-xl shadow-zinc-200 rotate-6">
                                 <Sparkles className="w-9 h-9 text-white fill-white" />
@@ -114,7 +122,6 @@ export const UpgradeModal = () => {
                             </div>
                         </div>
 
-                        {/* Plans */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
                             {PLANS.map((p) => {
                                 const Icon = p.icon;
@@ -185,7 +192,7 @@ export const UpgradeModal = () => {
                                         </Button>
                                     </div>
                                 );
-                            })}
+            })}
                         </div>
 
                         {!user && (

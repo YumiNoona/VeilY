@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Loader2, Mail, X, ArrowRight, ArrowLeft, KeyRound, CheckCheck } from 'lucide-react';
+import { Loader2, Mail, X, ArrowRight, KeyRound, CheckCheck } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { getRedirectUrl } from '@/lib/electron-utils';
 import { cn } from '@/lib/utils';
 
 type AuthStep = "form" | "otp";
@@ -34,7 +33,6 @@ export const AuthModal = () => {
         }
     }, [isAuthModalOpen]);
 
-    // Cooldown Timer
     useEffect(() => {
         if (cooldown <= 0) return;
         const timer = setInterval(() => {
@@ -51,20 +49,18 @@ export const AuthModal = () => {
         setError(null);
 
         try {
-            const { data, error: signInError } = await supabase.auth.signInWithPassword({
+            const { error: signInError } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
 
             if (signInError) {
-                // Bug 4: Catch "Email not confirmed" and send OTP instead
                 if (signInError.message.includes("Email not confirmed")) {
                     const { error: otpError } = await supabase.auth.resend({
                         type: 'signup',
                         email: email,
                     });
                     if (otpError) throw otpError;
-                    
                     setStep("otp");
                     setCooldown(60);
                     toast.info("Email not verified. We've sent a new 6-digit code!");
@@ -91,14 +87,11 @@ export const AuthModal = () => {
         setError(null);
 
         try {
-            // Bug 3: Remove emailRedirectTo as it conflicts with OTP
-            const { data, error: signUpError } = await supabase.auth.signUp({
+            const { error: signUpError } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
-                    data: {
-                        full_name: fullName,
-                    }
+                    data: { full_name: fullName }
                 }
             });
 
@@ -130,7 +123,7 @@ export const AuthModal = () => {
 
             if (verifyError) throw verifyError;
 
-            // Bug 1 Safety: Manual upsert to public.users as backup for the DB trigger
+            // Safety net: ensure public.users row exists (DB trigger handles it, this is a backup)
             if (data.user) {
                 await supabase.from('users').upsert({
                     id: data.user.id,
@@ -156,9 +149,11 @@ export const AuthModal = () => {
         verifyCode(otp);
     };
 
-    // Auto-submit when code length matches common Supabase OTP lengths (6 or 8)
+    // FIX: Auto-submit at 6 digits — Supabase sends 6-digit OTP codes.
+    // The previous value of 8 meant auto-submit NEVER fired, making the UX
+    // feel broken (user types 6 digits, nothing happens).
     useEffect(() => {
-        if (otp.length === 8 && !loading) {
+        if (otp.length === 6 && !loading) {
             verifyCode(otp);
         }
     }, [otp]);
@@ -263,19 +258,21 @@ export const AuthModal = () => {
                 ) : (
                     <form onSubmit={handleVerifyOtp} className="space-y-4 relative z-10">
                         <div className="group space-y-1.5">
-                            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Verification Code</label>
+                            {/* FIX: maxLength=6, placeholder=000000 — Supabase sends 6-digit codes */}
+                            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">6-Digit Code</label>
                             <Input
                                 type="text"
-                                maxLength={8}
-                                placeholder="00000000"
+                                maxLength={6}
+                                placeholder="000000"
                                 value={otp}
                                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                                 required
+                                autoFocus
                                 className="h-12 border-zinc-100 bg-zinc-50 focus:bg-white rounded-xl transition-all text-sm font-mono tracking-[0.4rem] text-center font-bold"
                             />
                         </div>
 
-                        {error && <p className="text-xs text-red-500 font-bold ml-1 text-center font-medium">⚠️ {error}</p>}
+                        {error && <p className="text-xs text-red-500 font-bold ml-1 text-center">⚠️ {error}</p>}
 
                         <Button
                             type="submit"
@@ -284,6 +281,22 @@ export const AuthModal = () => {
                         >
                             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Verify Account <CheckCheck className="w-4 h-4" /></>}
                         </Button>
+
+                        <div className="text-center">
+                            <button
+                                type="button"
+                                disabled={cooldown > 0 || loading}
+                                onClick={async () => {
+                                    if (cooldown > 0) return;
+                                    await supabase.auth.resend({ type: 'signup', email });
+                                    setCooldown(60);
+                                    toast.success("Code resent!");
+                                }}
+                                className="text-xs text-zinc-400 font-medium hover:text-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            >
+                                {cooldown > 0 ? `Resend in ${cooldown}s` : "Didn't receive it? Resend"}
+                            </button>
+                        </div>
                     </form>
                 )}
             </div>

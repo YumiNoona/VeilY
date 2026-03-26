@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react'; // Re-saved to clear runtime error
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -71,13 +71,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [triedBulkImport, setTriedBulkImport] = useState<boolean>(false);
     
-    // Global Modal States for easy triggering
     const [isAuthModalOpen, setAuthModalOpen] = useState(false);
     const [isUpgradeModalOpen, setUpgradeModalOpen] = useState(false);
     const [isProfileModalOpen, setProfileModalOpen] = useState(false);
     const [isDownloadModalOpen, setDownloadModalOpen] = useState(false);
     
-    // Memory leak guard
     const isMounted = useRef(true);
 
     useEffect(() => {
@@ -88,7 +86,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const fetchUserStatus = async (currentUser: User) => {
-        // Set initial state from metadata if available
         if (currentUser.user_metadata?.full_name && !fullName) {
             setFullName(currentUser.user_metadata.full_name);
         }
@@ -96,7 +93,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setAvatarUrl(currentUser.user_metadata.avatar_url);
         }
 
-        // 3-count retry loop for async database trigger lag logic
         for (let i = 0; i < 3; i++) {
             if (!isMounted.current) return;
             
@@ -110,14 +106,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 if (isMounted.current) {
                     setPlan(data.plan as 'free' | 'pro' | 'premium');
                     setDownloadsUsed(data.downloads_used || 0);
+                    setDownloadsUsed(data.downloads_used || 0);
                     setVideosUsed(data.videos_used || 0);
 
-                    // Daily AI Limit Reset Logic
                     const today = new Date().toISOString().split('T')[0];
                     if (data.last_ai_fill_date !== today) {
                         setAiFillsUsed(0);
                         setLastAiFillDate(today);
-                        // Silently update the date in DB to today
                         supabase.from('users').update({ 
                             last_ai_fill_date: today, 
                             ai_fills_used: 0 
@@ -127,7 +122,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         setLastAiFillDate(data.last_ai_fill_date);
                     }
 
-                    // DB values take precedence if they exist
                     if (data.avatar_url) setAvatarUrl(data.avatar_url);
                     if (data.full_name) setFullName(data.full_name);
                 }
@@ -145,12 +139,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const signOut = async () => {
+        // FIX: Do NOT manually clear localStorage keys.
+        // The old code wiped sb-* keys AFTER supabase.auth.signOut() already cleaned up,
+        // which left the Supabase JS client's in-memory state pointing at storage that
+        // no longer existed. On the next sign-in the client would hit a broken PKCE
+        // code-verifier lookup and silently fail — exactly the Electron login bug.
+        // Let supabase.auth.signOut() own the cleanup; onAuthStateChange(SIGNED_OUT)
+        // fires and resets React state via the listener below.
         try {
             await supabase.auth.signOut();
+            toast.success("Successfully logged out");
         } catch (err) {
             console.error("Supabase signOut error:", err);
-        } finally {
-            // Force clear everything to ensure logout even if network/Supabase fails
+            // If the network call fails (offline, Electron, etc.), force-clear state manually
+            // but do NOT touch localStorage — let the Supabase client keep its own integrity.
             setUser(null);
             setPlan('free');
             setDownloadsUsed(0);
@@ -159,14 +161,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setLastAiFillDate(null);
             setFullName(null);
             setAvatarUrl(null);
-            
-            // Clear all Supabase related items from localStorage
-            Object.keys(localStorage).forEach(key => {
-                if (key.includes('sb-') || key.includes('supabase')) {
-                    localStorage.removeItem(key);
-                }
-            });
-            
             toast.success("Successfully logged out");
         }
     };
@@ -204,8 +198,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    
-    // Track Bulk Import trial
     useEffect(() => {
         const tried = localStorage.getItem('veily_tried_bulk_import') === 'true';
         setTriedBulkImport(tried);
@@ -220,7 +212,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (!user) throw new Error("No user found");
 
         try {
-            // Update Auth Metadata first as it's faster and acts as a fallback
             const { error: authError } = await supabase.auth.updateUser({
                 data: {
                     full_name: updates.full_name !== undefined ? updates.full_name : fullName,
@@ -229,7 +220,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             });
             if (authError) console.warn("Auth metadata update failed:", authError);
 
-            // Use upsert on the users table
             const { error: dbError } = await supabase
                 .from('users')
                 .upsert({
@@ -279,7 +269,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
         };
 
-        // Guard against frozen Supabase edge nodes hanging startup
         const timeoutFailsafe = setTimeout(() => {
             if (isMounted.current && loading) {
                 setLoading(false);

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, shell, session } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 import Store from "electron-store";
@@ -30,23 +30,40 @@ function createWindow() {
 
   win.removeMenu();
 
-  // Save window state on close
   win.on("close", () => {
     store.set("window-bounds", win.getBounds());
   });
 
-  // Load the index.html from dist
+  // FIX: Intercept API response headers to add CORS for file:// origin.
+  // When Electron loads from file://, requests to your API at veily.venusapp.in
+  // are blocked by CORS because the browser sees origin as "null" (file://).
+  // This intercepts the response and injects the required CORS headers so the
+  // fetch in UpgradeModal succeeds.
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    const isApiCall = details.url.includes("veily.venusapp.in/api") ||
+                      details.url.includes("supabase.co");
+    if (isApiCall) {
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          "Access-Control-Allow-Origin": ["*"],
+          "Access-Control-Allow-Headers": ["Content-Type", "Authorization", "apikey", "x-client-info"],
+          "Access-Control-Allow-Methods": ["GET, POST, PUT, DELETE, PATCH, OPTIONS"],
+        },
+      });
+    } else {
+      callback({ responseHeaders: details.responseHeaders });
+    }
+  });
+
   win.loadFile(path.join(__dirname, "../dist/index.html"));
 
-  // Optional: Open DevTools
   if (!app.isPackaged) {
     win.webContents.openDevTools();
   }
 
-  // Native Polish: Disable Zoom
   win.webContents.setZoomFactor(1);
 
-  // Native Polish: Prevent Reload Shortcuts in production
   if (app.isPackaged) {
     win.webContents.on("before-input-event", (event, input) => {
       if (input.control && input.key.toLowerCase() === "r") {
@@ -54,9 +71,19 @@ function createWindow() {
       }
     });
   }
+
+  // FIX: Intercept any navigation away from file:// (e.g. Stripe checkout URL).
+  // Without this, clicking "Get Pro" would navigate the Electron window to
+  // stripe.com, destroying the app. This catches it and opens the system browser.
+  win.webContents.on("will-navigate", (event, url) => {
+    if (!url.startsWith("file://")) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
+  });
 }
 
-// Global IPC Listeners (Outside createWindow to prevent memory leaks/duplicates)
+// Window controls
 ipcMain.on("window-minimize", (event) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (win) win.minimize();
@@ -76,6 +103,14 @@ ipcMain.on("window-maximize", (event) => {
 ipcMain.on("window-close", (event) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (win) win.close();
+});
+
+// FIX: IPC handler so renderer can open URLs in the system browser.
+// Used by UpgradeModal to open the Stripe checkout URL properly.
+ipcMain.on("open-external", (_event, url) => {
+  if (typeof url === "string" && url.startsWith("https://")) {
+    shell.openExternal(url);
+  }
 });
 
 app.whenReady().then(createWindow);

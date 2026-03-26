@@ -27,3 +27,15 @@ export const getRedirectUrl = (): string => {
     // Production or Electron (file:// or packaged)
     return "https://veily.venusapp.in";
 };
+
+/**
+ * Prepends the API base URL if in Electron/Production.
+ */
+export const getApiUrl = (path: string): string => {
+    const origin = getRedirectUrl();
+    // Only prepend if path is relative
+    if (path.startsWith('/')) {
+        return `${origin}${path}`;
+    }
+    return path;
+};

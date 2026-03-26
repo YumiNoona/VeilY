@@ -6,6 +6,7 @@ import { Loader2, Crown, Sparkles, Check, Heart, Star, Zap, ArrowRight, X } from
 import { toast } from 'sonner';
 import { cn } from "@/lib/utils";
 import { DoodleBackground } from '@/components/icons/DoodleBackground';
+import { getApiUrl } from '@/lib/electron-utils';
 
 const PLANS = [
     {
@@ -55,7 +56,8 @@ export const UpgradeModal = () => {
         setLoading(planId);
 
         try {
-            const response = await fetch('/api/create-checkout-session', {
+            const apiUrl = getApiUrl('/api/create-checkout-session');
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: user.id, plan: planId })

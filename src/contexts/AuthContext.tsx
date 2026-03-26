@@ -145,16 +145,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const signOut = async () => {
-        await supabase.auth.signOut();
-        setUser(null);
-        setPlan('free');
-        setDownloadsUsed(0);
-        setVideosUsed(0);
-        setAiFillsUsed(0);
-        setLastAiFillDate(null);
-        setFullName(null);
-        setAvatarUrl(null);
-        toast.success("Successfully logged out");
+        try {
+            await supabase.auth.signOut();
+        } catch (err) {
+            console.error("Supabase signOut error:", err);
+        } finally {
+            // Force clear everything to ensure logout even if network/Supabase fails
+            setUser(null);
+            setPlan('free');
+            setDownloadsUsed(0);
+            setVideosUsed(0);
+            setAiFillsUsed(0);
+            setLastAiFillDate(null);
+            setFullName(null);
+            setAvatarUrl(null);
+            
+            // Clear all Supabase related items from localStorage
+            Object.keys(localStorage).forEach(key => {
+                if (key.includes('sb-') || key.includes('supabase')) {
+                    localStorage.removeItem(key);
+                }
+            });
+            
+            toast.success("Successfully logged out");
+        }
     };
 
     const incrementDownloads = async () => {

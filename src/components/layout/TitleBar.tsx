@@ -33,21 +33,24 @@ export const TitleBar = () => {
                 <span className="text-[11px] font-medium text-white/40 tracking-wider uppercase">Veily Desktop</span>
             </div>
 
-            <div className="flex items-center h-full">
+            <div data-tauri-drag-region="false" className="flex items-center h-full z-50">
                 <button 
                     onClick={handleMinimize}
+                    data-tauri-drag-region="false"
                     className="h-full px-4 flex items-center justify-center hover:bg-white/5 transition-colors group"
                 >
                     <Minus className="w-3.5 h-3.5 text-white/40 group-hover:text-white pointer-events-none" />
                 </button>
                 <button 
                     onClick={handleMaximize}
+                    data-tauri-drag-region="false"
                     className="h-full px-4 flex items-center justify-center hover:bg-white/5 transition-colors group"
                 >
                     <Square className="w-3 h-3 text-white/40 group-hover:text-white pointer-events-none" />
                 </button>
                 <button 
                     onClick={handleClose}
+                    data-tauri-drag-region="false"
                     className="h-full px-4 flex items-center justify-center hover:bg-red-500/80 transition-colors group cursor-pointer"
                 >
                     <X className="w-3.5 h-3.5 text-white/40 group-hover:text-white pointer-events-none" />

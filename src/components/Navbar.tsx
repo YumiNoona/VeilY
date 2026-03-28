@@ -54,7 +54,7 @@ export const Navbar = () => {
     const userInitial = (fullName || user?.email || 'U').charAt(0).toUpperCase();
 
     return (
-        <nav className="h-16 border-b border-border bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-50 shrink-0">
+        <nav data-tauri-drag-region className="h-16 border-b border-border bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-50 shrink-0">
             {/* LEFT: Logo */}
             <div className="flex items-center w-[200px]">
                 <Link to="/">

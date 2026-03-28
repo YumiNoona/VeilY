@@ -14,7 +14,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
 const supabaseUrl = process.env.VITE_SUPABASE_URL as string;
-const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY as string;
+const supabaseSecretKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {

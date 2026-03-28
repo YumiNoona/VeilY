@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { cn } from "@/lib/utils";
 import { DoodleBackground } from '@/components/icons/DoodleBackground';
 import { getApiUrl } from '@/lib/electron-utils';
+import { supabase } from '@/lib/supabase';
 
 import { open as openExternal } from '@tauri-apps/plugin-shell';
 
@@ -59,9 +60,21 @@ export const UpgradeModal = () => {
 
         try {
             const apiUrl = getApiUrl('/api/create-checkout-session');
+
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.access_token) {
+                toast.error('Session expired. Please sign in again.');
+                setUpgradeModalOpen(false);
+                setAuthModalOpen(true);
+                return;
+            }
+
             const response = await fetch(apiUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
                 body: JSON.stringify({ userId: user.id, plan: planId })
             });
 

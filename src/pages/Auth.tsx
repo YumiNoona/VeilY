@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getRedirectUrl } from '@/lib/electron-utils';
+import { cn } from '@/lib/utils';
 
 type AuthStep = "form" | "otp";
 

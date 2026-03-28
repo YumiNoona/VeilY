@@ -1,4 +1,8 @@
 import Stripe from 'stripe';
+import { createClient } from "@supabase/supabase-js";
+
+const VITE_SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || "";
+const VITE_SUPABASE_PUBLISHABLE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || "";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2026-02-25.clover', 
@@ -14,6 +18,25 @@ export default async function handler(req: any, res: any) {
 
     if (!userId || !plan) {
       return res.status(400).json({ error: 'User ID and Plan are required' });
+    }
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Unauthorized: Missing or invalid token" });
+    }
+    const token = authHeader.split(" ")[1];
+
+    const supabase = createClient(VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY, {
+      global: { headers: { Authorization: `Bearer ${token}` } }
+    });
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return res.status(401).json({ error: "Unauthorized: Invalid session" });
+    }
+
+    if (user.id !== userId) {
+      return res.status(403).json({ error: "Forbidden: User ID mismatch" });
     }
 
     // Map App Plans to Stripe Price IDs

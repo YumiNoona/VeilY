@@ -55,3 +55,8 @@ coverage
 # Vercel
 .vercel
 api/node_modules/
+
+# Rust / Tauri
+**/*.rs.bk
+src-tauri/target/
+src-tauri/gen/schemas/

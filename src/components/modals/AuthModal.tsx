@@ -130,7 +130,6 @@ export const AuthModal = () => {
                     email: data.user.email,
                     full_name: data.user.user_metadata?.full_name || fullName,
                     avatar_url: data.user.user_metadata?.avatar_url || "",
-                    plan: 'free'
                 }, { onConflict: 'id' });
             }
 

@@ -1,22 +1,30 @@
 import React from 'react';
 import { Minus, Square, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 
 export const TitleBar = () => {
-    const handleMinimize = () => {
-        window.electronAPI?.minimize();
+    const handleMinimize = async () => {
+        const appWindow = getCurrentWindow();
+        await appWindow.minimize();
     };
 
-    const handleMaximize = () => {
-        window.electronAPI?.maximize();
+    const handleMaximize = async () => {
+        const appWindow = getCurrentWindow();
+        if (await appWindow.isMaximized()) {
+            await appWindow.unmaximize();
+        } else {
+            await appWindow.maximize();
+        }
     };
 
-    const handleClose = () => {
-        window.electronAPI?.close();
+    const handleClose = async () => {
+        const appWindow = getCurrentWindow();
+        await appWindow.close();
     };
 
-    // Return null if not in Electron environment
-    if (!window.electronAPI) return null;
+    // Return null if not in Electron/Tauri environment
+    if (!(window as any).electronAPI && !(window as any).__TAURI_INTERNALS__) return null;
 
     return (
         <div className="h-8 w-full bg-[#0f0f0f] flex items-center justify-between select-none border-b border-white/5 relative z-[9999]" style={{ WebkitAppRegion: 'drag' } as any}>

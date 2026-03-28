@@ -9,13 +9,13 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 // but the parser still runs and can corrupt the auth state on startup,
 // causing sign-in to appear to succeed but the session never sticking.
 // On web this stays true so magic links / OAuth callbacks work correctly.
-const isElectron = typeof window !== 'undefined' && !!(window as any).electronAPI;
+const isDesktopApp = typeof window !== 'undefined' && (!!(window as any).electronAPI || !!(window as any).__TAURI_INTERNALS__);
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     storage: localStorage,
     autoRefreshToken: true,
-    detectSessionInUrl: !isElectron,
+    detectSessionInUrl: !isDesktopApp,
   }
 });

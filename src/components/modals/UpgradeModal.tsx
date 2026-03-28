@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { DoodleBackground } from '@/components/icons/DoodleBackground';
 import { getApiUrl } from '@/lib/electron-utils';
 
+import { open as openExternal } from '@tauri-apps/plugin-shell';
+
 const PLANS = [
     {
         id: 'pro',
@@ -70,12 +72,13 @@ export const UpgradeModal = () => {
 
             const { url } = await response.json();
 
-            // FIX: In Electron, window.location.href = url navigates the app window
+            // FIX: In Tauri/Electron, window.location.href = url navigates the app window
             // to stripe.com, which crashes the app (file:// → https:// navigation is
-            // blocked, or the Stripe page loads inside Electron with no way back).
-            // Use shell.openExternal so Stripe opens in the user's default browser.
-            // The will-navigate guard in main.js also catches this as a safety net.
-            if ((window as any).electronAPI?.openExternal) {
+            // blocked, or the Stripe page loads inside the frameless shell with no way back).
+            // Use shell.open so Stripe opens in the user's default desktop browser.
+            if ((window as any).__TAURI_INTERNALS__) {
+                await openExternal(url);
+            } else if ((window as any).electronAPI?.openExternal) {
                 (window as any).electronAPI.openExternal(url);
             } else {
                 // Web: open in new tab so user doesn't lose the app

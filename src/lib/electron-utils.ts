@@ -3,7 +3,7 @@
  * Checks for the presence of the window.electronAPI object exposed in preload.js.
  */
 export const isElectron = (): boolean => {
-    return typeof window !== 'undefined' && !!window.electronAPI;
+    return typeof window !== 'undefined' && (!!(window as any).electronAPI || !!(window as any).__TAURI_INTERNALS__);
 };
 
 /**
@@ -24,7 +24,8 @@ export const getRedirectUrl = (): string => {
         return "http://localhost:3000"; // Or 5173 if you prefer, but 3000 matches your dashboard setup
     }
 
-    // Production or Electron (file:// or packaged)
+    // Production or Desktop shell
+    if ((window as any).__TAURI_INTERNALS__) return "tauri://localhost";
     return "https://veily.venusapp.in";
 };
 
@@ -32,6 +33,11 @@ export const getRedirectUrl = (): string => {
  * Prepends the API base URL if in Electron/Production.
  */
 export const getApiUrl = (path: string): string => {
+    // If inside Tauri desktop shell, always route to the live server
+    if (typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__) {
+        return `https://veily.venusapp.in${path}`;
+    }
+
     const origin = getRedirectUrl();
     // Only prepend if path is relative
     if (path.startsWith('/')) {

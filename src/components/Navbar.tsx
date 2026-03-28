@@ -88,7 +88,18 @@ export const Navbar = () => {
             </div>
 
             {/* RIGHT: User Actions */}
-            <div className="flex items-center justify-end gap-3 w-[200px]">
+            <div className="flex items-center justify-end gap-3 w-auto min-w-[200px]">
+                {(!user || plan === 'free') && (
+                    <Button 
+                        size="sm" 
+                        onClick={() => setUpgradeModalOpen(true)}
+                        className="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white border-0 shadow-md gap-2 h-9 px-4 rounded-full text-[13px] font-bold"
+                    >
+                        <Crown className="w-3.5 h-3.5" />
+                        Upgrade
+                    </Button>
+                )}
+                
                 {!user ? (
                     <Button 
                         variant="ghost" 
@@ -99,20 +110,8 @@ export const Navbar = () => {
                         Sign In
                     </Button>
                 ) : (
-                    <div className="flex items-center gap-3">
-                        {plan === 'free' && (
-                            <Button 
-                                size="sm" 
-                                onClick={() => setUpgradeModalOpen(true)}
-                                className="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white border-0 shadow-md gap-2 h-9 px-4 rounded-full text-[13px] font-bold"
-                            >
-                                <Crown className="w-3.5 h-3.5" />
-                                Upgrade
-                            </Button>
-                        )}
-                        
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                                 <button className="outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-full transition-all duration-200 group">
                                     <Avatar className="w-9 h-9 border border-border shadow-sm group-hover:opacity-90 transition relative overflow-hidden">
                                         <AvatarImage src={avatarUrl || undefined} />
@@ -148,7 +147,6 @@ export const Navbar = () => {
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                    </div>
                 )}
             </div>
         </nav>

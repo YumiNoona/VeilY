@@ -106,9 +106,9 @@ const Auth = () => {
         verifyCode(otp);
     };
 
-    // Auto-submit when code length matches (supporting 8 digits)
+    // Auto-submit when 6-digit code is complete (Supabase sends 6-digit OTPs)
     useEffect(() => {
-        if (otp.length === 8 && !loading && !isLocked) {
+        if (otp.length === 6 && !loading && !isLocked) {
             verifyCode(otp);
         }
     }, [otp]);
@@ -169,8 +169,8 @@ const Auth = () => {
                                 <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-primary transition-colors" />
                                 <Input
                                     type="text"
-                                    maxLength={8}
-                                    placeholder="00000000"
+                                    maxLength={6}
+                                    placeholder="000000"
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                                     required

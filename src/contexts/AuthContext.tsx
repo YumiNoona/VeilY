@@ -106,7 +106,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 if (isMounted.current) {
                     setPlan(data.plan as 'free' | 'pro' | 'premium');
                     setDownloadsUsed(data.downloads_used || 0);
-                    setDownloadsUsed(data.downloads_used || 0);
                     setVideosUsed(data.videos_used || 0);
 
                     const today = new Date().toISOString().split('T')[0];
@@ -139,20 +138,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const signOut = async () => {
-        // FIX: Do NOT manually clear localStorage keys.
-        // The old code wiped sb-* keys AFTER supabase.auth.signOut() already cleaned up,
-        // which left the Supabase JS client's in-memory state pointing at storage that
-        // no longer existed. On the next sign-in the client would hit a broken PKCE
-        // code-verifier lookup and silently fail — exactly the Electron login bug.
-        // Let supabase.auth.signOut() own the cleanup; onAuthStateChange(SIGNED_OUT)
-        // fires and resets React state via the listener below.
         try {
             await supabase.auth.signOut();
-            toast.success("Successfully logged out");
         } catch (err) {
             console.error("Supabase signOut error:", err);
-            // If the network call fails (offline, Electron, etc.), force-clear state manually
-            // but do NOT touch localStorage — let the Supabase client keep its own integrity.
+        } finally {
+            // Reset state synchronously right here.
+            // onAuthStateChange will also fire, which is fine — setting null→null is a no-op.
+            // But this guarantees the UI updates immediately without waiting for the event.
             setUser(null);
             setPlan('free');
             setDownloadsUsed(0);

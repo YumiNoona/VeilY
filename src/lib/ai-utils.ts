@@ -14,21 +14,39 @@ export async function generateSmartFill(prompt: string, platform: string): Promi
     throw new Error("You must be logged in to use AI features.");
   }
 
-  const response = await fetch("https://veily.venusapp.in/api/generate", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify({ prompt, platform })
-  });
+  // 30-second timeout via AbortController — prevents infinite hang if the
+  // Vercel serverless function times out or Gemini is overloaded.
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
+  let response: Response;
+  try {
+    response = await fetch("https://veily.venusapp.in/api/generate", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ prompt, platform }),
+      signal: controller.signal,
+    });
+  } catch (err: any) {
+    // AbortError = timeout hit
+    if (err.name === "AbortError") {
+      throw new Error("AI generation timed out. Please try again.");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   const data = await response.json();
-  console.log(`[AI Smart Fill] Success. Provider used: ${data.provider}`);
 
   if (!response.ok) {
     throw new Error(data.error || "Failed to generate AI content from server.");
   }
+
+  console.log(`[AI Smart Fill] Success. Provider used: ${data.provider}`);
 
   // Restore client-side objects (UUIDs, Dates)
   const messages: Message[] = (data.messages || []).map((msg: any) => ({

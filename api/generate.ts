@@ -10,16 +10,59 @@ const VITE_SUPABASE_PUBLISHABLE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY 
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// In-memory rate limiting map for basic IP protection (20 requests per minute)
+// NOTE: In-memory rate limiting does NOT work on Vercel serverless functions.
+// Each invocation may spin up a fresh Node process, so this map is always empty.
+// The real quota protection is the DB check in step 5. To fix properly, use
+// Redis (e.g. Upstash free tier) or rely solely on the DB-level atomic check.
 const rateLimitMap = new Map<string, { count: number, timestamp: number }>();
 
+// CORS allow-list: Only these origins can call the API
+const ALLOWED_ORIGINS = [
+  'https://veily.venusapp.in',
+  'tauri://localhost',          // Tauri desktop app
+  'http://localhost:8080',      // Local Vite dev server
+  'http://localhost:5173',      // Alt Vite port
+  'http://localhost:3000',      // Alt dev port
+];
+
+/**
+ * Sanitize user prompt to mitigate prompt injection attempts.
+ * Strips backticks, [MODE: patterns, and instruction-override attempts.
+ */
+function sanitizePrompt(raw: string): string {
+  let sanitized = raw;
+  // Remove backtick blocks that could break out of the prompt
+  sanitized = sanitized.replace(/`{1,3}/g, '');
+  // Remove [MODE: ...] patterns that could override system instructions
+  sanitized = sanitized.replace(/\[MODE:\s*[^\]]*\]/gi, '');
+  // Remove common injection patterns
+  sanitized = sanitized.replace(/ignore\s+(all\s+)?previous\s+instructions/gi, '');
+  sanitized = sanitized.replace(/system\s*prompt/gi, '');
+  sanitized = sanitized.replace(/you\s+are\s+now/gi, '');
+  // Trim whitespace
+  return sanitized.trim();
+}
+
 export default async function handler(req: any, res: any) {
+  // CORS handling
+  const origin = req.headers.origin || '';
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, apikey, x-client-info');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // 1. IP Rate Limiting (Basic DDOS / Spam protection)
+  // 1. IP Rate Limiting (Basic — see NOTE above about Vercel limitations)
   const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
   const now = Date.now();
   const windowMs = 60 * 1000; // 1 minute
@@ -55,8 +98,8 @@ export default async function handler(req: any, res: any) {
   }
 
   // 4. Input Validation
-  const { prompt, platform } = req.body;
-  if (!prompt || !prompt.trim() || !platform) {
+  const { prompt: rawPrompt, platform } = req.body;
+  if (!rawPrompt || !rawPrompt.trim() || !platform) {
       return res.status(400).json({ error: "Prompt and platform are required and cannot be empty" });
   }
 
@@ -99,8 +142,8 @@ export default async function handler(req: any, res: any) {
     premium: 1500
   };
   const maxPromptLength = PROMPT_LENGTH_LIMITS[currentUserPlan] || 0;
-  
-  if (prompt.length > maxPromptLength) {
+
+  if (rawPrompt.length > maxPromptLength) {
     return res.status(400).json({ error: `Prompt too long. Your plan allows a maximum of ${maxPromptLength} characters.` });
   }
   
@@ -111,6 +154,9 @@ export default async function handler(req: any, res: any) {
   if (fillsUsed >= currentLimit) {
     return res.status(403).json({ error: `Daily limit reached (${currentLimit} generations). Please upgrade or try again tomorrow.` });
   }
+
+  // Sanitize prompt to mitigate injection attacks
+  const prompt = sanitizePrompt(rawPrompt);
 
   const systemPrompt = `
     You are an expert at creating realistic social media and chat mockups.
@@ -173,14 +219,9 @@ export default async function handler(req: any, res: any) {
       if (responseData.messages.length > maxMsgs) {
           responseData.messages = responseData.messages.slice(0, maxMsgs);
       }
-      
-      if (responseData.messages.length < minMsgs) {
-          // You could throw an error here, but returning what we have is usually better UX than throwing away everything. 
-          // At a minimum, we trim the fat if they go over.
-      }
   }
 
-  // 7. Success! Increment quota atomically via RPC and return response.
+  // 8. Success! Increment quota atomically via RPC and return response.
   if (responseData) {
       const { error: rpcError } = await supabase.rpc('increment_ai_fills', { target_user_id: user.id });
       if (rpcError) {

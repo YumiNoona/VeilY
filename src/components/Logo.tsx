@@ -9,7 +9,8 @@ interface LogoProps {
 export const Logo: React.FC<LogoProps> = ({ className, textClassName }) => {
     return (
         <div className={cn("relative flex items-center gap-2 group cursor-default select-none", className)}>
-            <div className="relative font-black tracking-tighter text-2xl filter drop-shadow-sm">
+            <span className="text-2xl leading-none pt-1">🌕</span>
+            <div className="relative font-black tracking-tighter text-2xl filter drop-shadow-sm pl-1">
                 {/* Red Offset */}
                 <span className="absolute inset-0 text-[#FF0000] translate-x-[1px] translate-y-[0.5px] opacity-70 mix-blend-screen blur-[0.5px] transition-transform duration-300 group-hover:translate-x-[1.5px]">
                     VEILY

@@ -120,11 +120,20 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                            onClick={onRandomize}
-                            title="Randomize Content"
+                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 relative group"
+                            onClick={() => {
+                                if (plan === 'free') {
+                                    setUpgradeModalOpen(true);
+                                    return;
+                                }
+                                onRandomize();
+                            }}
+                            title="Randomize Content (Premium)"
                         >
                             <Wand2 className="w-4 h-4" />
+                            {plan === 'free' && (
+                                <Crown className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-amber-500 fill-amber-500/20 drop-shadow-sm border-2 border-sidebar-bg rounded-full bg-sidebar-bg p-[0.5px]" />
+                            )}
                         </Button>
                     )}
                 </div>

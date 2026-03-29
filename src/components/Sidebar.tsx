@@ -2,7 +2,7 @@ import * as React from "react";
 import { ChatState, ChatType, Person, AppearanceSettings } from "@/types/chat";
 import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Wand2, RotateCcw } from "lucide-react";
+import { Wand2, RotateCcw, Crown, Sparkles } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSection } from "./sidebar/sections/AppSection";
 import { TypeSection } from "./sidebar/sections/TypeSection";
@@ -14,7 +14,6 @@ import { CallSection } from "./sidebar/sections/CallSection";
 import { CHAT_TEMPLATES, AI_CHAT_TEMPLATES } from "@/lib/templates";
 import { SmartFillModal } from "./modals/SmartFillModal";
 import { useAuth } from "@/contexts/AuthContext";
-import { Sparkles } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -192,11 +191,20 @@ export function Sidebar({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                onClick={onRandomize}
-                title="Randomize Content"
+                className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 relative group"
+                onClick={() => {
+                  if (plan === 'free') {
+                    setUpgradeModalOpen(true);
+                    return;
+                  }
+                  onRandomize();
+                }}
+                title="Randomize Content (Premium)"
               >
                 <Wand2 className="w-4 h-4" />
+                {plan === 'free' && (
+                  <Crown className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-amber-500 fill-amber-500/20 drop-shadow-sm border-2 border-sidebar-bg rounded-full bg-sidebar-bg p-[0.5px]" />
+                )}
               </Button>
             )}
 
@@ -204,11 +212,14 @@ export function Sidebar({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 relative group"
                 onClick={handleSmartFillClick}
                 title="AI Smart Fill (Premium)"
               >
                 <Sparkles className="w-4 h-4 fill-amber-500/20" />
+                {plan === 'free' && (
+                  <Crown className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-amber-500 fill-amber-500/20 drop-shadow-sm border-2 border-sidebar-bg rounded-full bg-sidebar-bg p-[0.5px]" />
+                )}
               </Button>
             )}
           </div>

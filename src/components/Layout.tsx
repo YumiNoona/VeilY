@@ -10,16 +10,10 @@ import { UpgradeModal } from "@/components/modals/UpgradeModal";
 import { ProfileModal } from "@/components/modals/ProfileModal";
 import { TitleBar } from "@/components/layout/TitleBar";
 import { isElectron } from "@/lib/electron-utils";
-import { useOfflineDetection } from "@/hooks/useOfflineDetection";
-import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export const Layout = () => {
     const location = useLocation();
     const { user, plan, setUpgradeModalOpen } = useAuth();
-    
-    // Global Hooks
-    useOfflineDetection();
-    useKeyboardShortcuts();
     
     const tabs = [
         { id: "chat", label: "Chat", path: "/", icon: MessageSquare },

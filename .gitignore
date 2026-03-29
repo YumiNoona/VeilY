@@ -1,65 +1,34 @@
-# =============================================================================
-# Veily — .gitignore
-# =============================================================================
-
 # Logs
-logs/
+logs
 *.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
 
 # Dependencies
-node_modules/
-api/node_modules/
+node_modules
 
-# Build outputs
-dist/
-dist-ssr/
-dist_electron/
-.vite/
-
-# TypeScript
-*.tsbuildinfo
-tsconfig.tsbuildinfo
-
-# Environment — NEVER commit secrets
-.env
-.env.*
-*.local
-
-# Rust / Tauri — can be multiple GB
-src-tauri/target/
-src-tauri/gen/
-src-tauri/WixTools/
-
-# Tauri signing keys — NEVER commit
-*.pem
-*.key
-.tauri/
-
-# Release bundles — binaries don't belong in git
+# Build
+dist
+dist-ssr
+dist_electron
 *.exe
 *.dmg
-*.AppImage
-*.deb
-*.rpm
-*.msi
-src-tauri/target/release/bundle/
+*.zip
+dev-app-update.yml
 
-# Vercel
-.vercel/
+# Env (CRITICAL)
+.env
+.env.*
+.env.local
+.env.production
+.env.development
+*.local
 
 # Editor
 .vscode/*
 !.vscode/extensions.json
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.idea
 
 # OS
 .DS_Store
@@ -74,16 +43,20 @@ _agent/
 .cursor/
 .history/
 
-# Test / coverage
-coverage/
-*.lcov
-test-results/
-playwright-report/
-
 # Misc
-dev-app-update.yml
-*.zip
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.tsbuildinfo
+coverage
 
-# Lock files — keep only npm's (delete the others if present)
-yarn.lock
-pnpm-lock.yaml
+# Vercel
+.vercel
+api/node_modules/
+
+# Rust / Tauri
+**/*.rs.bk
+src-tauri/target/
+src-tauri/gen/schemas/

@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎭 Veily
+# 🌕 Veily
 
 ### High-Fidelity Social Media Design & AI Preview Engine
 

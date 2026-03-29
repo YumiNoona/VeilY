@@ -13,6 +13,8 @@ pub fn run() {
     })
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_store::Builder::new().build())
+    // Remembers window size and position between sessions.
+    // No frontend code needed — the plugin hooks into OS window events directly.
     .plugin(tauri_plugin_window_state::Builder::default().build())
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

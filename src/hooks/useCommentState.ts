@@ -227,43 +227,71 @@ export const useCommentState = () => {
     };
 
     const randomizeState = () => {
-        const platforms: CommentPlatform[] = ['instagram', 'tiktok', 'twitter', 'youtube'];
-        const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
-        
-        const firstNames = ["James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "William", "Elizabeth"];
-        const randomName = () => firstNames[Math.floor(Math.random() * firstNames.length)] + Math.floor(Math.random() * 99);
-        
-        const randomCommentsPool = [
-            "Best content ever! 🔥",
-            "I totally agree with this.",
-            "Can you explain more about point 2?",
-            "This changed my life, thank you!",
-            "First! lol",
-            "Imagine not liking this video... 💀",
-            "Pure gold. More please!",
-            "I've been looking for this for ages.",
-            "Standard reached! 🚀",
-            "This is so underrated."
+        const scenarios = [
+            {
+                platform: 'youtube',
+                name: "Tutorial Feedback",
+                creator: { name: "Code with Arjun", handle: "@codearjun", avatar: "https://i.pravatar.cc/150?u=codearjun" },
+                comments: [
+                    { id: 'c1', userId: 'u1', name: "Rahul Singh", text: "bhai best explanation! finally understood how to use promises properly. 🚀", likes: "1.2K", timeAgo: "2h" },
+                    { id: 'c2', userId: 'u2', name: "Sarah Miller", text: "Can you do a follow up on async/await? Great video as always!", likes: "450", timeAgo: "5h" }
+                ]
+            },
+            {
+                platform: 'instagram',
+                name: "Social Hype",
+                creator: { name: "Aesthetic Vibes", handle: "asthetic_vibes", avatar: "https://i.pravatar.cc/150?u=aesthetic" },
+                comments: [
+                    { id: 'c1', userId: 'u3', name: "Priya Sharma", text: "omg where is this dress from?? 😍", likes: "842", timeAgo: "1h", isLikedByAuthor: true },
+                    { id: 'c2', userId: 'u4', name: "Jake Wilson", text: "vibes are actually immaculate", likes: "120", timeAgo: "3h" }
+                ]
+            },
+            {
+                platform: 'tiktok',
+                name: "Viral Trend",
+                creator: { name: "Trending Daily", handle: "trending_daily", avatar: "https://i.pravatar.cc/150?u=trending" },
+                comments: [
+                    { id: 'c1', userId: 'u5', name: "Kavya Iyer", text: "the way my jaw DROPPED 😭😭", likes: "45K", timeAgo: "4h", isLikedByAuthor: true },
+                    { id: 'c2', userId: 'u6', name: "Marcus Chen", text: "standard lol", likes: "12K", timeAgo: "6h" }
+                ]
+            },
+            {
+                platform: 'twitter',
+                name: "Tech Debate",
+                creator: { name: "Tech Insider", handle: "techinsider", avatar: "https://i.pravatar.cc/150?u=tech" },
+                comments: [
+                    { id: 'c1', userId: 'u7', name: "Tyler Smith", text: "ratio + you're wrong + here are the actual stats 📉", likes: "2.4K", timeAgo: "12m" },
+                    { id: 'c2', userId: 'u8', name: "Ananya Singh", text: "ngl i saw this coming miles away", likes: "450", timeAgo: "45m" }
+                ]
+            }
         ];
 
-        const newProfiles = state.profiles.map(p => ({
-            ...p,
-            name: randomName(),
-            handle: randomName().toLowerCase(),
-            verified: Math.random() > 0.8
-        }));
+        const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        
+        const newProfiles: Profile[] = [
+            { id: 'creator', ...scenario.creator, verified: true, isCreator: true },
+            ...scenario.comments.map(c => ({
+                id: c.userId,
+                name: c.name,
+                handle: c.name.toLowerCase().replace(/\s+/g, ''),
+                avatar: `https://i.pravatar.cc/150?u=${c.userId}`,
+                verified: Math.random() > 0.8
+            }))
+        ];
 
-        const newComments = state.comments.map(c => ({
-            ...c,
-            text: randomCommentsPool[Math.floor(Math.random() * randomCommentsPool.length)],
-            likes: Math.floor(Math.random() * 5000).toString(),
-            timeAgo: Math.floor(Math.random() * 23 + 1) + 'h',
-            isLikedByAuthor: Math.random() > 0.5
+        const newComments: Comment[] = scenario.comments.map(c => ({
+            id: c.id,
+            userId: c.userId,
+            text: c.text,
+            likes: c.likes,
+            timeAgo: c.timeAgo,
+            replies: [],
+            isLikedByAuthor: (c as any).isLikedByAuthor || false
         }));
 
         setState(prev => ({
             ...prev,
-            platform: randomPlatform,
+            platform: scenario.platform as CommentPlatform,
             profiles: newProfiles,
             comments: newComments,
             config: {
@@ -271,7 +299,8 @@ export const useCommentState = () => {
                 theme: Math.random() > 0.5 ? 'dark' : 'light'
             }
         }));
-        toast.success("Randomized comments content!");
+        
+        toast.success(`Randomized: ${scenario.name}`);
     };
 
     return {

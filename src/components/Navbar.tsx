@@ -53,27 +53,34 @@ export const Navbar = () => {
 
     const userInitial = (fullName || user?.email || 'U').charAt(0).toUpperCase();
 
-    // data-tauri-drag-region on the <nav> and logo area makes those zones
-    // act as a drag handle for moving the frameless window — exactly like a
-    // native title bar. Tauri passes click events through to child elements
-    // (Links, Buttons, Dropdowns) so all interactive elements still work.
+    // Detect Tauri app for conditional styling (solid bg to avoid drag-through
+    // issues with backdrop-blur). Drag regions are placed on dedicated spacer
+    // divs BETWEEN interactive elements — never on the parent <nav> — so that
+    // Links, Buttons, and Dropdowns receive click events normally.
     const isTauriApp = typeof window !== 'undefined' && !!(window as any).__TAURI_INTERNALS__;
-    const dragAttr = isTauriApp ? { 'data-tauri-drag-region': true } : {};
 
     return (
         <nav
-            {...dragAttr}
-            className="h-16 border-b border-border bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-50 shrink-0"
+            className={cn(
+                "h-16 border-b border-border px-6 flex items-center sticky top-0 z-50 shrink-0",
+                isTauriApp ? "bg-white" : "bg-white/80 backdrop-blur-md"
+            )}
         >
-            {/* LEFT: Logo — also a drag target when in Tauri */}
-            <div {...dragAttr} className="flex items-center w-[200px]">
+            {/* LEFT: Logo */}
+            <div className="flex items-center shrink-0">
                 <Link to="/">
                     <Logo />
                 </Link>
             </div>
+
+            {/* DRAG SPACER — left gap between logo and tabs */}
+            <div
+                {...(isTauriApp ? { 'data-tauri-drag-region': true } : {})}
+                className="flex-1 min-w-[16px] h-full"
+            />
             
-            {/* MIDDLE: Navigation Tabs — pill container itself is not a drag target */}
-            <div className="hidden md:flex flex-1 justify-center">
+            {/* MIDDLE: Navigation Tabs */}
+            <div className="hidden md:flex justify-center shrink-0">
                 <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-full border border-border/50">
                     {tabs.map((tab) => {
                         const isActive = location.pathname === tab.path;
@@ -96,6 +103,12 @@ export const Navbar = () => {
                     })}
                 </div>
             </div>
+
+            {/* DRAG SPACER — right gap between tabs and user actions */}
+            <div
+                {...(isTauriApp ? { 'data-tauri-drag-region': true } : {})}
+                className="flex-1 min-w-[16px] h-full"
+            />
 
             {/* RIGHT: User Actions */}
             <div className="flex items-center justify-end gap-3 w-auto min-w-[200px]">

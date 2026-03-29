@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 
 export type SocialPlatform = 'twitter' | 'instagram' | 'linkedin' | 'facebook' | 'reddit';
 
@@ -144,40 +145,81 @@ export const useSocialPostState = () => {
   };
 
   const randomizeState = () => {
-    setState(prev => {
-        const newLikes = Math.floor(Math.random() * 50000) + 100;
-        const newComments = Math.floor(newLikes * (Math.random() * 0.1));
-        const newReposts = Math.floor(newLikes * (Math.random() * 0.2));
-        const newViews = newLikes * Math.floor(Math.random() * 10 + 5);
+    const indianNames = ["Arjun Mehta", "Priya Sharma", "Rohan Gupta", "Kavya Iyer", "Ananya Singh"];
+    const westernNames = ["Alex Rivera", "Sarah Jenkins", "Tyler Smith", "Emma Wilson", "Marcus Chen"];
+    
+    const scenarios = [
+      {
+        platform: 'twitter',
+        name: "Tech Take (Western)",
+        author: { name: "Alex Rivera", handle: "arivera_dev" },
+        text: "unpopular opinion: clean code is overrated if you don't ship anything. speed > perfectionism. fight me. 🧵",
+        metrics: { likes: "12.4K", comments: "1.2K", reposts: "3.4K", views: "1.1M" }
+      },
+      {
+        platform: 'twitter',
+        name: "Indian Cricket",
+        author: { name: "Rohan Gupta", handle: "rohan_cricket" },
+        text: "Bhai kya catch pakda hai! 😱 Kohli is literally a beast. King for a reason. #INDvsAUS #KingKohli",
+        metrics: { likes: "45.7K", comments: "2.1K", reposts: "12.5K", views: "2.8M" }
+      },
+      {
+        platform: 'instagram',
+        name: "Travel Aesthetic",
+        author: { name: "Emma Wilson", handle: "emma_travels" },
+        text: "mornings in bali... 🌴✨ honestly never want to leave. #travel #minimalist",
+        metrics: { likes: "8.2K", comments: "142", reposts: "0", views: "0" }
+      },
+      {
+        platform: 'instagram',
+        name: "Indian Foodie",
+        author: { name: "Kavya Iyer", handle: "kavya_cooks" },
+        text: "This butter chicken was actually insane. Best dinner in Delhi ngl. 🍛🔥 #foodie #delhigram",
+        metrics: { likes: "15.3K", comments: "312", reposts: "0", views: "0" }
+      },
+      {
+        platform: 'linkedin',
+        name: "Corporate Update",
+        author: { name: "Sarah Jenkins", handle: "sjenkins-hr" },
+        text: "I'm thrilled to share that I've been promoted to Senior Director of People Ops! 🚀 It's been an incredible 5 years at Veily. #career #promotion",
+        metrics: { likes: "1,245", comments: "312", reposts: "12", views: "45K" }
+      },
+      {
+        platform: 'reddit',
+        name: "Drama/AITA",
+        author: { name: "u/throwaway_123", handle: "u/throwaway_123" },
+        text: "AITA for telling my brother his wedding was boring? He spent $50k on a venue with no music or dancing.",
+        metrics: { likes: "15.7K", comments: "3.2K", reposts: "0", views: "0" }
+      }
+    ];
 
-        const names = ["Alex Rivera", "Jordan Lee", "Sam Taylor", "Casey Smith", "Taylor Swift", "Elon Musk", "Tech Insider", "Daily Memes", "Startup Guru", "Fitness Freak"];
-        const randomName = names[Math.floor(Math.random() * names.length)];
-        const randomHandle = randomName.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 999);
-
-        const randomizedThreads = prev.threadItems.map(item => {
-            const threadLikes = Math.floor(Math.random() * Math.max(10, newLikes * 0.15));
-            return {
-                ...item,
-                metrics: {
-                    ...item.metrics,
-                    likes: threadLikes >= 1000 ? (threadLikes / 1000).toFixed(1) + 'K' : String(threadLikes)
-                }
-            };
-        });
-
-        return {
-            ...prev,
-            author: { ...prev.author, name: randomName, handle: randomHandle },
-            metrics: {
-                ...prev.metrics,
-                likes: newLikes >= 1000 ? (newLikes / 1000).toFixed(1) + 'K' : String(newLikes),
-                comments: newComments >= 1000 ? (newComments / 1000).toFixed(1) + 'K' : String(newComments),
-                reposts: newReposts >= 1000 ? (newReposts / 1000).toFixed(1) + 'K' : String(newReposts),
-                views: newViews >= 1000000 ? (newViews / 1000000).toFixed(1) + 'M' : (newViews >= 1000 ? (newViews / 1000).toFixed(1) + 'K' : String(newViews))
-            },
-            threadItems: randomizedThreads
-        };
-    });
+    const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+    
+    setState(prev => ({
+      ...prev,
+      platform: scenario.platform as SocialPlatform,
+      author: {
+        ...prev.author,
+        name: scenario.author.name,
+        handle: scenario.author.handle,
+        avatar: `https://i.pravatar.cc/150?u=${scenario.author.handle}`
+      },
+      content: {
+        ...prev.content,
+        text: scenario.text,
+        date: new Date()
+      },
+      metrics: {
+        ...prev.metrics,
+        ...scenario.metrics
+      },
+      config: {
+        ...prev.config,
+        theme: Math.random() > 0.5 ? 'dark' : 'light'
+      }
+    }));
+    
+    toast.success(`Randomized: ${scenario.name}`);
   };
 
   return {

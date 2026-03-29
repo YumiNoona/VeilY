@@ -203,62 +203,162 @@ export const useChatState = (storageKey: string = 'chatState') => {
     }, []);
 
     const randomizeState = useCallback(() => {
-        const platforms: Platform[] = ['whatsapp', 'discord', 'imessage', 'instagram', 'messenger', 'signal', 'slack', 'telegram', 'teams', 'snapchat'];
-        const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
+        const isAIPlatform = ['chatgpt', 'claude', 'gemini', 'grok'].includes(chatState.platform);
         
-        const firstNames = ["James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "William", "Elizabeth"];
-        const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"];
+        const indianNames = ["Rohan", "Arjun", "Priya", "Kavya", "Rahul", "Neha", "Aarav", "Ananya", "Ishaan", "Diya"];
+        const westernNames = ["Jake", "Sarah", "Tyler", "Zoe", "Marcus", "Emma", "Liam", "Olivia", "Ethan", "Sophia"];
         
-        const randomName = () => `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
-        
-        const randomMessagesPool = [
-            "Hey! How's it going?",
-            "Did you see the news today?",
-            "I'm so excited for the weekend!",
-            "Can you send me that file again?",
-            "Just finished the project, check it out! 🚀",
-            "Are we still meeting at 5?",
-            "That's hilarious! 🤣🤣",
-            "I'll be there in 10 mins.",
-            "Wow, I didn't know that.",
-            "Let's grab coffee tomorrow! ☕️",
-            "Check out this photo I took! 📸",
-            "Did you finish the sprint tasks?",
-            "Happy birthday! 🎂🎉",
-            "The new update is amazing.",
-            "I'm literally shaking right now. 😭"
+        const scenarios = isAIPlatform ? [
+            {
+                name: "Coding help",
+                messages: [
+                    { text: "how do I fix a hydration error in nextjs", isOwn: true },
+                    { text: "Hydration errors usually happen when the server-rendered HTML doesn't match the client's first render. Are you using any browser-only APIs like window inside your component?", isOwn: false },
+                    { text: "yeah I'm checking window.innerWidth in a div", isOwn: true },
+                    { text: "That's it. Wrap that logic in a useEffect hook so it only runs on the client. Or use a custom useHasMounted hook.", isOwn: false }
+                ]
+            },
+            {
+                name: "Recipe advice",
+                messages: [
+                    { text: "what can I make with chicken, spinach and heavy cream?", isOwn: true },
+                    { text: "You can make a classic Creamy Tuscan Chicken! Pan-sear the chicken, then make a sauce with the cream, garlic, and spinach. Serve it over pasta or rice.", isOwn: false },
+                    { text: "sounds fire, can I add mushrooms too?", isOwn: true },
+                    { text: "Definitely! Sauté them with the garlic before adding the cream. It'll add a great earthy flavor.", isOwn: false }
+                ]
+            },
+            {
+                name: "Life advice",
+                messages: [
+                    { text: "how do I tell my boss I'm quititng without being awkward", isOwn: true },
+                    { text: "Keep it professional and concise. Start with 'I'm writing to formally resign from my position as [Role]...'", isOwn: false },
+                    { text: "should I mention the new job?", isOwn: true },
+                    { text: "Only if you want to. You're not obligated. Just focus on your gratitude for the opportunity and your planned last day.", isOwn: false }
+                ]
+            },
+            {
+                name: "Quick Translation",
+                messages: [
+                    { text: "how do you say 'where is the nearest metro' in french", isOwn: true },
+                    { text: "You say: 'Où se trouve la station de métro la plus proche ?'", isOwn: false },
+                    { text: "and how do you pronounce it?", isOwn: true },
+                    { text: "Oo su troov la sta-syon du may-tro la ploo prosh.", isOwn: false }
+                ]
+            }
+        ] : [
+            {
+                name: "Making plans (Western)",
+                messages: [
+                    { text: "yooo u coming tonight?", isOwn: false },
+                    { text: "wait what's happening??", isOwn: true },
+                    { text: "birthday drinks for marcus lol did u forget", isOwn: false },
+                    { text: "omg istg I completely blanked", isOwn: true },
+                    { text: "standard lol. be there at 9", isOwn: false },
+                    { text: "aight bet", isOwn: true }
+                ]
+            },
+            {
+                name: "Indian College Chaos",
+                messages: [
+                    { text: "bhai notes de", isOwn: false },
+                    { text: "konsay?", isOwn: true },
+                    { text: "kal jo mpmc lab main hua tha, sir ne mera proxy marna mana kar diya", isOwn: false },
+                    { text: "lmao tune kuch kiya hoga", isOwn: true },
+                    { text: "arey bhai kuch nhi kiya bas late tha thoda", isOwn: false },
+                    { text: "chal library mil batata hu", isOwn: true }
+                ]
+            },
+            {
+                name: "Roasting (Western)",
+                messages: [
+                    { text: "ur fit in that story is... interesting", isOwn: false },
+                    { text: "stfu i look good", isOwn: true },
+                    { text: "bro u look like a highlighter 💀", isOwn: false },
+                    { text: "it's called fashion marcus look it up", isOwn: true },
+                    { text: "fashion from a construction site maybe", isOwn: false },
+                    { text: "ratio", isOwn: true }
+                ]
+            },
+            {
+                name: "Indian Family Group",
+                messages: [
+                    { text: "beta ghar kab aaoge?", isOwn: false },
+                    { text: "mummy bas 6 baje nikalunga office se", isOwn: true },
+                    { text: "theek hai, dahi lete aana raste se", isOwn: false },
+                    { text: "ok mummy", isOwn: true },
+                    { text: "aur papa puch rahe the ki light ka bill bhara ki nhi", isOwn: false },
+                    { text: "bhar diya tha subah hi", isOwn: true }
+                ]
+            },
+            {
+                name: "Gossip (Western)",
+                messages: [
+                    { text: "did u see what she posted???", isOwn: false },
+                    { text: "wait no what", isOwn: true },
+                    { text: "look at her story rn", isOwn: false },
+                    { text: "omg with TYLER??", isOwn: true },
+                    { text: "ngl i saw that coming months ago", isOwn: false },
+                    { text: "i'm actually screaming", isOwn: true }
+                ]
+            },
+            {
+                name: "School homework (Indian)",
+                messages: [
+                    { text: "bhai assignment kiya?", isOwn: false },
+                    { text: "kounsa wala", isOwn: true },
+                    { text: "woh math ka jo sharma sir ne diya tha", isOwn: false },
+                    { text: "nhi yaar abhi toh start bhi nhi kiya", isOwn: true },
+                    { text: "chal done, milte hai playground per discuss karenge", isOwn: false },
+                    { text: "ok bhai", isOwn: true }
+                ]
+            },
+            {
+                name: "Discord Chaos",
+                messages: [
+                    { text: "@everyone raid in 5 mins get on vc", isOwn: false },
+                    { text: "stfu pinging for a raid at 3am", isOwn: true },
+                    { text: "ratio + based", isOwn: false },
+                    { text: "loggin in rn u better be there", isOwn: true },
+                    { text: "i'm healer per usual", isOwn: false },
+                    { text: "L guest", isOwn: true }
+                ]
+            }
         ];
 
-        const numMessages = Math.floor(Math.random() * 5) + 3;
-        const newMessages: Message[] = [];
-        for (let i = 0; i < numMessages; i++) {
-            newMessages.push({
-                id: crypto.randomUUID(),
-                text: randomMessagesPool[Math.floor(Math.random() * randomMessagesPool.length)],
-                senderId: Math.random() > 0.5 ? 'user' : 'friend',
-                timestamp: new Date(Date.now() - (numMessages - i) * 300000),
-                isOwn: Math.random() > 0.5
-            });
-        }
+        // Randomly pick a scenario
+        const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        const platform = isAIPlatform ? chatState.platform : ['whatsapp', 'imessage', 'discord', 'instagram'][Math.floor(Math.random() * 4)] as Platform;
+        
+        const isIndian = scenario.name.includes("Indian");
+        const senderName = isAIPlatform ? (platform === 'chatgpt' ? 'ChatGPT' : platform === 'claude' ? 'Claude' : platform === 'gemini' ? 'Gemini' : 'Grok') : (isIndian ? indianNames[Math.floor(Math.random() * indianNames.length)] : westernNames[Math.floor(Math.random() * westernNames.length)]);
+
+        const newMessages: Message[] = scenario.messages.map((m, i) => ({
+            id: crypto.randomUUID(),
+            text: m.text,
+            senderId: m.isOwn ? 'friend' : 'user',
+            timestamp: new Date(Date.now() - (scenario.messages.length - i) * 120000),
+            isOwn: m.isOwn
+        }));
 
         const newPeople: Person[] = [
-            { id: 'friend', name: randomName(), isOnline: Math.random() > 0.3 },
-            { id: 'user', name: 'You', isOnline: true }
+            { id: 'friend', name: 'You', isOnline: true },
+            { id: 'user', name: senderName, isOnline: Math.random() > 0.3, avatar: isAIPlatform ? undefined : `https://i.pravatar.cc/150?u=${senderName}` }
         ];
 
         setChatState(prev => ({
             ...prev,
-            platform: randomPlatform,
+            platform,
             people: newPeople,
             messages: newMessages,
             appearance: {
                 ...prev.appearance,
                 darkMode: Math.random() > 0.5,
-                use24HourFormat: Math.random() > 0.5
+                use24HourFormat: isIndian
             }
         }));
-        toast.success("Randomized chat content!");
-    }, []);
+        
+        toast.success(`Randomized: ${scenario.name}`);
+    }, [chatState.platform]);
 
     return {
         chatState,

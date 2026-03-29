@@ -42,6 +42,7 @@ const INITIAL_STATE: StoriesState = {
         statusBarTime: '9:41',
         batteryLevel: 100,
         transparentBackground: false,
+        isTyping: false,
     },
 };
 
@@ -108,9 +109,70 @@ export const useStoriesState = () => {
     };
 
     const randomizeState = () => {
-        const templates = Object.values(STORIES_TEMPLATES);
-        const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
-        loadTemplate(randomTemplate);
+        const scenarios = [
+            {
+                platform: 'instagram',
+                username: 'fitness_junkie',
+                name: "Gym Session",
+                slides: [
+                    { imageUrl: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80" },
+                    { imageUrl: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80" }
+                ]
+            },
+            {
+                platform: 'instagram',
+                username: 'cozy_mornings',
+                name: "Morning Coffee",
+                slides: [
+                    { imageUrl: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80" },
+                    { imageUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80" }
+                ]
+            },
+            {
+                platform: 'snapchat',
+                username: 'island_hopper',
+                name: "Beach Day",
+                slides: [
+                    { imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" },
+                    { imageUrl: "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&q=80" }
+                ]
+            },
+            {
+                platform: 'instagram',
+                username: 'city_scout',
+                name: "Urban Vibe",
+                slides: [
+                    { imageUrl: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=80" },
+                    { imageUrl: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80" }
+                ]
+            },
+            {
+                platform: 'instagram',
+                username: 'style_edit',
+                name: "Minimal Fashion",
+                slides: [
+                    { imageUrl: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&q=80" },
+                    { imageUrl: "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=800&q=80" }
+                ]
+            }
+        ];
+
+        const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        
+        setState(prev => ({
+            ...prev,
+            platform: scenario.platform as StoryPlatform,
+            username: scenario.username,
+            slides: scenario.slides.map(s => ({ ...s, id: uuidv4() })),
+            activeSlideIndex: 0,
+            postedAt: new Date().toISOString().slice(0, 16),
+            appearance: {
+                ...prev.appearance,
+                darkMode: Math.random() > 0.5
+            }
+        }));
+        
+        toast.success(`Randomized: ${scenario.name}`);
     };
 
     return {

@@ -27,7 +27,7 @@ export const TitleBar = () => {
     if (!(window as any).electronAPI && !(window as any).__TAURI_INTERNALS__) return null;
 
     return (
-        <div data-tauri-drag-region className="h-8 w-full bg-[#0f0f0f] flex items-center justify-between select-none border-b border-white/5 relative z-[9999]">
+        <div data-tauri-drag-region className="h-10 w-full bg-[#0f0f0f] flex items-center justify-between select-none border-b border-white/5 relative z-[9999]">
             <div data-tauri-drag-region className="flex items-center px-3 gap-2 pointer-events-none">
                 <span className="text-sm leading-none">🌕</span>
                 <span className="text-[11px] font-medium text-white/40 tracking-wider uppercase">Veily Desktop</span>

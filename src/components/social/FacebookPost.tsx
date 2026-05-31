@@ -36,7 +36,7 @@ export const FacebookPost: React.FC<FacebookPostProps> = ({ state }) => {
                                     <VerifiedBadge platform="facebook" className="w-3.5 h-3.5 text-blue-500" />
                                 )}
                             </div>
-                            <div className="flex items-center gap-1 text-[13px] text-gray-500 dark:text-gray-400 leading-tight">
+                            <div className="flex items-center gap-1 text-[15px] text-gray-500 dark:text-gray-400 leading-tight">
                                 <span className="hover:underline cursor-pointer">{formatDistanceToNow(state.content.date)}</span>
                                 <span>·</span>
                                 <Globe className="w-3 h-3" />

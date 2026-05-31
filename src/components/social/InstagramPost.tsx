@@ -40,7 +40,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({ state }) => {
                     </div>
                     <div className="flex flex-col -gap-1">
                         <div className="flex items-center gap-1">
-                            <span className="font-semibold text-sm">{state.author.handle}</span>
+                            <span className="font-semibold text-[15px]">{state.author.handle}</span>
                             {state.author.verified && (
                                 <VerifiedBadge platform="instagram" className="w-3 h-3" />
                             )}
@@ -55,7 +55,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({ state }) => {
                 {state.content.image ? (
                     <img src={state.content.image} alt="Post content" className="w-full h-full object-cover" />
                 ) : (
-                    <span className="text-muted-foreground text-sm">No image</span>
+                    <span className="text-muted-foreground text-[15px]">No image</span>
                 )}
             </div>
 
@@ -71,10 +71,10 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({ state }) => {
                 </div>
 
                 {/* Likes */}
-                <div className="font-semibold text-sm mb-2">{state.metrics.likes} likes</div>
+                <div className="font-semibold text-[15px] mb-2">{state.metrics.likes} likes</div>
 
                 {/* Caption */}
-                <div className="text-sm mb-2">
+                <div className="text-[15px] mb-2">
                     <span className="font-semibold mr-2">{state.author.handle}</span>
                     <span className="whitespace-pre-wrap">{state.content.text}</span>
                 </div>
@@ -111,7 +111,7 @@ const InstagramComment = ({ item, isDark, depth }: { item: ThreadItem & { childr
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
-                    <div className="text-sm">
+                    <div className="text-[15px]">
                         <span className={cn("font-semibold mr-2 inline-flex items-center", isDark ? "text-white" : "text-black")}>
                             {item.author.handle}
                             {item.author.verified && <VerifiedBadge platform="instagram" className="w-[10px] h-[10px] ml-1" />}

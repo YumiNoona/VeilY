@@ -39,7 +39,7 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
                     <button className={cn("p-1 rounded hover:bg-gray-200 dark:hover:bg-zinc-800", isDark ? "text-zinc-400" : "text-gray-400")}>
                         <ArrowBigUp className="w-6 h-6" />
                     </button>
-                    <span className="text-xs font-bold my-1">{state.metrics.likes}</span>
+                    <span className="text-xs font-medium my-1">{state.metrics.likes}</span>
                     <button className={cn("p-1 rounded hover:bg-gray-200 dark:hover:bg-zinc-800", isDark ? "text-zinc-400" : "text-gray-400")}>
                         <ArrowBigDown className="w-6 h-6" />
                     </button>
@@ -62,10 +62,10 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
                     </div>
 
                     {/* Title & Content */}
-                    <h2 className={cn("text-lg font-medium mb-1.5 leading-tight", isDark ? "text-zinc-100" : "text-black")}>
-                        {state.content.text.split('\n')[0]} {/* Assuming first line is title for template simplicity */}
+                    <h2 className={cn("text-[15px] font-normal mb-1.5 leading-tight", isDark ? "text-zinc-100" : "text-black")}>
+                        {state.content.text.split('\n')[0]}
                     </h2>
-                    <div className={cn("text-sm mb-2 whitespace-pre-wrap", isDark ? "text-[#D7DADC]" : "text-gray-800")}>
+                    <div className={cn("text-[15px] mb-2 whitespace-pre-wrap", isDark ? "text-[#D7DADC]" : "text-gray-800")}>
                         {state.content.text.split('\n').slice(1).join('\n')}
                     </div>
 
@@ -92,7 +92,7 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
             {tree.length > 0 && (
                 <div className={cn("px-4 pb-4 pt-2 border-t", isDark ? "border-zinc-800 bg-[#1A1A1B]" : "border-gray-200 bg-white")}>
                     <div className="mb-4 mt-2">
-                        <span className={cn("text-sm font-medium", isDark ? "text-zinc-100" : "text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-500")}>
+                        <span className={cn("text-[15px] font-medium", isDark ? "text-zinc-100" : "text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-500")}>
                             Top Comments
                         </span>
                         <hr className={cn("mt-2", isDark ? "border-zinc-800" : "border-gray-200")} />
@@ -140,7 +140,7 @@ const RedditComment = React.memo(({ item, isDark, depth, items }: { item: Thread
                 </span>
             </div>
             
-            <div className={cn("pl-8 text-sm whitespace-pre-wrap leading-relaxed", isDark ? "text-[#D7DADC]" : "text-black")}>
+            <div className={cn("pl-8 text-[15px] whitespace-pre-wrap leading-relaxed", isDark ? "text-[#D7DADC]" : "text-black")}>
                 {item.content.text}
             </div>
             

@@ -14,15 +14,26 @@ interface ChatProps {
 }
 
 export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMessage, onUpdatePerson }: ChatProps) {
+    const bgColor = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-white';
+    const headerBg = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-white';
+    const textColor = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-[#0D0D0D]';
+    const userBubble = appearance.darkMode ? 'bg-[#3a3a5c]' : 'bg-[#2F2F2F]';
+    const userText = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-white';
+    const inputBg = appearance.darkMode ? 'bg-[#2a2a4a]' : 'bg-[#F4F4F4]';
+    const iconColor = appearance.darkMode ? 'text-[#b0b0b0]' : 'text-[#0D0D0D]';
+    const codeBg = 'bg-[#0d0d0d]';
     const getPerson = (id: string) => people.find(p => p.id === id);
 
     // Format model name for display
     const getModelDisplayName = () => {
         if (!aiModel) return 'ChatGPT';
         const modelMap: Record<string, string> = {
+            'gpt-4.1': 'GPT-4.1',
+            'gpt-4.1-plus': 'GPT-4.1 Plus',
             'gpt-4o': 'GPT-4o',
+            'gpt-4o-plus': 'GPT-4o Plus',
             'gpt-4-turbo': 'GPT-4 Turbo',
-            'gpt-3.5': 'GPT-3.5',
+            'gpt-3.5-turbo': 'GPT-3.5 Turbo',
         };
         return modelMap[aiModel] || 'ChatGPT';
     };
@@ -91,17 +102,17 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
     };
 
     return (
-        <div className={cn("flex flex-col h-full bg-white font-sans text-[#0D0D0D]")}>
+        <div className={cn("flex flex-col h-full font-sans", bgColor, textColor)}>
             {/* Header */}
-            <header className="px-4 py-2 flex items-center justify-between sticky top-0 bg-white z-10">
+            <header className={cn("px-4 py-2 flex items-center justify-between sticky top-0 z-10", headerBg)}>
                 <div className="w-8 flex items-center justify-center">
-                    <AlignJustify className="w-6 h-6 text-[#0D0D0D] stroke-[1.5]" />
+                    <AlignJustify className={cn("w-6 h-6 stroke-[1.5]", iconColor)} />
                 </div>
                 <div className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors">
-                    <span className="font-semibold text-[16px] text-[#0D0D0D]">{getModelDisplayName()}</span>
+                    <span className="font-semibold text-[16px]">{getModelDisplayName()}</span>
                     <span className="text-gray-400 text-[10px] transform translate-y-[1px]">▼</span>
                 </div>
-                <button className="w-8 h-8 flex items-center justify-center text-[#0D0D0D] hover:bg-gray-50 rounded-full transition-colors">
+                <button className={cn("w-8 h-8 flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors", iconColor)}>
                     <Pencil className="w-5 h-5" />
                 </button>
             </header>
@@ -117,7 +128,7 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
                             {!isUser && (
                                 <div className="max-w-[100%] pr-2">
                                     <div className="space-y-1">
-                                        <div className="text-[16px] leading-[1.6] text-[#0D0D0D]">
+                                        <div className="text-[16px] leading-[1.6]">
                                             <EditableText
                                                 value={message.text}
                                                 displayValue={formatMessageText(message.text)}
@@ -151,13 +162,13 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
 
                             {/* User Layout */}
                             {isUser && (
-                                <div className="max-w-[90%] bg-[#2F2F2F] text-white px-5 py-3 rounded-[26px] text-[16px] leading-[1.5] mb-2">
+                                <div className={cn("max-w-[90%] px-5 py-3 rounded-[26px] text-[16px] leading-[1.5] mb-2", userBubble, userText)}>
                                     <EditableText
                                         value={message.text}
                                         onSave={(newText) => onUpdateMessage?.(message.id, newText)}
                                         multiline
-                                        className="text-white"
-                                        inputClassName="text-white"
+                                        className={userText}
+                                        inputClassName={userText}
                                     />
                                 </div>
                             )}
@@ -168,10 +179,10 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
 
             {/* Input Area */}
             <div className="px-4 pb-6 pt-2">
-                <div className="bg-[#F4F4F4] rounded-[28px] flex items-center px-3 py-3 gap-3">
-                    <div className="flex gap-3 text-[#0D0D0D] shrink-0 items-center pl-1">
-                        <Plus className="w-7 h-7 stroke-[1.5] text-[#0D0D0D] cursor-pointer" />
-                        <SlidersHorizontal className="w-6 h-6 stroke-[1.5] text-[#0D0D0D] cursor-pointer" />
+                <div className={cn("rounded-[28px] flex items-center px-3 py-3 gap-3", inputBg)}>
+                    <div className={cn("flex gap-3 shrink-0 items-center pl-1", iconColor)}>
+                        <Plus className="w-7 h-7 stroke-[1.5] cursor-pointer" />
+                        <SlidersHorizontal className="w-6 h-6 stroke-[1.5] cursor-pointer" />
                     </div>
 
                     <div className="flex-1">
@@ -179,8 +190,8 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
                     </div>
 
                     <div className="flex gap-4 shrink-0 items-center pl-1 pr-1">
-                        <div className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-black/5 rounded-full transition-colors">
-                            <Mic className="w-6 h-6 stroke-[1.5] text-[#0D0D0D]" />
+                        <div className={cn("w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-black/5 rounded-full transition-colors", iconColor)}>
+                            <Mic className="w-6 h-6 stroke-[1.5]" />
                         </div>
                         <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
                             <AudioLines className="w-5 h-5 text-white stroke-[2]" />

@@ -1,6 +1,6 @@
 import { Message, Person, AppearanceSettings } from "@/types/chat";
 import { cn } from "@/lib/utils";
-import { AlignJustify, Pencil, RotateCw, Copy, ThumbsUp, ThumbsDown, HelpCircle, Paperclip, Mic, Lightbulb, ArrowUp } from "lucide-react";
+import { AlignJustify, Pencil, RotateCw, Copy, ThumbsUp, ThumbsDown, HelpCircle, Paperclip, Mic, Lightbulb } from "lucide-react";
 
 interface ChatProps {
     messages: Message[];
@@ -12,6 +12,13 @@ interface ChatProps {
 
 export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
     const getPerson = (id: string) => people.find(p => p.id === id);
+    const bgColor = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-[#F5F5F5]';
+    const headerBg = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-[#F5F5F5]';
+    const textColor = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-[#0D0D0D]';
+    const userBubble = appearance.darkMode ? 'bg-[#3a3a5c] border-[#4a4a6c]' : 'bg-white border-[#E5E5E5]';
+    const userText = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-[#2D2D2D]';
+    const inputBg = appearance.darkMode ? 'bg-[#2a2a4a] border-[#3a3a5c]' : 'bg-white border-gray-200';
+    const iconColor = appearance.darkMode ? 'text-[#b0b0b0]' : 'text-[#0D0D0D]';
 
     // Format model name for display
     const getModelDisplayName = () => {
@@ -84,18 +91,18 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
     };
 
     return (
-        <div className={cn("flex flex-col h-full bg-[#F5F5F5] font-sans text-[#0D0D0D]")}>
+        <div className={cn("flex flex-col h-full font-sans", bgColor, textColor)}>
             {/* Header */}
-            <header className="px-4 py-2 flex items-center justify-between sticky top-0 bg-[#F5F5F5] z-10">
+            <header className={cn("px-4 py-2 flex items-center justify-between sticky top-0 z-10", headerBg)}>
                 <div className="w-8 flex items-center justify-center">
-                    <AlignJustify className="w-6 h-6 text-[#0D0D0D] stroke-[1.5]" />
+                    <AlignJustify className={cn("w-6 h-6 stroke-[1.5]", iconColor)} />
                 </div>
-                <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 px-2 py-1 rounded-lg transition-colors">
+                <div className={cn("flex items-center gap-2 cursor-pointer px-2 py-1 rounded-lg transition-colors", appearance.darkMode ? 'hover:bg-[#2a2a4a]' : 'hover:bg-gray-200')}>
                     <div className="w-2 h-2 rounded-full bg-[#FF6B35]"></div>
-                    <span className="font-semibold text-[16px] text-[#0D0D0D]">{getModelDisplayName()}</span>
+                    <span className="font-semibold text-[16px]">{getModelDisplayName()}</span>
                     <span className="text-gray-400 text-[10px] transform translate-y-[1px]">▼</span>
                 </div>
-                <button className="w-8 h-8 flex items-center justify-center text-[#0D0D0D] hover:bg-gray-200 rounded-full transition-colors">
+                <button className={cn("w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full transition-colors", iconColor)}>
                     <Pencil className="w-5 h-5" />
                 </button>
             </header>
@@ -111,26 +118,26 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
                             {!isUser && (
                                 <div className="max-w-[100%] pr-2">
                                     <div className="space-y-1">
-                                        <div className="text-[16px] leading-[1.6] text-[#0D0D0D]">
+                                        <div className="text-[16px] leading-[1.6]">
                                             {formatMessageText(message.text)}
                                         </div>
                                     </div>
 
                                     {/* Action Buttons Row */}
-                                    <div className="flex items-center gap-2 mt-2 text-gray-600">
-                                        <button className="p-1.5 hover:bg-gray-200 rounded-full transition-colors">
+                                    <div className="flex items-center gap-2 mt-2 text-gray-500">
+                                        <button className={cn("p-1.5 rounded-full transition-colors", appearance.darkMode ? 'hover:bg-[#2a2a4a]' : 'hover:bg-gray-200')}>
                                             <RotateCw className="w-[18px] h-[18px] stroke-[1.5]" />
                                         </button>
-                                        <button className="p-1.5 hover:bg-gray-200 rounded-full transition-colors">
+                                        <button className={cn("p-1.5 rounded-full transition-colors", appearance.darkMode ? 'hover:bg-[#2a2a4a]' : 'hover:bg-gray-200')}>
                                             <Copy className="w-[18px] h-[18px] stroke-[1.5]" />
                                         </button>
-                                        <button className="p-1.5 hover:bg-gray-200 rounded-full transition-colors">
+                                        <button className={cn("p-1.5 rounded-full transition-colors", appearance.darkMode ? 'hover:bg-[#2a2a4a]' : 'hover:bg-gray-200')}>
                                             <ThumbsUp className="w-[18px] h-[18px] stroke-[1.5]" />
                                         </button>
-                                        <button className="p-1.5 hover:bg-gray-200 rounded-full transition-colors">
+                                        <button className={cn("p-1.5 rounded-full transition-colors", appearance.darkMode ? 'hover:bg-[#2a2a4a]' : 'hover:bg-gray-200')}>
                                             <ThumbsDown className="w-[18px] h-[18px] stroke-[1.5]" />
                                         </button>
-                                        <button className="p-1.5 hover:bg-gray-200 rounded-full transition-colors">
+                                        <button className={cn("p-1.5 rounded-full transition-colors", appearance.darkMode ? 'hover:bg-[#2a2a4a]' : 'hover:bg-gray-200')}>
                                             <HelpCircle className="w-[18px] h-[18px] stroke-[1.5]" />
                                         </button>
                                     </div>
@@ -139,7 +146,7 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
 
                             {/* User Layout */}
                             {isUser && (
-                                <div className="max-w-[85%] bg-white border border-[#E5E5E5] text-[#2D2D2D] px-4 py-3 rounded-[16px] text-[16px] leading-[1.5]">
+                                <div className={cn("max-w-[85%] border px-4 py-3 rounded-[16px] text-[16px] leading-[1.5]", userBubble, userText)}>
                                     {message.text}
                                 </div>
                             )}
@@ -150,36 +157,31 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
 
             {/* Input Area */}
             <div className="px-4 pb-6 pt-2">
-                <div className="bg-white border border-gray-200 rounded-[24px] px-4 py-3 shadow-sm">
+                <div className={cn("border rounded-[24px] px-4 py-3 shadow-sm", inputBg)}>
                     {/* Input Field */}
                     <div className="mb-3">
                         <span className="text-[#9CA3AF] text-[15px]">Ask Anything</span>
                     </div>
 
                     {/* Buttons Row */}
-                    <div className="flex gap-2 items-center justify-between">
-                        <div className="flex gap-2 items-center">
+                    <div className="flex gap-2 items-center">
                             <button className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                                 <Paperclip className="w-5 h-5 text-[#6B7280]" />
                             </button>
-                            <button className="px-3 py-1.5 hover:bg-gray-100 rounded-full transition-colors flex items-center gap-1.5 border border-gray-200">
+                            <button className={cn("px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 border", appearance.darkMode ? 'hover:bg-[#2a2a4a] border-[#3a3a5c]' : 'hover:bg-gray-100 border-gray-200')}>
                                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M12 6v6l4 2" />
                                 </svg>
                                 <span className="text-sm font-medium text-[#374151]">DeepSearch</span>
                             </button>
-                            <button className="px-3 py-1.5 hover:bg-gray-100 rounded-full transition-colors flex items-center gap-1.5 border border-gray-200">
+                            <button className={cn("px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 border", appearance.darkMode ? 'hover:bg-[#2a2a4a] border-[#3a3a5c]' : 'hover:bg-gray-100 border-gray-200')}>
                                 <Lightbulb className="w-4 h-4" />
                                 <span className="text-sm font-medium text-[#374151]">Think</span>
                             </button>
-                            <button className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
+                            <button className={cn("w-9 h-9 rounded-full flex items-center justify-center transition-colors", appearance.darkMode ? 'bg-[#3a3a5c] hover:bg-[#4a4a6c]' : 'bg-gray-100 hover:bg-gray-200')}>
                                 <Mic className="w-5 h-5 text-[#6B7280]" />
                             </button>
-                        </div>
-                        <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
-                            <ArrowUp className="w-5 h-5 text-white stroke-[2.5]" />
-                        </div>
                     </div>
                 </div>
             </div>

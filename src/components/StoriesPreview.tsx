@@ -5,7 +5,6 @@ import { Image as ImageIcon, X, MoreHorizontal, Signal, Wifi } from 'lucide-reac
 import { Watermark } from '@/components/Watermark';
 import { VerifiedBadge } from '@/components/icons/VerifiedBadge';
 import { exportAsImage, copyToClipboard } from '@/lib/export-utils';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 type StoriesState = ReturnType<typeof useStoriesState>['state'];
@@ -174,36 +173,22 @@ const StoryFrame: React.FC<{ state: StoriesState; onSlideChange?: (index: number
 
 export const StoriesPreview = React.forwardRef<StoriesPreviewRef, StoriesPreviewProps>(({ state, onSlideChange }, ref) => {
     const captureRef = useRef<HTMLDivElement>(null);
-    const { user, plan, downloadsUsed, setAuthModalOpen, setUpgradeModalOpen, incrementDownloads } = useAuth();
+
 
     React.useImperativeHandle(ref, () => ({
         handleDownload: async () => {
-            if (!user) {
-                setAuthModalOpen(true);
-                return;
-            }
-            if (plan === 'free' && (3 - downloadsUsed) <= 0) {
-                toast.error("You've reached your free export limit!");
-                setUpgradeModalOpen(true);
-                return;
-            }
             if (!captureRef.current) return;
             try {
                 await exportAsImage(captureRef.current, {
                     scale: 2,
                     filename: `veily-story-${state.platform}-${Date.now()}.png`
                 });
-                await incrementDownloads();
                 toast.success("Mockup downloaded!");
             } catch (err) {
                 toast.error("Download failed");
             }
         },
         handleCopy: async () => {
-            if (!user) {
-                setAuthModalOpen(true);
-                return;
-            }
             if (!captureRef.current) return;
             try {
                 const success = await copyToClipboard(captureRef.current, 2);

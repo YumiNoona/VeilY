@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSocialPostState, SocialPlatform, ThreadItem } from '@/hooks/useSocialPostState';
 import { formatMetric } from '@/lib/utils';
 import { SOCIAL_TEMPLATES } from '@/lib/templates';
@@ -17,8 +17,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Crown, Upload, X, Twitter, Instagram, Linkedin, Facebook, MessageSquare, Wand2, ChevronDown, ChevronRight, RotateCcw, User, FileText, MessageCircle, BarChart2, Palette, Sparkles } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { Upload, X, Twitter, Instagram, Linkedin, Facebook, MessageSquare, Wand2, ChevronDown, ChevronRight, RotateCcw, User, FileText, MessageCircle, BarChart2, Palette, Sparkles } from 'lucide-react';
 import { SmartFillModal } from './modals/SmartFillModal';
 import { ParsedChat } from '@/lib/parsers';
 
@@ -47,17 +46,28 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
     randomizeState,
     handleResetState
 }) => {
-    const { plan, setUpgradeModalOpen } = useAuth();
     const [collapsedThreads, setCollapsedThreads] = React.useState<Record<string, boolean>>({});
     const [isSmartFillOpen, setIsSmartFillOpen] = React.useState(false);
 
-    const handleSmartFillClick = () => {
-        if (plan === 'free') {
-            setUpgradeModalOpen(true);
-            return;
-        }
-        setIsSmartFillOpen(true);
-    };
+    // Pill toggle animation
+    const pillContainerRef = useRef<HTMLDivElement>(null);
+    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
+    const [pillMounted, setPillMounted] = useState(false);
+
+    useEffect(() => {
+      if (!pillContainerRef.current) return;
+      const raf = requestAnimationFrame(() => {
+        const active = pillContainerRef.current?.querySelector<HTMLElement>('[data-state="active"]');
+        if (!active || !pillContainerRef.current) return;
+        const containerRect = pillContainerRef.current.getBoundingClientRect();
+        const rect = active.getBoundingClientRect();
+        setPillStyle({ left: rect.left - containerRect.left, width: rect.width });
+        if (!pillMounted) setPillMounted(true);
+      });
+      return () => cancelAnimationFrame(raf);
+    }, [state.platform, pillMounted]);
+
+    const pillRefs = { containerRef: pillContainerRef, pillStyle, mounted: pillMounted };
 
     const handleSmartFillSuccess = (data: ParsedChat) => {
         if (data.participants && data.participants.length > 0) {
@@ -225,34 +235,22 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 relative group"
-                            onClick={() => {
-                                if (plan === 'free') {
-                                    setUpgradeModalOpen(true);
-                                    return;
-                                }
-                                randomizeState();
-                            }}
-                            title="Randomize Content (Premium)"
+                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                            onClick={randomizeState}
+                            title="Randomize Content"
                         >
                             <Wand2 className="w-4 h-4" />
-                            {plan === 'free' && (
-                                <Crown className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-amber-500 fill-amber-500/20 drop-shadow-sm border-2 border-sidebar-bg rounded-full bg-sidebar-bg p-[0.5px]" />
-                            )}
                         </Button>
                     )}
 
                     <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 relative group"
-                        onClick={handleSmartFillClick}
-                        title="AI Smart Fill (Premium)"
+                        className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                        onClick={() => setIsSmartFillOpen(true)}
+                        title="AI Smart Fill"
                     >
                         <Sparkles className="w-4 h-4 fill-amber-500/20" />
-                        {plan === 'free' && (
-                            <Crown className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-amber-500 fill-amber-500/20 drop-shadow-sm border-2 border-sidebar-bg rounded-full bg-sidebar-bg p-[0.5px]" />
-                        )}
                     </Button>
                 </div>
             </div>
@@ -266,31 +264,28 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
             <div className="px-3 py-2.5 border-b border-sidebar-border shrink-0 flex items-center justify-center min-h-[56px]">
                 <Tabs
                     value={state.platform}
-                    onValueChange={(val) => {
-                        if (['linkedin', 'facebook', 'reddit'].includes(val)) {
-                            if (plan === 'free') {
-                                setUpgradeModalOpen(true);
-                                return;
-                            }
-                        }
-                        setPlatform(val as SocialPlatform);
-                    }}
+                    onValueChange={(val) => setPlatform(val as SocialPlatform)}
                     className="w-full"
                 >
-                    <TabsList className="grid w-full grid-cols-5 h-10">
-                        <TabsTrigger value="twitter"><Twitter className="w-4 h-4" /></TabsTrigger>
-                        <TabsTrigger value="instagram"><Instagram className="w-4 h-4" /></TabsTrigger>
-                        <TabsTrigger value="linkedin" className="relative">
+                    <TabsList ref={pillRefs.containerRef} className="relative grid w-full grid-cols-5 h-10">
+                        <div
+                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-0"
+                            style={{
+                                left: `${pillRefs.pillStyle.left}px`,
+                                width: `${pillRefs.pillStyle.width}px`,
+                                opacity: pillRefs.mounted ? 1 : 0,
+                            }}
+                        />
+                        <TabsTrigger value="twitter" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10"><Twitter className="w-4 h-4" /></TabsTrigger>
+                        <TabsTrigger value="instagram" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10"><Instagram className="w-4 h-4" /></TabsTrigger>
+                        <TabsTrigger value="linkedin" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <Linkedin className="w-4 h-4" />
-                            {plan === 'free' && <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />}
                         </TabsTrigger>
-                        <TabsTrigger value="facebook" className="relative">
+                        <TabsTrigger value="facebook" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <Facebook className="w-4 h-4" />
-                            {plan === 'free' && <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />}
                         </TabsTrigger>
-                        <TabsTrigger value="reddit" className="relative">
+                        <TabsTrigger value="reddit" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <MessageSquare className="w-4 h-4" />
-                            {plan === 'free' && <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />}
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>
@@ -311,20 +306,20 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
                             <div className="grid gap-2 mt-1">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Display Name</Label>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Display Name</Label>
                                 <Input
                                     value={state.author.name}
                                     onChange={(e) => setAuthor({ name: e.target.value })}
-                                    className="h-10 text-base font-medium bg-background border-zinc-200"
+                                    className="h-10 text-sm font-medium bg-background border-zinc-200"
                                 />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Handle / Username (Subreddit for Reddit)</Label>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Handle / Username (Subreddit for Reddit)</Label>
                                 <div className="relative">
                                     <span className="absolute left-3 top-2.5 text-muted-foreground font-medium">{state.platform === 'reddit' ? 'r/' : '@'}</span>
                                     <Input
-                                        className="pl-8 h-10 text-base font-medium bg-background border-zinc-200"
+                                        className="pl-8 h-10 text-sm font-medium bg-background border-zinc-200"
                                         value={state.author.handle}
                                         onChange={(e) => setAuthor({ handle: e.target.value })}
                                     />
@@ -372,16 +367,16 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
                             <div className="grid gap-2 mt-1">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Text / Caption</Label>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Text / Caption</Label>
                                 <Textarea
-                                    className="min-h-[120px] text-base font-medium bg-background border-zinc-200 leading-relaxed"
+                                    className="min-h-[120px] text-sm bg-background border-zinc-200 leading-relaxed"
                                     value={state.content.text}
                                     onChange={(e) => setContent({ text: e.target.value })}
                                 />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Post Image</Label>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Post Image</Label>
                                 <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:bg-muted/50 transition-colors cursor-pointer relative">
                                     {state.content.image ? (
                                         <div className="relative">
@@ -436,8 +431,8 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                 
                                 {state.threadItems.length > 0 && (
                                     <div className="flex items-center gap-1.5">
-                                        <Button size="sm" variant="ghost" className="h-8 text-[11px] px-2" onClick={expandAllThreads}>Expand</Button>
-                                        <Button size="sm" variant="secondary" className="h-8 text-[11px] px-2" onClick={collapseAllThreads}>Collapse</Button>
+                                        <Button size="sm" variant="ghost" className="h-8 text-xs px-2" onClick={expandAllThreads}>Expand</Button>
+                                        <Button size="sm" variant="secondary" className="h-8 text-xs px-2" onClick={collapseAllThreads}>Collapse</Button>
                                     </div>
                                 )}
                             </div>
@@ -461,7 +456,7 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                             onClick={() => toggleThreadCollapse(item.id)}
                                         >
                                             {isCollapsed ? <ChevronRight className="w-4 h-4 mr-1 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 mr-1 text-muted-foreground" />}
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-2">
+                                            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground mr-2">
                                                 {item.isThreadContinuation ? 'Thread Continuation' : (item.depth === 1 ? 'Reply (Nested)' : 'Top-Level Comment')}
                                             </span>
                                             {isCollapsed && (
@@ -478,7 +473,7 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                                         {item.author.avatar ? (
                                                             <img src={item.author.avatar} alt="Avatar" className="w-full h-full object-cover" />
                                                         ) : (
-                                                            <div className="w-full h-full flex items-center justify-center text-[8px] text-muted-foreground">img</div>
+                                                            <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">img</div>
                                                         )}
                                                         <Input
                                                             type="file"
@@ -544,18 +539,18 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
                             <div className="grid grid-cols-2 gap-4 mt-1">
                                 <div className="grid gap-2">
-                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Likes / Upvotes</Label>
+                                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Likes / Upvotes</Label>
                                     <Input
-                                        className="h-10 text-base font-medium bg-background border-zinc-200"
+                                        className="h-10 text-sm font-medium bg-background border-zinc-200"
                                         value={state.metrics.likes}
                                         onChange={(e) => setMetrics({ likes: e.target.value })}
                                         onBlur={(e) => setMetrics({ likes: formatMetric(e.target.value) })}
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Comments</Label>
+                                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Comments</Label>
                                     <Input
-                                        className="h-10 text-base font-medium bg-background border-zinc-200"
+                                        className="h-10 text-sm font-medium bg-background border-zinc-200"
                                         value={state.metrics.comments}
                                         onChange={(e) => setMetrics({ comments: e.target.value })}
                                         onBlur={(e) => setMetrics({ comments: formatMetric(e.target.value) })}
@@ -563,9 +558,9 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                 </div>
                                 {(state.platform === 'twitter' || state.platform === 'linkedin') && (
                                     <div className="grid gap-2">
-                                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Reposts</Label>
+                                        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Reposts</Label>
                                         <Input
-                                            className="h-10 text-base font-medium bg-background border-zinc-200"
+                                            className="h-10 text-sm font-medium bg-background border-zinc-200"
                                             value={state.metrics.reposts}
                                             onChange={(e) => setMetrics({ reposts: e.target.value })}
                                             onBlur={(e) => setMetrics({ reposts: formatMetric(e.target.value) })}
@@ -574,9 +569,9 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                 )}
                                 {state.platform === 'twitter' && (
                                     <div className="grid gap-2">
-                                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Views</Label>
+                                        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Views</Label>
                                         <Input
-                                            className="h-10 text-base font-medium bg-background border-zinc-200"
+                                            className="h-10 text-sm font-medium bg-background border-zinc-200"
                                             value={state.metrics.views}
                                             onChange={(e) => setMetrics({ views: e.target.value })}
                                             onBlur={(e) => setMetrics({ views: formatMetric(e.target.value) })}

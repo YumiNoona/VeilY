@@ -10,10 +10,14 @@ import { UpgradeModal } from "@/components/modals/UpgradeModal";
 import { ProfileModal } from "@/components/modals/ProfileModal";
 import { TitleBar } from "@/components/layout/TitleBar";
 import { isElectron } from "@/lib/electron-utils";
+import { UpdateModal } from "@/components/modals/UpdateModal";
+import { useUpdateChecker } from "@/hooks/useUpdateChecker";
 
 export const Layout = () => {
     const location = useLocation();
     const { user, plan, setUpgradeModalOpen } = useAuth();
+    
+    const { updateAvailable, currentVersion, latestVersion, dismiss, releasesUrl } = useUpdateChecker();
     
     const tabs = [
         { id: "chat", label: "Chat", path: "/", icon: MessageSquare },
@@ -37,6 +41,13 @@ export const Layout = () => {
             <AuthModal />
             <UpgradeModal />
             <ProfileModal />
+            <UpdateModal
+                open={updateAvailable}
+                onOpenChange={(open) => { if (!open) dismiss(); }}
+                currentVersion={currentVersion}
+                latestVersion={latestVersion}
+                releasesUrl={releasesUrl}
+            />
             <Navbar />
 
             <main className="flex-1 overflow-hidden relative">

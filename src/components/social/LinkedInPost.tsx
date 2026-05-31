@@ -40,7 +40,7 @@ export const LinkedInPost: React.FC<LinkedInPostProps> = ({ state }) => {
                     <div className="flex items-start justify-between">
                         <div>
                             <div className="flex items-center gap-1">
-                                <span className="font-semibold text-sm hover:underline hover:text-blue-600 cursor-pointer">
+                                <span className="font-semibold text-[15px] hover:underline hover:text-blue-600 cursor-pointer">
                                     {state.author.name}
                                 </span>
                                 {state.author.verified && (
@@ -62,7 +62,7 @@ export const LinkedInPost: React.FC<LinkedInPostProps> = ({ state }) => {
             </div>
 
             {/* Content Text */}
-            <div className="px-4 pt-1 pb-3 whitespace-pre-wrap text-[14px] leading-snug">
+            <div className="px-4 pt-1 pb-3 whitespace-pre-wrap text-[15px] leading-snug">
                 {state.content.text}
             </div>
 
@@ -113,7 +113,7 @@ export const LinkedInPost: React.FC<LinkedInPostProps> = ({ state }) => {
 
 const ActionButton = ({ icon: Icon, label, isDark }: { icon: any, label: string, isDark: boolean }) => (
     <button className={cn(
-        "flex items-center gap-1.5 px-3 py-3 rounded-md font-semibold text-[14px] transition-colors flex-1 justify-center relative shadow-none border-0",
+        "flex items-center gap-1.5 px-3 py-3 rounded-md font-semibold text-[15px] transition-colors flex-1 justify-center relative shadow-none border-0",
         isDark ? "hover:bg-zinc-800 text-zinc-300" : "hover:bg-gray-100/80 text-gray-600"
     )}>
         <Icon className="w-[22px] h-[22px]" />
@@ -129,7 +129,7 @@ const LinkedInComment = ({ item, isDark, depth, items }: { item: ThreadItem & { 
                 <AvatarFallback>{item.author.name[0]}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-                <div className={cn("rounded-r-[8px] rounded-bl-[8px] p-2 px-3 text-[14px] flex flex-col", isDark ? "bg-zinc-800" : "bg-gray-100")}>
+                <div className={cn("rounded-r-[8px] rounded-bl-[8px] p-2 px-3 text-[15px] flex flex-col", isDark ? "bg-zinc-800" : "bg-gray-100")}>
                     <div className="flex justify-between items-start">
                         <div className="flex flex-col">
                             <div className="flex items-center">

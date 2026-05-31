@@ -51,7 +51,7 @@ export function GroupCallPreview({ state, deviceView, appearance }: GroupCallPre
 
                 {/* Status Overlays */}
                 <div className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded bg-black/40 backdrop-blur-md">
-                    <span className="text-[10px] text-white font-medium truncate max-w-[80px]">{p.name}</span>
+                    <span className="text-xs text-white font-medium truncate max-w-[80px]">{p.name}</span>
                     {isMuted && <MicOff className="w-3 h-3 text-red-400" />}
                 </div>
             </div>
@@ -72,7 +72,7 @@ export function GroupCallPreview({ state, deviceView, appearance }: GroupCallPre
                 {isRecording && (
                     <div className="flex items-center gap-1 text-red-500 animate-pulse">
                         <Disc className="w-3 h-3 fill-current" />
-                        <span className="text-[10px] font-bold">REC</span>
+                        <span className="text-xs font-bold">REC</span>
                     </div>
                 )}
                 <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">

@@ -45,7 +45,7 @@ export function PeopleSection({
                         <Users className="w-3.5 h-3.5 text-primary" />
                     </div>
                     <span className="font-semibold text-sm">People</span>
-                    <span className="ml-1 w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium text-muted-foreground">
+                    <span className="ml-1 w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                         {people.length}
                     </span>
                 </div>
@@ -54,7 +54,7 @@ export function PeopleSection({
                 {/* Sender Section */}
                 <div>
                     <div className="flex items-center gap-1.5 mb-2 mt-1">
-                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sender</span>
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Sender</span>
                         <Tooltip>
                             <TooltipTrigger>
                                 <HelpCircle className="w-3 h-3 text-muted-foreground" />
@@ -87,7 +87,7 @@ export function PeopleSection({
                             <Input
                                 value={senderPerson.name}
                                 onChange={(e) => onUpdatePerson({ ...senderPerson, name: e.target.value })}
-                                className="h-10 text-base font-medium flex-1 bg-background border-zinc-200 focus:border-primary/50"
+                                className="h-10 text-sm font-medium flex-1 bg-background border-zinc-200 focus:border-primary/50"
                             />
                         </div>
                     )}
@@ -96,7 +96,7 @@ export function PeopleSection({
                 {/* Receiver Section */}
                 <div>
                     <div className="flex items-center gap-1.5 mb-2 mt-2">
-                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Receiver</span>
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Receiver</span>
                         <Tooltip>
                             <TooltipTrigger>
                                 <HelpCircle className="w-3 h-3 text-muted-foreground" />
@@ -130,7 +130,7 @@ export function PeopleSection({
                                 <Input
                                     value={person.name}
                                     onChange={(e) => onUpdatePerson({ ...person, name: e.target.value })}
-                                    className="h-10 text-base font-medium flex-1 bg-background border-zinc-200 focus:border-primary/50"
+                                    className="h-10 text-sm font-medium flex-1 bg-background border-zinc-200 focus:border-primary/50"
                                 />
                                 {people.length > 2 && (
                                     <button

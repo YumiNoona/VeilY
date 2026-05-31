@@ -55,6 +55,11 @@ export interface AppearanceSettings {
   wallpaperUrl?: string;
   transparentBackground: boolean;
   isTyping: boolean;
+  // Typography
+  fontSize?: 'xs' | 'sm' | 'base' | 'lg';
+  fontFamily?: 'sans' | 'serif' | 'mono';
+  // Chat style
+  chatStyle?: 'global' | 'indian';
 }
 
 export interface ChatState {

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useCommentState, CommentPlatform, Profile, Comment } from '@/hooks/useCommentState';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -21,10 +21,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Twitter, Instagram, Linkedin, Facebook, Youtube, Plus, Trash2, Upload, MessageSquare, Heart, Clock, RotateCcw, Wand2, Users, Palette, MessageCircle, Crown, Sparkles } from 'lucide-react';
+import { Twitter, Instagram, Linkedin, Facebook, Youtube, Plus, Trash2, Upload, MessageSquare, Heart, Clock, RotateCcw, Wand2, Users, Palette, MessageCircle, Sparkles } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { COMMENT_TEMPLATES } from '@/lib/templates';
-import { useAuth } from '@/contexts/AuthContext';
+
 import { SmartFillModal } from './modals/SmartFillModal';
 import { ParsedChat } from '@/lib/parsers';
 
@@ -62,19 +62,29 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     onTemplateLoad,
     onRandomize,
 }) => {
-    const { plan, setUpgradeModalOpen } = useAuth();
     const [isSmartFillOpen, setIsSmartFillOpen] = React.useState(false);
 
-    const handleSmartFillClick = () => {
-        if (plan === 'free') {
-            setUpgradeModalOpen(true);
-            return;
-        }
-        setIsSmartFillOpen(true);
-    };
+    // Pill toggle animation
+    const pillContainerRef = useRef<HTMLDivElement>(null);
+    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
+    const [pillMounted, setPillMounted] = useState(false);
+
+    useEffect(() => {
+      if (!pillContainerRef.current) return;
+      const raf = requestAnimationFrame(() => {
+        const active = pillContainerRef.current?.querySelector<HTMLElement>('[data-state="active"]');
+        if (!active || !pillContainerRef.current) return;
+        const containerRect = pillContainerRef.current.getBoundingClientRect();
+        const rect = active.getBoundingClientRect();
+        setPillStyle({ left: rect.left - containerRect.left, width: rect.width });
+        if (!pillMounted) setPillMounted(true);
+      });
+      return () => cancelAnimationFrame(raf);
+    }, [state.platform, pillMounted]);
+
+    const pillRefs = { containerRef: pillContainerRef, pillStyle, mounted: pillMounted };
 
     const handleSmartFillSuccess = (data: ParsedChat) => {
-        // Map AI generated participants to profiles
         if (data.participants && data.participants.length > 0) {
             data.participants.forEach((p, idx) => {
                 const existing = state.profiles.find(prof => prof.name === p.name);
@@ -84,7 +94,6 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
             });
         }
 
-        // Map AI generated messages to comments
         if (data.messages && data.messages.length > 0) {
             data.messages.forEach((msg, idx) => {
                 const author = (data.participants?.[idx] || data.participants?.[0] || { name: 'User' }) as any;
@@ -99,8 +108,6 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                     });
                 } else {
                     addComment();
-                    // Note: In a real app, we might need a way to get the ID of the newly added comment 
-                    // or batch update the state. For now, this populates the first or adds more.
                 }
             });
         }
@@ -108,12 +115,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handlePlatformChange = (val: CommentPlatform) => {
-        const isPremium = val === 'tiktok' || val === 'youtube';
-        if (isPremium && plan === 'free') {
-            setUpgradeModalOpen(true);
-        } else {
-            setPlatform(val);
-        }
+        setPlatform(val);
     };
 
     const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>, profileId: string) => {
@@ -197,7 +199,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                         <Button
                             variant="secondary"
                             size="sm"
-                            className="h-8 text-xs font-bold ml-auto px-4 rounded-lg uppercase tracking-wider"
+                            className="h-8 text-xs font-medium ml-auto px-4 rounded-lg uppercase tracking-wider"
                             onClick={() => addComment(comment.id)}
                         >
                             Reply
@@ -265,34 +267,22 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 relative group"
-                            onClick={() => {
-                                if (plan === 'free') {
-                                    setUpgradeModalOpen(true);
-                                    return;
-                                }
-                                onRandomize();
-                            }}
-                            title="Randomize Content (Premium)"
+                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                            onClick={onRandomize}
+                            title="Randomize Content"
                         >
                             <Wand2 className="w-4 h-4" />
-                            {plan === 'free' && (
-                                <Crown className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-amber-500 fill-amber-500/20 drop-shadow-sm border-2 border-sidebar-bg rounded-full bg-sidebar-bg p-[0.5px]" />
-                            )}
                         </Button>
                     )}
 
                     <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 relative group"
-                        onClick={handleSmartFillClick}
-                        title="AI Smart Fill (Premium)"
+                        className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                        onClick={() => setIsSmartFillOpen(true)}
+                        title="AI Smart Fill"
                     >
                         <Sparkles className="w-4 h-4 fill-amber-500/20" />
-                        {plan === 'free' && (
-                            <Crown className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-amber-500 fill-amber-500/20 drop-shadow-sm border-2 border-sidebar-bg rounded-full bg-sidebar-bg p-[0.5px]" />
-                        )}
                     </Button>
                 </div>
             </div>
@@ -310,20 +300,26 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                     onValueChange={(val) => handlePlatformChange(val as CommentPlatform)}
                     className="w-full"
                 >
-                    <TabsList className="grid w-full grid-cols-4 h-10">
-                        <TabsTrigger value="instagram" className="relative">
+                    <TabsList ref={pillRefs.containerRef} className="relative grid w-full grid-cols-4 h-10">
+                        <div
+                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-0"
+                            style={{
+                                left: `${pillRefs.pillStyle.left}px`,
+                                width: `${pillRefs.pillStyle.width}px`,
+                                opacity: pillRefs.mounted ? 1 : 0,
+                            }}
+                        />
+                        <TabsTrigger value="instagram" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <Instagram className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="tiktok" className="relative">
+                        <TabsTrigger value="tiktok" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
-                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5" />}
                         </TabsTrigger>
-                        <TabsTrigger value="twitter" className="relative">
+                        <TabsTrigger value="twitter" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <Twitter className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="youtube" className="relative">
+                        <TabsTrigger value="youtube" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <Youtube className="w-4 h-4" />
-                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5" />}
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>
@@ -364,22 +360,22 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
 
                                         <div className="flex-1 space-y-3">
                                             <div className="grid gap-2">
-                                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Display Name</Label>
+                                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Display Name</Label>
                                                 <Input
                                                     value={profile.name}
                                                     onChange={(e) => updateProfile(profile.id, { name: e.target.value })}
                                                     placeholder="Display Name"
-                                                    className="h-10 text-base font-medium bg-background border-zinc-200"
+                                                    className="h-10 text-sm font-medium bg-background border-zinc-200"
                                                 />
                                             </div>
                                             <div className="grid gap-2">
-                                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Handle</Label>
+                                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Handle</Label>
                                                 <div className="flex gap-2">
                                                     <Input
                                                         value={profile.handle}
                                                         onChange={(e) => updateProfile(profile.id, { handle: e.target.value })}
                                                         placeholder="Handle"
-                                                        className="h-10 text-base font-medium flex-1 bg-background border-zinc-200"
+                                                        className="h-10 text-sm font-medium flex-1 bg-background border-zinc-200"
                                                     />
                                                     <div className="flex items-center gap-2 px-2 bg-background border border-zinc-200 rounded-lg h-10">
                                                         <Switch
@@ -387,7 +383,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                                                             checked={profile.verified}
                                                             onCheckedChange={(c) => updateProfile(profile.id, { verified: c })}
                                                         />
-                                                        <span className="text-[10px] font-bold text-muted-foreground">VERIFIED</span>
+                                                        <span className="text-xs font-medium text-muted-foreground">VERIFIED</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -406,7 +402,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                                     </div>
                                 </div>
                             ))}
-                            <Button variant="outline" className="w-full h-10 text-xs font-bold uppercase tracking-wider" onClick={addProfile}>
+                            <Button variant="outline" className="w-full h-10 text-xs font-medium uppercase tracking-wider" onClick={addProfile}>
                                 <Plus className="w-4 h-4 mr-2" /> Add Person
                             </Button>
                         </AccordionContent>
@@ -424,7 +420,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                         </AccordionTrigger>
                         <AccordionContent className="pt-2 px-3 pb-3">
                             {state.comments.map(comment => renderCommentEditor(comment))}
-                            <Button className="w-full mt-4 h-12 text-sm font-bold uppercase tracking-wider bg-[#1d2333] hover:bg-[#1d2333]/90 rounded-xl" onClick={() => addComment()}>
+                            <Button className="w-full mt-4 h-12 text-sm font-medium uppercase tracking-wider bg-[#1d2333] hover:bg-[#1d2333]/90 rounded-xl" onClick={() => addComment()}>
                                 <Plus className="w-4 h-4 mr-2" /> Add New Comment
                             </Button>
                         </AccordionContent>

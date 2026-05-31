@@ -33,7 +33,7 @@ export const Watermark = ({ isDark }: WatermarkProps) => {
             {/* Bottom-right promotional badge */}
             <div data-html2canvas-ignore="true" className="absolute bottom-6 right-6 z-50 flex flex-col items-center bg-black/95 backdrop-blur-sm border border-white/20 rounded-xl px-5 py-3 shadow-2xl pointer-events-auto animate-in fade-in zoom-in duration-300">
                 <div className="flex items-center gap-1.5 mb-1.5 text-white">
-                    <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/70">Made with</span>
+                    <span className="text-xs font-medium uppercase tracking-[0.2em] text-white/70">Made with</span>
                     <span className="text-base font-bold tracking-tight">Veily</span>
                 </div>
                 <button
@@ -42,7 +42,7 @@ export const Watermark = ({ isDark }: WatermarkProps) => {
                         e.preventDefault();
                         setUpgradeModalOpen(true);
                     }}
-                    className="text-[11px] font-bold text-blue-400 hover:text-blue-300 transition-colors underline underline-offset-4 decoration-blue-400/40"
+                    className="text-sm font-bold text-blue-400 hover:text-blue-300 transition-colors underline underline-offset-4 decoration-blue-400/40"
                 >
                     Get clean exports
                 </button>

@@ -3,27 +3,17 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { cn } from "@/lib/utils";
 import { 
-    Download, 
     Image as ImageIcon, 
-    Video, 
-    Crown, 
-    Check, 
-    Lock,
     Zap,
     Monitor,
     Sparkles,
-    ShieldCheck,
-    ArrowRight,
-    Layers,
-    Type,
-    Info,
     X
 } from 'lucide-react';
-import { cn } from "@/lib/utils";
+
 import { exportAsImage } from '@/lib/export-utils';
 import { toast } from 'sonner';
-import { DoodleBackground } from '@/components/icons/DoodleBackground';
 
 interface DownloadModalProps {
     previewRef: React.RefObject<HTMLElement>;
@@ -33,12 +23,6 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
     const { 
         isDownloadModalOpen, 
         setDownloadModalOpen, 
-        user,
-        plan, 
-        downloadsUsed,
-        setUpgradeModalOpen,
-        setAuthModalOpen,
-        incrementDownloads
     } = useAuth();
 
     const [exportType, setExportType] = useState<'image' | 'video'>('image');
@@ -46,39 +30,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
     const [filename, setFilename] = useState(`mockly-${Date.now()}`);
     const [isExporting, setIsExporting] = useState(false);
 
-    const isFree = plan === 'free';
-    const exportLimit = 3;
-    const remainingExports = Math.max(0, exportLimit - downloadsUsed);
-
-    const isLocked = (type: 'image' | 'video', q: 'sd' | 'hd' | '4k') => {
-        if (!user) return true;
-        if (isFree) {
-            if (type === 'video') return true;
-            if (q !== 'sd') return true;
-        }
-        return false;
-    };
-
     const handleDownload = async () => {
-        if (!user) {
-            setDownloadModalOpen(false);
-            setAuthModalOpen(true);
-            return;
-        }
-
-        if (isFree && remainingExports <= 0) {
-            setDownloadModalOpen(false);
-            setUpgradeModalOpen(true);
-            toast.error("You've reached your free export limit!");
-            return;
-        }
-
-        if (isLocked(exportType, quality)) {
-            setDownloadModalOpen(false);
-            setUpgradeModalOpen(true);
-            return;
-        }
-
         if (!previewRef.current) return;
 
         setIsExporting(true);
@@ -89,7 +41,6 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
                 scale,
                 filename: `${filename}.png`,
             });
-            await incrementDownloads();
             toast.success("Mockup downloaded successfully!");
             setDownloadModalOpen(false);
         } catch (err) {
@@ -100,32 +51,34 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
     };
 
     const typeOptions = [
-        { id: 'image', label: 'Image', icon: ImageIcon, locked: false },
-        { id: 'video', label: 'Video', icon: Video, locked: isFree || !user }
+        { id: 'image' as const, label: 'Image', icon: ImageIcon },
     ];
 
     const qualityOptions = [
-        { id: 'sd', label: 'Standard', desc: 'Quick previews', res: '468x832', icon: Zap, locked: false },
-        { id: 'hd', label: 'HD', desc: 'Sharp exports', res: '936x1664', icon: Sparkles, locked: isFree || !user },
-        { id: '4k', label: '4K', desc: 'Maximum detail', res: '1872x3328', icon: Monitor, locked: isFree || !user }
+        { id: 'sd' as const, label: 'Standard', desc: 'Quick previews', res: '468x832', icon: Zap },
+        { id: 'hd' as const, label: 'HD', desc: 'Sharp exports', res: '936x1664', icon: Sparkles },
+        { id: '4k' as const, label: '4K', desc: 'Maximum detail', res: '1872x3328', icon: Monitor },
     ];
+
+    const handleExportTypeChange = (id: string) => {
+        setExportType(id as 'image' | 'video');
+    };
+
+    const handleQualityChange = (id: string) => {
+        setQuality(id as 'sd' | 'hd' | '4k');
+    };
 
     return (
         <Dialog open={isDownloadModalOpen} onOpenChange={setDownloadModalOpen}>
-            <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-2xl">
+            <DialogContent hideClose className="sm:max-w-[500px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-2xl">
                 <div className="relative flex flex-col h-full bg-white max-h-[90vh] overflow-y-auto scrollbar-hide">
-                    
-                    <div className="absolute inset-0 z-0 text-zinc-900 opacity-[0.08]">
-                        <DoodleBackground />
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/40 to-white/95" />
-                    </div>
 
                     {/* Close Button */}
                     <button 
                         onClick={() => setDownloadModalOpen(false)}
-                        className="absolute top-4 right-4 z-50 p-2 rounded-full hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-zinc-600"
+                        className="absolute top-3 right-3 z-50 p-2 rounded-full hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-zinc-600"
                     >
-                        <X className="w-6 h-6" />
+                        <X className="w-5 h-5" />
                     </button>
 
                     <div className="relative z-10 p-6 space-y-7">
@@ -141,14 +94,10 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
                                 {typeOptions.map((option) => {
                                     const Icon = option.icon;
                                     const active = exportType === option.id;
-                                    const locked = option.locked;
                                     return (
                                         <button
                                             key={option.id}
-                                            onClick={() => {
-                                                if (locked) setUpgradeModalOpen(true);
-                                                else setExportType(option.id as any);
-                                            }}
+                                            onClick={() => handleExportTypeChange(option.id)}
                                             className={cn(
                                                 "w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200",
                                                 active 
@@ -168,11 +117,6 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
                                                     <span className="font-bold text-sm text-zinc-800">{option.label}</span>
                                                 </div>
                                             </div>
-                                            {locked && (
-                                                <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-orange-100/50 text-orange-700 text-[10px] font-bold">
-                                                    <Sparkles className="w-3 h-3" /> Premium
-                                                </div>
-                                            )}
                                         </button>
                                     );
                                 })}
@@ -185,15 +129,11 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
                             <div className="space-y-2">
                                 {qualityOptions.map((option) => {
                                     const active = quality === option.id;
-                                    const locked = option.locked;
                                     const Icon = option.icon;
                                     return (
                                         <button
                                             key={option.id}
-                                            onClick={() => {
-                                                if (locked) setUpgradeModalOpen(true);
-                                                else setQuality(option.id as any);
-                                            }}
+                                            onClick={() => handleQualityChange(option.id)}
                                             className={cn(
                                                 "w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200",
                                                 active 
@@ -217,20 +157,12 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                {locked && (
-                                                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-orange-100/50 text-orange-700 text-[10px] font-bold">
-                                                        <Sparkles className="w-3 h-3" /> Premium
-                                                    </div>
-                                                )}
                                                 <span className="text-xs font-bold text-zinc-500">{option.res}</span>
                                             </div>
                                         </button>
                                     );
                                 })}
                             </div>
-                            <p className="text-[11px] text-zinc-500 px-1 py-1">
-                                Free exports stay on Standard. Premium unlocks HD and 4K watermark-free exports.
-                            </p>
                         </div>
 
                         {/* File Name Section */}
@@ -247,19 +179,6 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Export Limit / Info Section */}
-                        {isFree && user && (
-                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 flex gap-3">
-                                <div className="w-5 h-5 rounded-full bg-zinc-200 flex items-center justify-center shrink-0">
-                                    <Info className="w-3 h-3 text-zinc-600" />
-                                </div>
-                                <div className="space-y-0.5">
-                                    <h4 className="text-sm font-bold text-zinc-900">Export limit</h4>
-                                    <p className="text-sm text-zinc-600">You have {remainingExports} exports remaining.</p>
-                                </div>
-                            </div>
-                        )}
 
                         {/* Footer Action */}
                         <div className="flex justify-end pt-2">

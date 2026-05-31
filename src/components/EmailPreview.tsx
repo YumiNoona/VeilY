@@ -3,7 +3,6 @@ import { useEmailState } from '@/hooks/useEmailState';
 import { Paperclip } from 'lucide-react';
 import { Watermark } from '@/components/Watermark';
 import { exportAsImage, copyToClipboard } from '@/lib/export-utils';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 type EmailState = ReturnType<typeof useEmailState>['state'];
@@ -274,39 +273,21 @@ const EmailCard: React.FC<{ state: EmailState }> = ({ state }) => {
 
 export const EmailPreview = React.forwardRef<EmailPreviewRef, EmailPreviewProps>(({ state }, ref) => {
     const captureRef = useRef<HTMLDivElement>(null);
-    const { user, plan, downloadsUsed, setAuthModalOpen, setUpgradeModalOpen, incrementDownloads } = useAuth();
 
     React.useImperativeHandle(ref, () => ({
         handleDownload: async () => {
-            if (!user) {
-                setAuthModalOpen(true);
-                return;
-            }
-
-            if (plan === 'free' && (3 - downloadsUsed) <= 0) {
-                toast.error("You've reached your free export limit!");
-                setUpgradeModalOpen(true);
-                return;
-            }
-
             if (!captureRef.current) return;
             try {
                 await exportAsImage(captureRef.current, {
                     scale: 2,
                     filename: `veily-email-${Date.now()}.png`
                 });
-                await incrementDownloads();
                 toast.success("Mockup downloaded!");
             } catch (err) {
                 toast.error("Download failed");
             }
         },
         handleCopy: async () => {
-            if (!user) {
-                setAuthModalOpen(true);
-                return;
-            }
-
             if (!captureRef.current) return;
             try {
                 const success = await copyToClipboard(captureRef.current, 2);

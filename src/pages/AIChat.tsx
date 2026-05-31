@@ -93,8 +93,6 @@ const AIChat = () => {
           onViewChange={setDeviceView}
           onDownload={() => setDownloadModalOpen(true)}
           onCopy={copyScreenshot}
-          isAnimating={isAnimating}
-          onToggleAnimation={() => setIsAnimating(!isAnimating)}
         />
       </main>
       <DownloadModal previewRef={chatPreviewRef} />

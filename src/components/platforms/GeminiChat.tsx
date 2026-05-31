@@ -11,15 +11,23 @@ interface ChatProps {
 }
 
 export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps) {
+    const bgColor = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-white';
+    const headerBg = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-white';
+    const textColor = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-[#2D2D2D]';
+    const userBubble = appearance.darkMode ? 'bg-[#3a3a5c]' : 'bg-[#F1F3F4]';
+    const userText = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-[#2D2D2D]';
+    const inputBg = appearance.darkMode ? 'bg-[#2a2a4a] border-[#3a3a5c]' : 'bg-white border-gray-200';
+    const iconColor = appearance.darkMode ? 'text-[#b0b0b0]' : 'text-[#2D2D2D]';
     const getPerson = (id: string) => people.find(p => p.id === id);
 
     // Format model name for display
     const getModelDisplayName = () => {
         if (!aiModel) return 'Gemini 3 Flash';
         const modelMap: Record<string, string> = {
-            'gemini-2-flash': 'Gemini 2 Flash',
-            'gemini-1-5-pro': 'Gemini 1.5 Pro',
-            'gemini-1-5-flash': 'Gemini 1.5 Flash',
+            'gemini-2.5-pro': 'Gemini 2.5 Pro',
+            'gemini-2.5-flash': 'Gemini 2.5 Flash',
+            'gemini-2-flash': 'Gemini 2.0 Flash',
+            'gemini-1.5-pro': 'Gemini 1.5 Pro',
         };
         return modelMap[aiModel] || 'Gemini';
     };
@@ -84,14 +92,14 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
     };
 
     return (
-        <div className={cn("flex flex-col h-full bg-white font-sans text-[#2D2D2D]")}>
+        <div className={cn("flex flex-col h-full font-sans", bgColor, textColor)}>
             {/* Header */}
-            <header className="px-4 py-2 flex items-center justify-between sticky top-0 bg-white z-10 border-b border-gray-100">
+            <header className={cn("px-4 py-2 flex items-center justify-between sticky top-0 z-10 border-b", headerBg, appearance.darkMode ? "border-[#3a3a5c]" : "border-gray-100")}>
                 <div className="w-8 flex items-center justify-center">
-                    <AlignJustify className="w-6 h-6 text-[#2D2D2D] stroke-[1.5]" />
+                    <AlignJustify className={cn("w-6 h-6 stroke-[1.5]", iconColor)} />
                 </div>
                 <div className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors">
-                    <span className="font-semibold text-[16px] text-[#2D2D2D]">{getModelDisplayName()}</span>
+                    <span className="font-semibold text-[16px]">{getModelDisplayName()}</span>
                     <span className="text-gray-400 text-[10px] transform translate-y-[1px]">▼</span>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-[#8E5CF7] flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
@@ -111,15 +119,15 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
                                 <div className="max-w-[100%] pr-2">
                                     <div className="flex gap-3">
                                         <div className="w-6 h-6 flex items-center justify-center shrink-0 mt-1">
-                                            <Sparkles className="w-5 h-5 text-[#2D2D2D]" />
+                                            <Sparkles className={cn("w-5 h-5", iconColor)} />
                                         </div>
                                         <div className="flex-1">
-                                            <div className="text-[16px] leading-[1.6] text-[#2D2D2D]">
+                                            <div className="text-[16px] leading-[1.6]">
                                                 {formatMessageText(message.text)}
                                             </div>
 
                                             {/* Action Buttons Row */}
-                                            <div className="flex items-center gap-2 mt-2 text-gray-600">
+                                            <div className="flex items-center gap-2 mt-2 text-gray-500">
                                                 <button className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                                                     <ThumbsUp className="w-[18px] h-[18px] stroke-[1.5]" />
                                                 </button>
@@ -148,7 +156,7 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
 
                             {/* User Layout */}
                             {isUser && (
-                                <div className="max-w-[85%] bg-[#F1F3F4] text-[#2D2D2D] px-4 py-3 rounded-[20px] text-[16px] leading-[1.5]">
+                                <div className={cn("max-w-[85%] px-4 py-3 rounded-[20px] text-[16px] leading-[1.5]", userBubble, userText)}>
                                     {message.text}
                                 </div>
                             )}
@@ -159,17 +167,17 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
 
             {/* Input Area */}
             <div className="px-4 pb-6 pt-2">
-                <div className="bg-white border border-gray-200 rounded-[28px] flex items-center px-4 py-3 gap-3 shadow-sm">
+                <div className={cn("rounded-[28px] flex items-center px-4 py-3 gap-3 shadow-sm border", inputBg)}>
                     <div className="flex-1">
                         <span className="text-[#5F6368] text-[16px]">Ask Gemini</span>
                     </div>
 
                     <div className="flex gap-2 shrink-0 items-center">
-                        <button className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
-                            <Mic className="w-5 h-5 text-[#5F6368]" />
+                        <button className={cn("w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors", iconColor)}>
+                            <Mic className="w-5 h-5" />
                         </button>
-                        <button className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
-                            <Camera className="w-5 h-5 text-[#5F6368]" />
+                        <button className={cn("w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors", iconColor)}>
+                            <Camera className="w-5 h-5" />
                         </button>
                         <div className="w-10 h-10 rounded-full bg-[#4285F4] flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
                             <ArrowUp className="w-5 h-5 text-white stroke-[2.5]" />

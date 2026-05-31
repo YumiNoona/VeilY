@@ -74,7 +74,7 @@ const defaultState: SocialPostState = {
   },
   config: {
     theme: 'light',
-    transparentBackground: false,
+    transparentBackground: true,
   },
   threadItems: [],
 };

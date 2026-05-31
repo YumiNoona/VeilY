@@ -3,9 +3,8 @@ import { Message, Person } from "@/types/chat";
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { 
     MessageCircle, X, ImagePlus, Plus, User, Clock, Trash2, 
-    Check, Bot, GripVertical, RefreshCw, FileUp, Crown, Mic 
+    Check, Bot, GripVertical, RefreshCw, FileUp, Mic 
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 import { parseWhatsApp, parseTelegram, ParsedChat } from "@/lib/parsers";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -52,7 +51,6 @@ export function MessagesSection({
     onReorderMessages,
     onBulkImport,
 }: MessagesSectionProps) {
-    const { plan, setUpgradeModalOpen, triedBulkImport, markBulkImportAsTried } = useAuth();
     const [newMessage, setNewMessage] = useState("");
     const [isOwnMessage, setIsOwnMessage] = useState(true);
     const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
@@ -102,10 +100,6 @@ export function MessagesSection({
     };
 
     const handleBulkImportClick = () => {
-        if (plan === 'free' && triedBulkImport) {
-            setUpgradeModalOpen(true);
-            return;
-        }
         bulkImportRef.current?.click();
     };
 
@@ -131,12 +125,7 @@ export function MessagesSection({
 
                 if (parsed && parsed.messages.length > 0) {
                     onBulkImport?.(parsed);
-                    if (plan === 'free') {
-                        markBulkImportAsTried();
-                        toast.success("Trial used! Upgrade to Premium for unlimited imports.");
-                    } else {
-                        toast.success(`Successfully imported ${parsed.messages.length} messages.`);
-                    }
+                    toast.success(`Successfully imported ${parsed.messages.length} messages.`);
                 } else {
                     toast.error("No valid messages found in the file.");
                 }
@@ -220,7 +209,7 @@ export function MessagesSection({
                         <MessageCircle className="w-3.5 h-3.5 text-primary" />
                     </div>
                     <span className="font-semibold text-sm">Messages</span>
-                    <span className="ml-1 w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium text-muted-foreground">
+                    <span className="ml-1 w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                         {messages.length}
                     </span>
                 </div>
@@ -329,21 +318,12 @@ export function MessagesSection({
                         />
                         <Button
                             variant="outline"
-                            className="w-full h-10 text-xs font-bold gap-2 border-dashed border-zinc-300 hover:border-zinc-400 hover:bg-zinc-50 transition-all group overflow-hidden relative"
+                            className="w-full h-10 text-xs font-medium gap-2 border-dashed border-zinc-300 hover:border-zinc-400 hover:bg-zinc-50 transition-all group overflow-hidden relative"
                             onClick={handleBulkImportClick}
                         >
                             <FileUp className="w-4 h-4 text-zinc-500 group-hover:text-zinc-700 transition-colors" />
                             Import Real Chat Data
-                            {plan === 'free' && (
-                                <div className="absolute top-0 right-0 bg-amber-500 text-[9px] text-white px-2 py-0.5 rounded-bl-md flex items-center gap-1 shadow-sm uppercase tracking-tighter">
-                                    <Crown className="w-2.5 h-2.5 fill-white" />
-                                    TRIAL
-                                </div>
-                            )}
                         </Button>
-                        {plan === 'free' && !triedBulkImport && (
-                            <p className="text-xs text-zinc-400 mt-2 text-center font-medium"> Free users can try bulk import <span className="text-zinc-600 font-bold">once</span>.</p>
-                        )}
                     </div>
                 </div>
 
@@ -468,7 +448,7 @@ function SortableMessageItem({
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <div className={cn(
-                                "w-6 h-6 rounded-full flex items-center justify-center text-[10px]",
+                                "w-6 h-6 rounded-full flex items-center justify-center text-xs",
                                 isUser ? "bg-secondary text-secondary-foreground" : "bg-orange-100 text-orange-600"
                             )}>
                                 {isUser ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
@@ -493,7 +473,7 @@ function SortableMessageItem({
                     <div className="flex items-center justify-end gap-2 pt-1 border-t border-border/30">
                         <button
                             onClick={toggleMessageRole}
-                            className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-secondary/50"
+                            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-secondary/50"
                         >
                             <RefreshCw className="w-3 h-3" />
                             Switch to {isUser ? "Assistant" : "User"}
@@ -547,12 +527,12 @@ function SortableMessageItem({
                                 ) : (
                                     <User className="w-3.5 h-3.5" />
                                 )}
-                                <span className="text-[10px] font-medium">{message.isOwn ? 'You' : msgPerson?.name || 'Friend'}</span>
+                                <span className="text-xs font-medium">{message.isOwn ? 'You' : msgPerson?.name || 'Friend'}</span>
                             </div>
                         </div>
                         <button
                             onClick={startEditingTimestamp}
-                            className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <Clock className="w-3 h-3" />
                             {formatTimestamp(message.timestamp)}

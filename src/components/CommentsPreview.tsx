@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { useCommentState } from '@/hooks/useCommentState';
 import { Button } from '@/components/ui/button';
 import { exportAsImage, copyToClipboard } from '@/lib/export-utils';
-import { useAuth } from '@/contexts/AuthContext';
+
 import { toast } from 'sonner';
 
 import { InstagramComments } from './comments/InstagramComments';
@@ -23,7 +23,7 @@ export interface CommentsPreviewRef {
 
 export const CommentsPreview = React.forwardRef<CommentsPreviewRef, CommentsPreviewProps>(({ state }, ref) => {
     const previewRef = useRef<HTMLDivElement>(null);
-    const { user, plan, downloadsUsed, setAuthModalOpen, setUpgradeModalOpen, incrementDownloads } = useAuth();
+
 
     React.useImperativeHandle(ref, () => ({
         handleDownload,
@@ -32,17 +32,6 @@ export const CommentsPreview = React.forwardRef<CommentsPreviewRef, CommentsPrev
     }));
 
     const handleDownload = async () => {
-        if (!user) {
-            setAuthModalOpen(true);
-            return;
-        }
-
-        if (plan === 'free' && (3 - downloadsUsed) <= 0) {
-            toast.error("You've reached your free export limit!");
-            setUpgradeModalOpen(true);
-            return;
-        }
-
         if (!previewRef.current) return;
 
         try {
@@ -50,7 +39,6 @@ export const CommentsPreview = React.forwardRef<CommentsPreviewRef, CommentsPrev
                 scale: 2,
                 filename: `veily-comments-${state.platform}-${Date.now()}.png`
             });
-            await incrementDownloads();
             toast.success("Mockup downloaded!");
         } catch (err) {
             toast.error("Download failed");
@@ -58,11 +46,6 @@ export const CommentsPreview = React.forwardRef<CommentsPreviewRef, CommentsPrev
     };
 
     const handleCopy = async () => {
-        if (!user) {
-            setAuthModalOpen(true);
-            return;
-        }
-
         if (!previewRef.current) return;
 
         try {

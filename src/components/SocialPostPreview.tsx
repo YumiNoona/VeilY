@@ -9,7 +9,6 @@ import { Download, Copy, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Watermark } from '@/components/Watermark';
 import { exportAsImage, copyToClipboard } from '@/lib/export-utils';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 interface SocialPostPreviewProps {
@@ -24,7 +23,7 @@ export interface SocialPostPreviewRef {
 
 export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPostPreviewProps>(({ state }, ref) => {
     const previewRef = useRef<HTMLDivElement>(null);
-    const { user, plan, downloadsUsed, setAuthModalOpen, setUpgradeModalOpen, incrementDownloads } = useAuth();
+
 
     React.useImperativeHandle(ref, () => ({
         handleDownload,
@@ -46,25 +45,12 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
     const PostComponent = getPlatformComponent(state.platform);
 
     const handleDownload = async () => {
-        if (!user) {
-            setAuthModalOpen(true);
-            return;
-        }
-        
-        // Tiered download limits
-        if (plan === 'free' && (3 - downloadsUsed) <= 0) {
-            toast.error("You've reached your free export limit! Please upgrade to continue.");
-            setUpgradeModalOpen(true);
-            return;
-        }
-
         if (!previewRef.current) return;
         try {
             await exportAsImage(previewRef.current, {
                 scale: 2,
                 filename: `veily-${state.platform}-post-${Date.now()}.png`
             });
-            await incrementDownloads();
             toast.success("Mockup downloaded!");
         } catch (err) {
             toast.error("Failed to download image");
@@ -72,11 +58,6 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
     };
 
     const handleCopy = async () => {
-        if (!user) {
-            setAuthModalOpen(true);
-            return;
-        }
-
         if (!previewRef.current) return;
         try {
             const success = await copyToClipboard(previewRef.current, 2);

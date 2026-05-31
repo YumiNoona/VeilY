@@ -1,6 +1,5 @@
-import React, { useRef } from 'react';
-import { Plus, Trash2, Upload, Instagram, Ghost, Crown, RotateCcw, Wand2, User, FileText, MessageCircle } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useRef, useState, useEffect } from 'react';
+import { Plus, Trash2, Upload, Instagram, Ghost, RotateCcw, Wand2, User, FileText, MessageCircle } from 'lucide-react';
 import { useStoriesState } from '@/hooks/useStoriesState';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -53,8 +52,28 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
     setActiveSlide, addSlide, updateSlideImage, removeSlide, setAppearance,
     handleReset, onTemplateLoad, onRandomize
 }) => {
-    const { plan, setUpgradeModalOpen } = useAuth();
+
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Pill toggle animation
+    const pillContainerRef = useRef<HTMLDivElement>(null);
+    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
+    const [pillMounted, setPillMounted] = useState(false);
+
+    useEffect(() => {
+      if (!pillContainerRef.current) return;
+      const raf = requestAnimationFrame(() => {
+        const active = pillContainerRef.current?.querySelector<HTMLElement>('[data-state="active"]');
+        if (!active || !pillContainerRef.current) return;
+        const containerRect = pillContainerRef.current.getBoundingClientRect();
+        const rect = active.getBoundingClientRect();
+        setPillStyle({ left: rect.left - containerRect.left, width: rect.width });
+        if (!pillMounted) setPillMounted(true);
+      });
+      return () => cancelAnimationFrame(raf);
+    }, [state.platform, pillMounted]);
+
+    const pillRefs = { containerRef: pillContainerRef, pillStyle, mounted: pillMounted };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
@@ -120,20 +139,11 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 relative group"
-                            onClick={() => {
-                                if (plan === 'free') {
-                                    setUpgradeModalOpen(true);
-                                    return;
-                                }
-                                onRandomize();
-                            }}
-                            title="Randomize Content (Premium)"
+                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                            onClick={onRandomize}
+                            title="Randomize Content"
                         >
                             <Wand2 className="w-4 h-4" />
-                            {plan === 'free' && (
-                                <Crown className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-amber-500 fill-amber-500/20 drop-shadow-sm border-2 border-sidebar-bg rounded-full bg-sidebar-bg p-[0.5px]" />
-                            )}
                         </Button>
                     )}
                 </div>
@@ -142,30 +152,29 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
             <div className="px-3 py-2.5 border-b border-sidebar-border shrink-0 flex items-center justify-center min-h-[56px]">
                 <Tabs
                     value={state.platform}
-                    onValueChange={(val) => {
-                        if ((val === 'snapchat' || val === 'whatsapp' || val === 'messenger') && plan === 'free') {
-                            setUpgradeModalOpen(true);
-                            return;
-                        }
-                        setPlatform(val as 'instagram' | 'snapchat' | 'whatsapp' | 'messenger');
-                    }}
+                    onValueChange={(val) => setPlatform(val as 'instagram' | 'snapchat' | 'whatsapp' | 'messenger')}
                     className="w-full"
                 >
-                    <TabsList className="grid w-full grid-cols-4 h-10">
-                        <TabsTrigger value="instagram">
+                    <TabsList ref={pillRefs.containerRef} className="relative grid w-full grid-cols-4 h-10">
+                        <div
+                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-0"
+                            style={{
+                                left: `${pillRefs.pillStyle.left}px`,
+                                width: `${pillRefs.pillStyle.width}px`,
+                                opacity: pillRefs.mounted ? 1 : 0,
+                            }}
+                        />
+                        <TabsTrigger value="instagram" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <PlatformIcon platform="instagram" className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="snapchat" className="relative">
+                        <TabsTrigger value="snapchat" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <PlatformIcon platform="snapchat" className="w-4 h-4" />
-                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5 drop-shadow-sm" />}
                         </TabsTrigger>
-                        <TabsTrigger value="whatsapp" className="relative">
+                        <TabsTrigger value="whatsapp" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <PlatformIcon platform="whatsapp" className="w-4 h-4" />
-                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5 drop-shadow-sm" />}
                         </TabsTrigger>
-                        <TabsTrigger value="messenger" className="relative">
+                        <TabsTrigger value="messenger" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
                             <PlatformIcon platform="messenger" className="w-4 h-4" />
-                            {plan === 'free' && <Crown className="w-2.5 h-2.5 text-amber-500 absolute top-0.5 right-0.5 drop-shadow-sm" />}
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>
@@ -186,16 +195,16 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
                             <div className="grid gap-2 mt-1">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Username</Label>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Username</Label>
                                 <Input
                                     value={state.username}
                                     onChange={e => setUsername(e.target.value)}
                                     placeholder="username"
-                                    className="h-10 text-base font-medium bg-background border-zinc-200"
+                                    className="h-10 text-sm font-medium bg-background border-zinc-200"
                                 />
                             </div>
                             <div className="flex items-center justify-between">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Verified Badge</Label>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Verified Badge</Label>
                                 <Switch checked={state.verified} onCheckedChange={setVerified} />
                             </div>
                         </AccordionContent>
@@ -215,14 +224,14 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                             
                             {/* Slides navigator */}
                             <div className="grid gap-2 mt-1">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Slides</Label>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Slides</Label>
                                 <div className="flex items-center gap-2 flex-wrap">
                                     {state.slides.map((slide, i) => (
                                         <button
                                             key={slide.id}
                                             onClick={() => setActiveSlide(i)}
                                             className={cn(
-                                                "w-12 h-12 rounded-lg border-2 overflow-hidden flex items-center justify-center text-xs font-bold relative group",
+                                                "w-12 h-12 rounded-lg border-2 overflow-hidden flex items-center justify-center text-xs font-medium relative group",
                                                 state.activeSlideIndex === i
                                                     ? 'border-primary border-solid'
                                                     : 'border-border border-solid hover:border-primary/50'
@@ -254,7 +263,7 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
 
                             {/* Active Slide Image Upload */}
                             <div className="grid gap-2">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Slide {state.activeSlideIndex + 1} Image</Label>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Slide {state.activeSlideIndex + 1} Image</Label>
                                 <input
                                     ref={fileInputRef}
                                     type="file"
@@ -280,23 +289,23 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                                         </>
                                     )}
                                 </div>
-                                <p className="text-[10px] text-muted-foreground">9:16 aspect ratio recommended. Supports JPEG, PNG, WebP.</p>
+                                <p className="text-xs text-muted-foreground">9:16 aspect ratio recommended. Supports JPEG, PNG, WebP.</p>
                             </div>
 
                             <div className="grid gap-2">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Posted At</Label>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Posted At</Label>
                                 <Input
                                     type="datetime-local"
                                     value={state.postedAt}
                                     onChange={e => setPostedAt(e.target.value)}
-                                    className="h-10 text-base font-medium bg-background border-zinc-200"
+                                    className="h-10 text-sm font-medium bg-background border-zinc-200"
                                 />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Time Label (shown on preview)</Label>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Time Label (shown on preview)</Label>
                                 <Input
-                                    className="h-10 text-base font-medium bg-background border-zinc-200"
+                                    className="h-10 text-sm font-medium bg-background border-zinc-200"
                                     value={state.timeAgo}
                                     onChange={e => setTimeAgo(e.target.value)}
                                     placeholder="e.g. 3 months"

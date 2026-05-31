@@ -47,7 +47,7 @@ export function CallSection({
                         <Users className="w-3.5 h-3.5 text-emerald-600" />
                     </div>
                     <span className="font-semibold text-sm">Participants & Settings</span>
-                    <span className="ml-1 w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium text-muted-foreground">
+                    <span className="ml-1 w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                         {state.participants.length}
                     </span>
                 </div>
@@ -56,20 +56,20 @@ export function CallSection({
                 {/* Call Settings */}
                 <div className="grid grid-cols-2 gap-2 pb-2 border-b border-border/50">
                     <div className="space-y-1.5">
-                        <Label className="text-[10px] uppercase text-muted-foreground flex items-center gap-1">
+                        <Label className="text-xs uppercase text-muted-foreground flex items-center gap-1">
                             <Clock className="w-3 h-3" /> Duration
                         </Label>
                         <Input 
                             value={state.duration} 
                             onChange={(e) => onUpdateDuration(e.target.value)}
-                            className="h-8 text-[12px]"
+                            className="h-8 text-xs"
                         />
                     </div>
                     <div className="flex flex-col justify-end gap-2">
                         <Button 
                             variant="outline" 
                             size="sm" 
-                            className={cn("h-8 text-[10px] gap-1.5", state.isSignalLow && "border-red-500 text-red-500")}
+                            className={cn("h-8 text-xs gap-1.5", state.isSignalLow && "border-red-500 text-red-500")}
                             onClick={onToggleSignal}
                         >
                             {state.isSignalLow ? <SignalLow className="w-3 h-3" /> : <SignalHigh className="w-3 h-3" />}
@@ -78,7 +78,7 @@ export function CallSection({
                         <Button 
                             variant="outline" 
                             size="sm" 
-                            className={cn("h-8 text-[10px] gap-1.5", state.isRecording && "border-red-500 text-red-500")}
+                            className={cn("h-8 text-xs gap-1.5", state.isRecording && "border-red-500 text-red-500")}
                             onClick={onToggleRecording}
                         >
                             <Disc className={cn("w-3 h-3", state.isRecording && "animate-pulse fill-current")} />
@@ -114,7 +114,7 @@ export function CallSection({
                                         checked={p.isMuted} 
                                         onCheckedChange={(val) => onUpdateParticipant(p.id, { isMuted: !!val })} 
                                     />
-                                    <Label htmlFor={`mute-${p.id}`} className="text-[10px] font-medium flex items-center gap-1">
+                                    <Label htmlFor={`mute-${p.id}`} className="text-xs font-medium flex items-center gap-1">
                                         <MicOff className="w-3 h-3" /> Mute
                                     </Label>
                                 </div>
@@ -124,7 +124,7 @@ export function CallSection({
                                         checked={p.isCameraOff} 
                                         onCheckedChange={(val) => onUpdateParticipant(p.id, { isCameraOff: !!val })} 
                                     />
-                                    <Label htmlFor={`cam-${p.id}`} className="text-[10px] font-medium flex items-center gap-1">
+                                    <Label htmlFor={`cam-${p.id}`} className="text-xs font-medium flex items-center gap-1">
                                         <VideoOff className="w-3 h-3" /> Cam Off
                                     </Label>
                                 </div>
@@ -134,7 +134,7 @@ export function CallSection({
                                         checked={p.isSpeaking} 
                                         onCheckedChange={(val) => onUpdateParticipant(p.id, { isSpeaking: !!val })} 
                                     />
-                                    <Label htmlFor={`speak-${p.id}`} className="text-[10px] font-medium text-emerald-600">
+                                    <Label htmlFor={`speak-${p.id}`} className="text-xs font-medium text-emerald-600">
                                         Speaking
                                     </Label>
                                 </div>
@@ -143,7 +143,7 @@ export function CallSection({
                     ))}
                     <Button 
                         variant="outline" 
-                        className="w-full h-8 text-[11px] gap-2 border-dashed"
+                        className="w-full h-8 text-xs gap-2 border-dashed"
                         onClick={handleAdd}
                     >
                         <Plus className="w-3.5 h-3.5" /> Add Participant

@@ -110,7 +110,7 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
                                  "Conversation Scenario"}
                             </label>
                             <span className={cn(
-                                "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase",
+                                "text-xs font-bold px-2 py-0.5 rounded-full uppercase",
                                 isLimitReached ? "bg-red-100 text-red-600" : "bg-purple-100 text-purple-600"
                             )}>
                                 {aiFillsUsed} / {currentLimit} Daily Uses
@@ -130,7 +130,7 @@ export function SmartFillModal({ isOpen, onClose, onSuccess, platform }: SmartFi
                             disabled={isLoading || isLimitReached}
                         />
                         {error && (
-                            <p className="text-[11px] text-red-500 mt-1.5 font-medium flex items-center gap-1">
+                            <p className="text-xs text-red-500 mt-1.5 font-medium flex items-center gap-1">
                                 ⚠️ {error}
                             </p>
                         )}

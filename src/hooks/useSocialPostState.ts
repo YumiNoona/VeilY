@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { socialScenarios } from './scenarios/social';
+import { getAvatarUrl } from '@/lib/avatar-utils';
 
 export type SocialPlatform = 'twitter' | 'instagram' | 'linkedin' | 'facebook' | 'reddit';
 
@@ -56,21 +58,21 @@ export interface SocialPostState {
 const defaultState: SocialPostState = {
   platform: 'twitter',
   author: {
-    name: 'Jane Doe',
-    handle: 'janedoe',
-    avatar: '', // TODO: Add default avatar
+    name: 'Alex Rivera',
+    handle: 'arivera_dev',
+    avatar: getAvatarUrl('Alex Rivera'),
     verified: true,
   },
   content: {
-    text: 'Just launched my new portfolio! 🚀\n\nCheck it out and let me know what you think. #webdev #design',
+    text: "designers if you haven't tried Veily yet you're missing out 🔥\n\nit's a free mockup tool that supports WhatsApp, iMessage, Discord and 20+ other platforms. you can customize literally everything. been using it for my portfolio case studies and the exports are crisp.\n\nalso peep vexo.venusapp.in for more cool stuff",
     image: null,
     date: new Date(),
   },
   metrics: {
-    likes: '1.2K',
-    comments: '48',
-    reposts: '125',
-    views: '15K',
+    likes: '3.4K',
+    comments: '287',
+    reposts: '1.2K',
+    views: '142K',
   },
   config: {
     theme: 'light',
@@ -145,55 +147,7 @@ export const useSocialPostState = () => {
   };
 
   const randomizeState = () => {
-    const indianNames = ["Arjun Mehta", "Priya Sharma", "Rohan Gupta", "Kavya Iyer", "Ananya Singh"];
-    const westernNames = ["Alex Rivera", "Sarah Jenkins", "Tyler Smith", "Emma Wilson", "Marcus Chen"];
-    
-    const scenarios = [
-      {
-        platform: 'twitter',
-        name: "Tech Take (Western)",
-        author: { name: "Alex Rivera", handle: "arivera_dev" },
-        text: "unpopular opinion: clean code is overrated if you don't ship anything. speed > perfectionism. fight me. 🧵",
-        metrics: { likes: "12.4K", comments: "1.2K", reposts: "3.4K", views: "1.1M" }
-      },
-      {
-        platform: 'twitter',
-        name: "Indian Cricket",
-        author: { name: "Rohan Gupta", handle: "rohan_cricket" },
-        text: "Bhai kya catch pakda hai! 😱 Kohli is literally a beast. King for a reason. #INDvsAUS #KingKohli",
-        metrics: { likes: "45.7K", comments: "2.1K", reposts: "12.5K", views: "2.8M" }
-      },
-      {
-        platform: 'instagram',
-        name: "Travel Aesthetic",
-        author: { name: "Emma Wilson", handle: "emma_travels" },
-        text: "mornings in bali... 🌴✨ honestly never want to leave. #travel #minimalist",
-        metrics: { likes: "8.2K", comments: "142", reposts: "0", views: "0" }
-      },
-      {
-        platform: 'instagram',
-        name: "Indian Foodie",
-        author: { name: "Kavya Iyer", handle: "kavya_cooks" },
-        text: "This butter chicken was actually insane. Best dinner in Delhi ngl. 🍛🔥 #foodie #delhigram",
-        metrics: { likes: "15.3K", comments: "312", reposts: "0", views: "0" }
-      },
-      {
-        platform: 'linkedin',
-        name: "Corporate Update",
-        author: { name: "Sarah Jenkins", handle: "sjenkins-hr" },
-        text: "I'm thrilled to share that I've been promoted to Senior Director of People Ops! 🚀 It's been an incredible 5 years at Veily. #career #promotion",
-        metrics: { likes: "1,245", comments: "312", reposts: "12", views: "45K" }
-      },
-      {
-        platform: 'reddit',
-        name: "Drama/AITA",
-        author: { name: "u/throwaway_123", handle: "u/throwaway_123" },
-        text: "AITA for telling my brother his wedding was boring? He spent $50k on a venue with no music or dancing.",
-        metrics: { likes: "15.7K", comments: "3.2K", reposts: "0", views: "0" }
-      }
-    ];
-
-    const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+    const scenario = socialScenarios[Math.floor(Math.random() * socialScenarios.length)];
     
     setState(prev => ({
       ...prev,
@@ -202,7 +156,7 @@ export const useSocialPostState = () => {
         ...prev.author,
         name: scenario.author.name,
         handle: scenario.author.handle,
-        avatar: `https://i.pravatar.cc/150?u=${scenario.author.handle}`
+        avatar: getAvatarUrl(scenario.author.name)
       },
       content: {
         ...prev.content,

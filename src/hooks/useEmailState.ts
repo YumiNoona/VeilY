@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { EMAIL_TEMPLATES } from '@/lib/templates';
 import { AppearanceSettings } from '@/types/chat';
 import { toast } from 'sonner';
+import { emailScenarios } from './scenarios/email';
 
 export interface EmailParticipant {
     id: string;
@@ -142,78 +143,7 @@ export const useEmailState = () => {
     };
 
     const randomizeState = () => {
-        const scenarios = [
-            {
-                name: "Jeffrey Epstein Files",
-                subject: "URGENT: Regarding the travel logs and island guest list",
-                attachment: "travel_logs_2008.pdf",
-                participants: [
-                    { id: 'p1', name: "Jeffrey Epstein", email: "je@island.com", redactName: false, redactEmail: false },
-                    { id: 'p2', name: "Ghislaine Maxwell", email: "gm@london.net", redactName: false, redactEmail: false }
-                ],
-                emails: [
-                    {
-                        id: uuidv4(),
-                        fromParticipantId: 'p1',
-                        dateTime: 'May 14, 2008 at 11:42 PM',
-                        body: "Make sure those files are **encrypted** before the flight tomorrow. We can't afford any leaks regarding the **V.I.P. list**. Check the **Black Book** again for any missing entries."
-                    }
-                ]
-            },
-            {
-                name: "FBI Security Alert",
-                subject: "CRITICAL: Potential unauthorized access to federal systems",
-                attachment: "incident_report_FBI.docx",
-                participants: [
-                    { id: 'p1', name: "FBI Cyber Division", email: "security@fbi.gov", redactName: false, redactEmail: false },
-                    { id: 'p2', name: "Agent Mulder", email: "f.mulder@fbi.gov", redactName: false, redactEmail: false }
-                ],
-                emails: [
-                    {
-                        id: uuidv4(),
-                        fromParticipantId: 'p1',
-                        dateTime: 'Just now',
-                        body: "Agent, we've detected a breach in the **classified server**. Immediate action is required to secure the **evidence files**. Do not discuss this over unsecured lines."
-                    }
-                ]
-            },
-            {
-                name: "Corporate Resignation",
-                subject: "Resignation - Rohan Gupta",
-                attachment: "",
-                participants: [
-                    { id: 'p1', name: "Rohan Gupta", email: "rohan.g@veily.app", redactName: false, redactEmail: false },
-                    { id: 'p2', name: "HR Department", email: "hr@veily.app", redactName: false, redactEmail: false }
-                ],
-                emails: [
-                    {
-                        id: uuidv4(),
-                        fromParticipantId: 'p1',
-                        dateTime: 'Today, 10:00 AM',
-                        body: "Hi Team,\n\nPlease accept this email as formal notification that I am resigning from my position as Senior Developer. My last day will be October 15th. Thank you for the opportunities during my time here."
-                    }
-                ]
-            },
-            {
-                name: "Job Offer",
-                subject: "Offer Letter: Software Engineer - Veily",
-                attachment: "Offer_Letter_Veily.pdf",
-                participants: [
-                    { id: 'p1', name: "Sarah Jenkins", email: "s.jenkins@veily.app", redactName: false, redactEmail: false },
-                    { id: 'p2', name: "Ananya Singh", email: "ananya.s@gmail.com", redactName: false, redactEmail: false }
-                ],
-                emails: [
-                    {
-                        id: uuidv4(),
-                        fromParticipantId: 'p1',
-                        dateTime: 'Yesterday',
-                        body: "Hi Ananya,\n\nWe were incredibly impressed with your technical rounds! Included is your official offer letter for the Software Engineer position. We'd love to have you join the team."
-                    }
-                ]
-            }
-        ];
-
-        const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        const scenario = emailScenarios[Math.floor(Math.random() * emailScenarios.length)];
         
         setState(prev => ({
             ...prev,

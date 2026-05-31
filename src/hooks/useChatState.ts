@@ -1,20 +1,22 @@
 import { useState, useCallback, useEffect } from "react";
 import { ChatState, Message, Person, Platform, ChatType, AppearanceSettings } from "@/types/chat";
 import { ParsedChat } from "@/lib/parsers";
+import { getAvatarUrl } from '@/lib/avatar-utils';
 import { toast } from "sonner";
 import { aiScenarios, globalScenarios, indianScenarios } from './scenarios';
 
 const initialMessages: Message[] = [
-    { id: '1', text: "Hey, want to try building a chat app mockup?", senderId: 'user', timestamp: new Date(), isOwn: false },
-    { id: '2', text: "A chat app mockup? You mean like pretending to send messages?", senderId: 'friend', timestamp: new Date(), isOwn: true },
-    { id: '3', text: "Exactly! We can design fake conversations, test layouts, and have some fun.", senderId: 'user', timestamp: new Date(), isOwn: false },
-    { id: '4', text: "Can we add funny names and profile pics too?", senderId: 'friend', timestamp: new Date(), isOwn: true },
-    { id: '5', text: "Of course! And try out different chat platforms—like making it look like Discord or iMessage.", senderId: 'user', timestamp: new Date(), isOwn: false },
+    { id: '1', text: "yo have you checked out Veily? its this dope mockup tool for creating chat screenshots that look super clean", senderId: 'user', timestamp: new Date(), isOwn: false },
+    { id: '2', text: "wait really? like those screenshots people use in design portfolios?", senderId: 'friend', timestamp: new Date(), isOwn: true },
+    { id: '3', text: "yeah exactly! you can set up WhatsApp, iMessage, Discord, literally any platform. they have templates and everything, all completely free", senderId: 'user', timestamp: new Date(), isOwn: false },
+    { id: '4', text: "no way i need this for my UX case studies. is it actually free?", senderId: 'friend', timestamp: new Date(), isOwn: true },
+    { id: '5', text: "100% free, every feature unlocked. oh and check out vexo.venusapp.in too they have some really cool projects", senderId: 'user', timestamp: new Date(), isOwn: false },
+    { id: '6', text: "bro you just made my day, building my portfolio mockups tonight 🙌", senderId: 'friend', timestamp: new Date(), isOwn: true },
 ];
 
 const initialPeople: Person[] = [
     { id: 'friend', name: 'You', isOnline: true },
-    { id: 'user', name: 'Friend', isOnline: true },
+    { id: 'user', name: 'Alex Rivera', isOnline: true, avatar: getAvatarUrl('Alex Rivera') },
 ];
 
 const initialAppearance: AppearanceSettings = {
@@ -39,7 +41,7 @@ const initialChatState: ChatState = {
     people: initialPeople,
     messages: initialMessages,
     appearance: initialAppearance,
-    aiModel: 'gpt-4o',
+    aiModel: 'claude-4.8-opus',
 };
 
 const loadStateFromLocalStorage = (storageKey: string): ChatState => {
@@ -256,7 +258,7 @@ export const useChatState = (storageKey: string = 'chatState') => {
 
             const newPeople: Person[] = [
                 { id: 'friend', name: 'You', isOnline: true },
-                { id: 'user', name: senderName, isOnline: Math.random() > 0.3, avatar: `https://i.pravatar.cc/150?u=${senderName}` }
+                { id: 'user', name: senderName, isOnline: Math.random() > 0.3, avatar: getAvatarUrl(senderName) }
             ];
 
             setChatState(prev => ({

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { getAvatarUrl } from '@/lib/avatar-utils';
 import { toast } from 'sonner';
+import { commentScenarios } from './scenarios/comments';
 
 export type CommentPlatform = 'instagram' | 'tiktok' | 'twitter' | 'youtube';
 
@@ -38,24 +40,24 @@ const DEFAULT_AVATAR = "https://github.com/shadcn.png";
 const INITIAL_PROFILES: Profile[] = [
     {
         id: 'creator',
-        name: 'Content Creator',
-        handle: 'contentcreator',
+        name: 'Veily Official',
+        handle: 'veily_app',
         avatar: DEFAULT_AVATAR,
         verified: true,
         isCreator: true,
     },
     {
         id: 'user1',
-        name: 'Alex Thompson',
-        handle: 'alexthompson',
-        avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop',
+        name: 'Priya Sharma',
+        handle: 'priyasharma',
+        avatar: getAvatarUrl('Priya Sharma'),
         verified: false,
     },
     {
         id: 'user2',
-        name: 'Sarah Chen',
-        handle: 'sarahchen',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
+        name: 'Marcus Chen',
+        handle: 'marcuschen',
+        avatar: getAvatarUrl('Marcus Chen'),
         verified: false,
     },
 ];
@@ -64,17 +66,17 @@ const INITIAL_COMMENTS: Comment[] = [
     {
         id: 'c1',
         userId: 'user1',
-        text: 'This is amazing! Thanks for sharing this content. Really helped me understand the topic better.',
-        likes: '245',
-        timeAgo: '3h',
+        text: 'been using Veily for my design portfolio for 3 months now and its honestly the best mockup tool out there. the AI chat templates are insane 🔥',
+        likes: '847',
+        timeAgo: '2h',
         isLikedByAuthor: true,
         replies: [
             {
                 id: 'r1',
                 userId: 'creator',
-                text: 'Thank you so much for the kind words! Glad it helped!',
-                likes: '89',
-                timeAgo: '2h',
+                text: 'Thank you so much Priya! Really glad you are enjoying it. Have you checked out vexo.venusapp.in too?',
+                likes: '234',
+                timeAgo: '1h',
                 replies: [],
             }
         ]
@@ -82,11 +84,12 @@ const INITIAL_COMMENTS: Comment[] = [
     {
         id: 'c2',
         userId: 'user2',
-        text: 'Great explanation! Could you make a follow-up video on this topic?',
-        likes: '129',
-        timeAgo: '5h',
+        text: 'ok but can we talk about how clean the UI is? and its completely free?? whoever made this deserves a raise',
+        likes: '512',
+        timeAgo: '4h',
+        isLikedByAuthor: false,
         replies: [],
-    }
+    },
 ];
 
 export const useCommentState = () => {
@@ -112,7 +115,7 @@ export const useCommentState = () => {
             id: uuidv4(),
             name: 'New User',
             handle: 'newuser',
-            avatar: DEFAULT_AVATAR,
+        avatar: getAvatarUrl('Veily Official'),
             verified: false,
         };
         setState(prev => ({ ...prev, profiles: [...prev.profiles, newProfile] }));
@@ -227,54 +230,15 @@ export const useCommentState = () => {
     };
 
     const randomizeState = () => {
-        const scenarios = [
-            {
-                platform: 'youtube',
-                name: "Tutorial Feedback",
-                creator: { name: "Code with Arjun", handle: "@codearjun", avatar: "https://i.pravatar.cc/150?u=codearjun" },
-                comments: [
-                    { id: 'c1', userId: 'u1', name: "Rahul Singh", text: "bhai best explanation! finally understood how to use promises properly. 🚀", likes: "1.2K", timeAgo: "2h" },
-                    { id: 'c2', userId: 'u2', name: "Sarah Miller", text: "Can you do a follow up on async/await? Great video as always!", likes: "450", timeAgo: "5h" }
-                ]
-            },
-            {
-                platform: 'instagram',
-                name: "Social Hype",
-                creator: { name: "Aesthetic Vibes", handle: "asthetic_vibes", avatar: "https://i.pravatar.cc/150?u=aesthetic" },
-                comments: [
-                    { id: 'c1', userId: 'u3', name: "Priya Sharma", text: "omg where is this dress from?? 😍", likes: "842", timeAgo: "1h", isLikedByAuthor: true },
-                    { id: 'c2', userId: 'u4', name: "Jake Wilson", text: "vibes are actually immaculate", likes: "120", timeAgo: "3h" }
-                ]
-            },
-            {
-                platform: 'tiktok',
-                name: "Viral Trend",
-                creator: { name: "Trending Daily", handle: "trending_daily", avatar: "https://i.pravatar.cc/150?u=trending" },
-                comments: [
-                    { id: 'c1', userId: 'u5', name: "Kavya Iyer", text: "the way my jaw DROPPED 😭😭", likes: "45K", timeAgo: "4h", isLikedByAuthor: true },
-                    { id: 'c2', userId: 'u6', name: "Marcus Chen", text: "standard lol", likes: "12K", timeAgo: "6h" }
-                ]
-            },
-            {
-                platform: 'twitter',
-                name: "Tech Debate",
-                creator: { name: "Tech Insider", handle: "techinsider", avatar: "https://i.pravatar.cc/150?u=tech" },
-                comments: [
-                    { id: 'c1', userId: 'u7', name: "Tyler Smith", text: "ratio + you're wrong + here are the actual stats 📉", likes: "2.4K", timeAgo: "12m" },
-                    { id: 'c2', userId: 'u8', name: "Ananya Singh", text: "ngl i saw this coming miles away", likes: "450", timeAgo: "45m" }
-                ]
-            }
-        ];
-
-        const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        const scenario = commentScenarios[Math.floor(Math.random() * commentScenarios.length)];
         
         const newProfiles: Profile[] = [
-            { id: 'creator', ...scenario.creator, verified: true, isCreator: true },
+            { id: 'creator', ...scenario.creator, avatar: getAvatarUrl(scenario.creator.name), verified: true, isCreator: true },
             ...scenario.comments.map(c => ({
                 id: c.userId,
                 name: c.name,
                 handle: c.name.toLowerCase().replace(/\s+/g, ''),
-                avatar: `https://i.pravatar.cc/150?u=${c.userId}`,
+                avatar: getAvatarUrl(c.name),
                 verified: Math.random() > 0.8
             }))
         ];

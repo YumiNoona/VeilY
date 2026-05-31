@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 import { STORIES_TEMPLATES } from '@/lib/templates';
 import { AppearanceSettings } from '@/types/chat';
+import { storyScenarios } from './scenarios/stories';
 
 export type StoryPlatform = 'instagram' | 'snapchat' | 'whatsapp' | 'messenger';
 
@@ -109,55 +110,7 @@ export const useStoriesState = () => {
     };
 
     const randomizeState = () => {
-        const scenarios = [
-            {
-                platform: 'instagram',
-                username: 'fitness_junkie',
-                name: "Gym Session",
-                slides: [
-                    { imageUrl: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80" },
-                    { imageUrl: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80" }
-                ]
-            },
-            {
-                platform: 'instagram',
-                username: 'cozy_mornings',
-                name: "Morning Coffee",
-                slides: [
-                    { imageUrl: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80" },
-                    { imageUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80" }
-                ]
-            },
-            {
-                platform: 'snapchat',
-                username: 'island_hopper',
-                name: "Beach Day",
-                slides: [
-                    { imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" },
-                    { imageUrl: "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&q=80" }
-                ]
-            },
-            {
-                platform: 'instagram',
-                username: 'city_scout',
-                name: "Urban Vibe",
-                slides: [
-                    { imageUrl: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=80" },
-                    { imageUrl: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80" }
-                ]
-            },
-            {
-                platform: 'instagram',
-                username: 'style_edit',
-                name: "Minimal Fashion",
-                slides: [
-                    { imageUrl: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&q=80" },
-                    { imageUrl: "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=800&q=80" }
-                ]
-            }
-        ];
-
-        const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        const scenario = storyScenarios[Math.floor(Math.random() * storyScenarios.length)];
         
         setState(prev => ({
             ...prev,

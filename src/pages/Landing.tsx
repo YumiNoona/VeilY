@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Zap, Heart, Download, Palette, Shield, Globe, Sparkles, HardDrive, Lock } from "lucide-react";
+import { ArrowRight, Zap, Heart, Download, Play, Palette, Shield, Globe, Sparkles, HardDrive, Lock } from "lucide-react";
 import { PlatformIcon } from "@/components/icons/PlatformIcons";
 import { SupportModal } from "@/components/modals/SupportModal";
 
@@ -10,6 +10,17 @@ const Scanlines = () => (
 
 const CRT = () => (
   <div className="fixed inset-0 pointer-events-none z-40 rounded-lg" style={{ boxShadow: "inset 0 0 150px rgba(0,0,0,0.4), inset 0 0 60px rgba(0,0,0,0.3)" }} />
+);
+
+const Grid = () => (
+  <div className="fixed inset-0 pointer-events-none z-5" style={{
+    backgroundImage: `
+      radial-gradient(circle, rgba(57,255,138,0.12) 1px, transparent 1px),
+      radial-gradient(circle, rgba(57,255,138,0.12) 1px, transparent 1px)
+    `,
+    backgroundSize: '32px 32px',
+    backgroundPosition: '0 0, 16px 16px',
+  }} />
 );
 
 const GlitchText = ({ text, className }: { text: string; className?: string }) => (
@@ -62,6 +73,7 @@ export default function Landing() {
     <div className="min-h-screen bg-[#080c10] text-[#c8ffd4] font-mono overflow-hidden relative">
       <Scanlines />
       <CRT />
+      <Grid />
 
       {/* Top bar — Arcade stats */}
       <div className="relative z-20 flex items-center justify-between px-6 py-3 border-b-2 border-[#39ff8a]/15 text-xs">
@@ -87,10 +99,10 @@ export default function Landing() {
             <Heart className="w-4 h-4 fill-current" /> TIP
           </button>
           <Link to="/app" className="px-7 py-2.5 border-2 border-[#39ff8a] text-[#39ff8a] text-sm font-bold hover:bg-[#39ff8a] hover:text-[#080c10] transition-colors pixel-corners flex items-center gap-1.5" onClick={handleCombo}>
-            ► PLAY
+            <Play className="w-4 h-4 fill-current" /> PLAY
           </Link>
           <a href="https://github.com/YumiNoona/VeilY/releases/latest/download/Veily.exe" className="px-7 py-2.5 border-2 border-[#ff6b35] text-[#ff6b35] text-sm font-bold hover:bg-[#ff6b35] hover:text-[#080c10] transition-colors pixel-corners flex items-center gap-1.5">
-            ↓ ROM
+            <Download className="w-4 h-4" /> ROM
           </a>
         </div>
       </nav>
@@ -156,11 +168,11 @@ export default function Landing() {
 
             <div className="flex flex-row items-center justify-center gap-3 flex-wrap">
               <Link to="/app" onClick={handleCombo} className="group inline-flex items-center gap-2 px-7 py-3 border-2 border-[#39ff8a] bg-[#39ff8a]/10 text-[#39ff8a] text-sm font-bold hover:bg-[#39ff8a] hover:text-[#080c10] transition-all pixel-corners whitespace-nowrap">
-                <span className="text-[#ffe566] group-hover:text-[#080c10]">►</span> INSERT COIN
+                <Play className="w-4 h-4 fill-current group-hover:text-[#080c10]" /> INSERT COIN
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <a href="https://github.com/YumiNoona/VeilY/releases/latest/download/Veily.exe" className="group inline-flex items-center gap-2 px-7 py-3 border-2 border-[#ff6b35] bg-[#ff6b35]/10 text-[#ff6b35] text-sm font-bold hover:bg-[#ff6b35] hover:text-[#080c10] transition-all pixel-corners whitespace-nowrap">
-                <span className="group-hover:text-[#080c10]">💾</span> DOWNLOAD ROM
+                <Download className="w-4 h-4 group-hover:text-[#080c10]" /> DOWNLOAD ROM
               </a>
             </div>
 

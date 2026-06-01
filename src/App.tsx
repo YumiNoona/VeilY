@@ -2,7 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { isElectron } from "@/lib/electron-utils";
 import { Layout } from "@/components/Layout";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -23,6 +23,7 @@ const App = () => {
   const [queryClient] = useState(() => new QueryClient());
 
   const Router = isElectron() ? HashRouter : BrowserRouter;
+  const isDesktop = isElectron();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -32,7 +33,7 @@ const App = () => {
           <Router>
             <Suspense fallback={<div className="flex items-center justify-center h-screen w-full bg-background text-muted-foreground">Loading...</div>}>
               <Routes>
-                <Route path="/" element={<Landing />} />
+                <Route path="/" element={isDesktop ? <Navigate to="/app" replace /> : <Landing />} />
                 <Route element={<Layout />}>
                   <Route path="/app" element={<Index />} />
                   <Route path="/app/ai-chat" element={<AIChat />} />

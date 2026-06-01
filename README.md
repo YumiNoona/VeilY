@@ -141,12 +141,12 @@ Veily/
 
 ## 📝 License
 
-MIT License — see [LICENSE](./LICENSE) file.
+MIT [LICENSE](./LICENSE).
 
 ---
 
 <div align="center">
 
-**Veily** is built with ❤️ by [Vexo Labs](https://vexo.venusapp.in)
+*Built with 💙 Made by [Veil](https://vexo.venusapp.in)
 
 </div>

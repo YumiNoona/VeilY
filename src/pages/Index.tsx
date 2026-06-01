@@ -61,7 +61,7 @@ const Index = () => {
    const activePerson = chatState.people.find(p => p.id === 'user') || null;
 
   return (
-    <div className="flex h-[calc(100vh-64px)] bg-background overflow-hidden">
+    <div className="flex h-full bg-background overflow-hidden">
       <Sidebar
         chatState={chatState}
         onPlatformChange={handlePlatformChange}

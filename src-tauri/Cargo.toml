@@ -1,10 +1,10 @@
 [package]
-name = "app"
+name = "Veily"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+description = "Chat Mockup Design Tool"
+authors = ["Veily"]
+license = "MIT"
+repository = "https://github.com/YumiNoona/VeilY"
 edition = "2021"
 rust-version = "1.77.2"
 

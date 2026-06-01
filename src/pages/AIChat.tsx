@@ -61,7 +61,7 @@ const AIChat = () => {
   const activePerson = chatState.people.find(p => p.id === 'user') || null;
 
   return (
-    <div className="flex bg-background h-[calc(100vh-64px)] overflow-hidden">
+    <div className="flex bg-background h-full overflow-hidden">
       <Sidebar
         chatState={chatState}
         mode="ai"

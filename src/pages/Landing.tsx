@@ -89,7 +89,7 @@ export default function Landing() {
           <Link to="/app" className="px-7 py-2.5 border-2 border-[#39ff8a] text-[#39ff8a] text-sm font-bold hover:bg-[#39ff8a] hover:text-[#080c10] transition-colors pixel-corners flex items-center gap-1.5" onClick={handleCombo}>
             ► PLAY
           </Link>
-          <a href="https://github.com/YumiNoona/VeilY/releases/latest" target="_blank" rel="noopener" className="px-7 py-2.5 border-2 border-[#ff6b35] text-[#ff6b35] text-sm font-bold hover:bg-[#ff6b35] hover:text-[#080c10] transition-colors pixel-corners flex items-center gap-1.5" onClick={handleCombo}>
+          <a href="https://github.com/YumiNoona/VeilY/releases/latest/download/Veily.exe" className="px-7 py-2.5 border-2 border-[#ff6b35] text-[#ff6b35] text-sm font-bold hover:bg-[#ff6b35] hover:text-[#080c10] transition-colors pixel-corners flex items-center gap-1.5">
             ↓ ROM
           </a>
         </div>
@@ -159,7 +159,7 @@ export default function Landing() {
                 <span className="text-[#ffe566] group-hover:text-[#080c10]">►</span> INSERT COIN
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a href="https://github.com/YumiNoona/VeilY/releases/latest" target="_blank" rel="noopener" onClick={handleCombo} className="group inline-flex items-center gap-2 px-7 py-3 border-2 border-[#ff6b35] bg-[#ff6b35]/10 text-[#ff6b35] text-sm font-bold hover:bg-[#ff6b35] hover:text-[#080c10] transition-all pixel-corners whitespace-nowrap">
+              <a href="https://github.com/YumiNoona/VeilY/releases/latest/download/Veily.exe" className="group inline-flex items-center gap-2 px-7 py-3 border-2 border-[#ff6b35] bg-[#ff6b35]/10 text-[#ff6b35] text-sm font-bold hover:bg-[#ff6b35] hover:text-[#080c10] transition-all pixel-corners whitespace-nowrap">
                 <span className="group-hover:text-[#080c10]">💾</span> DOWNLOAD ROM
               </a>
             </div>

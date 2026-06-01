@@ -49,7 +49,7 @@ export default function GroupCall() {
     };
 
     return (
-        <div className="flex h-[calc(100vh-64px)] bg-background overflow-hidden">
+        <div className="flex h-full bg-background overflow-hidden">
             <Sidebar 
                 chatState={mockChatState}
                 mode="call"

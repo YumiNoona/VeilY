@@ -51,6 +51,10 @@ _agent/
 *.sw?
 *.tsbuildinfo
 coverage
+*.tmp
+*.saved
+*.head
+*.tail
 
 # Vercel
 .vercel

@@ -1,8 +1,12 @@
 import { ParsedChat } from "./parsers";
 import { Message, Person } from "@/types/chat";
 
-function getApiKey(): string | null {
-  return import.meta.env.VITE_GEMINI_API_KEY || null;
+function getGroqKey(): string | null {
+  return import.meta.env.GROQ_API_KEY || null;
+}
+
+function getGeminiKey(): string | null {
+  return import.meta.env.GEMINI_API_KEY || null;
 }
 
 function buildPrompt(prompt: string, platform: string): string {
@@ -36,33 +40,7 @@ Rules:
 - Do not include any text outside the JSON object`;
 }
 
-async function callGeminiDirectly(prompt: string, platform: string): Promise<ParsedChat> {
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    throw new Error("VITE_GEMINI_API_KEY not set in .env");
-  }
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: buildPrompt(prompt, platform) }] }],
-        generationConfig: { temperature: 0.9, maxOutputTokens: 4096 },
-      }),
-    }
-  );
-
-  if (!res.ok) {
-    const errBody = await res.text();
-    throw new Error(`Gemini API error (${res.status}): ${errBody}`);
-  }
-
-  const data = await res.json();
-  const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-  // Strip markdown code fences if present
+function parseResponse(rawText: string): ParsedChat {
   const jsonStr = rawText.replace(/```json\s*/g, "").replace(/```\s*$/g, "").trim();
   const parsed = JSON.parse(jsonStr);
 
@@ -83,6 +61,60 @@ async function callGeminiDirectly(prompt: string, platform: string): Promise<Par
   }));
 
   return { messages, participants };
+}
+
+async function callGroq(prompt: string, platform: string): Promise<ParsedChat> {
+  const apiKey = getGroqKey();
+  if (!apiKey) throw new Error("GROQ_API_KEY not set");
+
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: buildPrompt(prompt, platform) }],
+      temperature: 0.9,
+      max_tokens: 4096,
+    }),
+  });
+
+  if (!res.ok) {
+    const errBody = await res.text();
+    throw new Error(`Groq API error (${res.status}): ${errBody}`);
+  }
+
+  const data = await res.json();
+  const rawText = data?.choices?.[0]?.message?.content || "";
+  return parseResponse(rawText);
+}
+
+async function callGemini(prompt: string, platform: string): Promise<ParsedChat> {
+  const apiKey = getGeminiKey();
+  if (!apiKey) throw new Error("GEMINI_API_KEY not set");
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: buildPrompt(prompt, platform) }] }],
+        generationConfig: { temperature: 0.9, maxOutputTokens: 4096 },
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    const errBody = await res.text();
+    throw new Error(`Gemini API error (${res.status}): ${errBody}`);
+  }
+
+  const data = await res.json();
+  const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return parseResponse(rawText);
 }
 
 function generateFallbackMock(platform: string): ParsedChat {
@@ -113,40 +145,28 @@ function generateFallbackMock(platform: string): ParsedChat {
 }
 
 export async function generateSmartFill(prompt: string, platform: string): Promise<ParsedChat> {
-  const apiKey = getApiKey();
-
-  if (apiKey) {
+  // Primary: Groq
+  const groqKey = getGroqKey();
+  if (groqKey) {
     try {
-      return await callGeminiDirectly(prompt, platform);
+      console.log("[AI] Using Groq (primary)...");
+      return await callGroq(prompt, platform);
     } catch (err: any) {
-      console.warn("[AI] Gemini direct call failed, using fallback:", err.message);
-      return generateFallbackMock(platform);
+      console.warn("[AI] Groq failed, trying Gemini fallback:", err.message);
     }
   }
 
-  // Try remote server fallback
-  try {
-    const res = await fetch("https://veily.venusapp.in/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, platform, local: true }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      const messages: Message[] = (data.messages || []).map((msg: any) => ({
-        ...msg,
-        id: msg.id || crypto.randomUUID(),
-        timestamp: new Date(msg.timestamp || new Date()),
-      }));
-      const participants: Person[] = (data.participants || []).map((p: any) => ({
-        ...p,
-        id: p.id || crypto.randomUUID(),
-        isOnline: p.isOnline ?? true,
-      }));
-      return { messages, participants };
+  // Fallback: Gemini
+  const geminiKey = getGeminiKey();
+  if (geminiKey) {
+    try {
+      console.log("[AI] Using Gemini (fallback)...");
+      return await callGemini(prompt, platform);
+    } catch (err: any) {
+      console.warn("[AI] Gemini failed, using local mock:", err.message);
     }
-  } catch { /* ignore */ }
+  }
 
-  // Final fallback
+  // Final fallback: local mock
   return generateFallbackMock(platform);
 }

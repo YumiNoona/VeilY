@@ -147,6 +147,6 @@ MIT [LICENSE](./LICENSE).
 
 <div align="center">
 
-*Built with 💙 Made by [Veil](https://vexo.venusapp.in)
+Built with 💙 Made by [Veil](https://vexo.venusapp.in)
 
 </div>

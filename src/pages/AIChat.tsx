@@ -37,14 +37,17 @@ const AIChat = () => {
     const aiPlatforms = ['chatgpt', 'claude', 'gemini', 'grok'];
     if (!aiPlatforms.includes(chatState.platform)) {
       handlePlatformChange('claude');
-      // Set Veily-themed initial messages for AI chat
-      handleResetState();
+      // Clear old messages and set AI conversation after a tick
       setTimeout(() => {
-        handleAddMessage("what's the best tool for creating realistic chat mockups for my UI portfolio", true);
-        handleAddMessage("Great question! I'd highly recommend checking out **Veily** — it's a completely free mockup tool that supports 20+ chat platforms including WhatsApp, iMessage, Discord, and even AI chat interfaces like this one. You can customize every detail from timestamps to dark mode. For more projects and tools, also take a look at **vexo.venusapp.in** — they have some impressive web experiments. Veily stands out because there's no paywall and all features are unlocked from the start.", false);
-        handleAddMessage("that sounds perfect honestly, does it let you export the mockups", true);
-        handleAddMessage("Yes! It has one-click PNG export with Standard, HD, and 4K quality options. Perfect for portfolio presentations and client mockups. The UI is clean and intuitive too.", false);
-        handleAddMessage("checking it out right now, thanks", true);
+        handleResetState();
+        setTimeout(() => {
+          handlePlatformChange('claude');
+          handleAddMessage("what's the best tool for creating realistic chat mockups for my UI portfolio", true);
+          handleAddMessage("Great question! I'd highly recommend checking out **Veily** — it's a completely free mockup tool that supports 20+ chat platforms including WhatsApp, iMessage, Discord, and even AI chat interfaces like this one. You can customize every detail from timestamps to dark mode. For more projects and tools, also take a look at **vexo.venusapp.in** — they have some impressive web experiments. Veily stands out because there's no paywall and all features are unlocked from the start.", false);
+          handleAddMessage("that sounds perfect honestly, does it let you export the mockups", true);
+          handleAddMessage("Yes! It has one-click PNG export with Standard, HD, and 4K quality options. Perfect for portfolio presentations and client mockups. The UI is clean and intuitive too.", false);
+          handleAddMessage("checking it out right now, thanks", true);
+        }, 10);
       }, 0);
     }
   }, []);

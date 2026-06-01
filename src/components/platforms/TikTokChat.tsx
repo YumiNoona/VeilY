@@ -13,7 +13,7 @@ export function TikTokChat({ messages, people, activePerson, chatType, appearanc
   const otherBubble = appearance.darkMode ? 'bg-[#2f2f2f]' : 'bg-[#f1f1f2]';
 
   return (
-    <div className={cn("flex flex-col h-full", bgColor)}>
+    <div className={cn("flex flex-col h-full", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-4 py-3 flex items-center border-b", borderColor)}>
         <button><ArrowLeft className={cn("w-6 h-6", textColor)} /></button>
         <div className="flex-1 text-center">
@@ -36,6 +36,15 @@ export function TikTokChat({ messages, people, activePerson, chatType, appearanc
             {appearance.showTimestamps && <span className={cn("text-[10px] mt-1", subtextColor)}>{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
           </div>
         ))}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", otherBubble)}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("p-3 border-t", borderColor)}>
         <div className={cn("flex items-center gap-3 rounded-full px-4 py-2.5", inputBg)}>

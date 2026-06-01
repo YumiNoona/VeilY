@@ -13,7 +13,7 @@ export function SignalChat({ messages, people, activePerson, chatType, appearanc
   const bubbleOther = appearance.darkMode ? 'bg-[#2b2d31]' : 'bg-[#e8e8e8]';
 
   return (
-    <div className={cn("flex flex-col h-full", bgColor)}>
+    <div className={cn("flex flex-col h-full", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-4 py-2 flex items-center shadow-sm z-10", headerBg)}>
         <button className="mr-3 text-[#2C6BED]"><ArrowLeft className="w-6 h-6" /></button>
         <div className="w-10 h-10 rounded-full bg-[#2C6BED] flex items-center justify-center text-white font-bold text-lg mr-3">
@@ -60,6 +60,15 @@ export function SignalChat({ messages, people, activePerson, chatType, appearanc
             </div>
           );
         })}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", bubbleOther)}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("p-2 flex items-center gap-2", bgColor)}>
         <button className={cn("p-2 rounded-full hover:bg-gray-100", appearance.darkMode ? "text-gray-300" : "text-gray-600")}>

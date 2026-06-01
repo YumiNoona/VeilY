@@ -13,7 +13,7 @@ export function SlackChat({ messages, people, activePerson, chatType, appearance
   const inputBorder = appearance.darkMode ? 'border-[#565856]' : 'border-[#868686]';
 
   return (
-    <div className={cn("flex flex-col h-full font-lato", bgColor)}>
+    <div className={cn("flex flex-col h-full font-lato", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-4 py-3 border-b flex items-center shadow-sm z-10", bgColor, borderColor)}>
         <h3 className={cn("font-black text-[18px]", textColor)}>
           {chatType === 'group' ? '# general' : (
@@ -55,6 +55,15 @@ export function SlackChat({ messages, people, activePerson, chatType, appearance
             </div>
           );
         })}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", appearance.darkMode ? "bg-[#222529]" : "bg-[#f8f8f8]")}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("p-4", bgColor)}>
         <div className={cn("border rounded-xl shadow-sm", inputBorder)}>

@@ -38,7 +38,7 @@ export function ClaudeChat({ messages, people, appearance, aiModel, onUpdateMess
     };
 
     return (
-        <div className={cn("flex flex-col h-full font-[Inter,sans-serif]", bgColor, textColor)}>
+        <div className={cn("flex flex-col h-full font-[Inter,sans-serif]", appearance.transparentBackground ? 'bg-transparent' : bgColor, textColor)}>
             {/* Header */}
             <header className={cn("px-5 py-3 flex items-center justify-between sticky top-0 z-10", headerBg)}>
                 <button className={cn("p-1 -ml-2 hover:bg-stone-100 rounded-md transition-colors", iconColor)}>

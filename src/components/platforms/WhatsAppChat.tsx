@@ -23,8 +23,30 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
 
   const [editingMessage, setEditingMessage] = useState<{ id: string, text: string } | null>(null);
 
+  // Build read receipt parity map: even = gray (delivered), odd = blue (read)
+  let ownMsgIndex = 0;
+  const readReceiptParity = new Map<string, 'delivered' | 'read'>();
+  messages.forEach((m) => {
+    if (m.isOwn) {
+      ownMsgIndex++;
+      readReceiptParity.set(m.id, ownMsgIndex % 2 === 0 ? 'delivered' : 'read');
+    }
+  });
+
+  const isSameGroup = (msg: typeof messages[0], prevMsg: typeof messages[0] | null) => {
+    if (!prevMsg) return false;
+    if (msg.senderId !== prevMsg.senderId) return false;
+    const diff = Math.abs(new Date(msg.timestamp).getTime() - new Date(prevMsg.timestamp).getTime());
+    return diff < 120000;
+  };
+
+  const hasReply = (id: string) => {
+    const hash = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    return hash % 5 === 0;
+  };
+
   return (
-    <div className={cn("flex flex-col h-full font-whatsapp", bgClass)}>
+    <div className={cn("flex flex-col h-full font-whatsapp", appearance.transparentBackground ? 'bg-transparent' : bgClass)}>
       {/* Header */}
       <div className={cn("px-3 py-2 flex items-center border-b", headerBg, appearance.darkMode ? "border-[#202c33]" : "border-[#bdc1c6]")}>
         <button className={cn("p-1 flex items-center gap-1", iconColor)}>
@@ -53,17 +75,20 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-1" style={{
+      <div className="flex-1 overflow-y-auto p-3" style={{
         ...getWallpaperStyle(appearance),
         backgroundImage: appearance.wallpaperUrl ? `url(${appearance.wallpaperUrl})` : "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')"
       }}>
         {messages.map((message, i) => {
           const msgDate = new Date(message.timestamp);
-          const prevMsgDate = i > 0 ? new Date(messages[i - 1].timestamp) : null;
+          const prevMsg = i > 0 ? messages[i - 1] : null;
+          const prevMsgDate = prevMsg ? new Date(prevMsg.timestamp) : null;
           const showDateSeparator = !prevMsgDate || !isSameDay(msgDate, prevMsgDate);
+          const grouped = isSameGroup(message, prevMsg);
+          const showReply = hasReply(message.id);
 
           return (
-            <div key={message.id} className="flex flex-col mb-1">
+            <div key={message.id} className="flex flex-col" style={{ marginBottom: grouped ? '2px' : '8px' }}>
               {showDateSeparator && (
                 <div className="flex justify-center my-4">
                   <span className={cn(
@@ -75,6 +100,26 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
                 </div>
               )}
               <div className={cn("flex flex-col", message.isOwn ? "items-end" : "items-start")}>
+                {showReply && !message.isOwn && (
+                  <div className="max-w-[80%] mb-1 flex items-center gap-1.5">
+                    <div className="w-1 h-8 rounded-full bg-[#25d366] flex-shrink-0" />
+                    <div className="text-[12px] text-[#8696a0] truncate">
+                      <span className="font-medium text-[#25d366]">{getSenderName(message.senderId, people).split(' ')[0]}</span>
+                      <span className="mx-1">replied to</span>
+                      <span>message</span>
+                    </div>
+                  </div>
+                )}
+                {showReply && message.isOwn && (
+                  <div className="max-w-[80%] mb-1 flex items-center gap-1.5 justify-end">
+                    <div className="text-[12px] text-[#8696a0] truncate text-right">
+                      <span className="font-medium text-[#25d366]">You</span>
+                      <span className="mx-1">replied to</span>
+                      <span>{getSenderName(message.senderId, people).split(' ')[0] || 'message'}</span>
+                    </div>
+                    <div className="w-1 h-8 rounded-full bg-[#25d366] flex-shrink-0" />
+                  </div>
+                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <div className={cn(
@@ -107,8 +152,8 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, appeara
                             {message.isOwn && (
                               <div className="flex -mb-[1px] ml-0.5 shrink-0">
                                 <svg width="15" height="10" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" className="block">
-                                  <path d="M4 8.5L1.5 6L0.5 7L4 10.5L12 1.5L11 0.5L4 8.5Z" fill="#53bdeb"/>
-                                  <path d="M8 8.5L7.5 8L6.5 9L8 10.5L16 1.5L15 0.5L8 8.5Z" fill="#53bdeb"/>
+                                  <path d="M4 8.5L1.5 6L0.5 7L4 10.5L12 1.5L11 0.5L4 8.5Z" fill={readReceiptParity.get(message.id) === 'read' ? "#53bdeb" : "#8696a0"}/>
+                                  <path d="M8 8.5L7.5 8L6.5 9L8 10.5L16 1.5L15 0.5L8 8.5Z" fill={readReceiptParity.get(message.id) === 'read' ? "#53bdeb" : "#8696a0"}/>
                                 </svg>
                               </div>
                             )}

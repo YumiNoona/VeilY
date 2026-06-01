@@ -11,7 +11,7 @@ export function LineChat({ messages, people, activePerson, chatType, appearance,
   const headerText = appearance.darkMode ? 'text-white' : 'text-black';
 
   return (
-    <div className={cn("flex flex-col h-full", bgColor)}>
+    <div className={cn("flex flex-col h-full", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-4 py-3 flex items-center shadow-sm z-10", headerBg)}>
         <button className="mr-3"><ArrowLeft className={cn("w-6 h-6", headerText)} /></button>
         <div className="flex-1">
@@ -37,14 +37,14 @@ export function LineChat({ messages, people, activePerson, chatType, appearance,
                   <span className="bg-black/10 text-white text-[11px] px-3 py-1 rounded-full">{formatDateSeparator(msgDate)}</span>
                 </div>
               )}
-              <div className={cn("flex flex-col", message.isOwn ? "items-end" : "items-start")}>
-                <div className="flex items-end gap-1.5 max-w-[85%]">
+              <div className={cn("flex flex-col", message.isOwn ? "self-end items-end" : "self-start items-start")}>
+                <div className={cn("flex items-end gap-1.5", message.isOwn ? "max-w-[85%]" : "max-w-[80%]")}>
                   {!message.isOwn && (
-                    <div className="flex flex-col items-center mr-1">
+                    <div className="shrink-0 mr-0.5">
                       {displayPerson?.avatar ? (
-                        <img src={displayPerson.avatar} alt="" className="w-8 h-8 rounded-full mb-1 object-cover" />
+                        <img src={displayPerson.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-xs font-bold mb-1">
+                        <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-xs font-bold">
                           {displayPerson?.name?.charAt(0)}
                         </div>
                       )}
@@ -67,6 +67,15 @@ export function LineChat({ messages, people, activePerson, chatType, appearance,
             </div>
           );
         })}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", appearance.darkMode ? "bg-gray-700" : "bg-white")}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("px-3 py-2 flex items-center gap-2", appearance.darkMode ? "bg-[#2a2a2a]" : "bg-white")}>
         <Plus className={cn("w-7 h-7", appearance.darkMode ? "text-white" : "text-[#1d4475]")} />

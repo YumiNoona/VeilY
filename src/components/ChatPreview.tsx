@@ -150,7 +150,7 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
         <div id={chatId} className={cn(
           "w-full h-full overflow-hidden flex flex-col relative",
           showFrame ? "rounded-[32px]" : "rounded-xl",
-          appearance.darkMode ? "bg-black" : "bg-white"
+          !appearance.transparentBackground && (appearance.darkMode ? "bg-black" : "bg-white")
         )}>
           {showStatusBar && <DeviceStatusBar appearance={appearance} />}
           <div className="flex-1 overflow-hidden relative">

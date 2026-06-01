@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react"; // Re-saved to clear runtime error
+import { useSearchParams } from "react-router-dom";
 import { Sidebar } from "@/components/Sidebar";
 import { ChatPreview } from "@/components/ChatPreview";
 import { PreviewControls } from "@/components/PreviewControls";
@@ -36,7 +37,19 @@ const Index = () => {
     if (aiPlatforms.includes(chatState.platform)) {
       handlePlatformChange('whatsapp');
     }
-   }, [chatState.platform, handlePlatformChange]);
+  }, [chatState.platform, handlePlatformChange]);
+
+  // Set platform from URL param on first load
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    const platformParam = searchParams.get('platform');
+    if (platformParam) {
+      const validPlatforms = ['whatsapp','discord','imessage','instagram','telegram','messenger','tiktok','slack','reddit','snapchat','line','teams','signal','tinder','wechat','x','chatgpt','claude','gemini','grok'];
+      if (validPlatforms.includes(platformParam)) {
+        handlePlatformChange(platformParam as any);
+      }
+    }
+  }, []);
 
    const { setDownloadModalOpen } = useAuth();
    const [deviceView, setDeviceView] = useState<DeviceView>('mobile');

@@ -9,7 +9,7 @@ export function WeChatChat({ messages, people, activePerson, chatType, appearanc
   const textColor = appearance.darkMode ? 'text-white' : 'text-black';
 
   return (
-    <div className={cn("flex flex-col h-full", bgColor)}>
+    <div className={cn("flex flex-col h-full", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-4 py-3 flex items-center border-b-[0.5px]", headerBg, appearance.darkMode ? "border-[#3a3a3a]" : "border-[#e0e0e0]")}>
         <button><ChevronLeft className={cn("w-6 h-6", textColor)} /></button>
         <h3 className={cn("flex-1 text-center font-bold text-[17px]", textColor)}>{chatType === 'group' ? 'Group Chat' : displayPerson?.name || 'Friend'}</h3>
@@ -54,6 +54,15 @@ export function WeChatChat({ messages, people, activePerson, chatType, appearanc
             </div>
           );
         })}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", appearance.darkMode ? "bg-[#3a3a3a]" : "bg-white")}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("px-2 py-2 flex items-center gap-3 border-t-[0.5px]", headerBg, appearance.darkMode ? "border-[#3a3a3a]" : "border-[#e0e0e0]")}>
         <div className="flex items-center justify-center p-1">

@@ -1,7 +1,7 @@
 import { Phone, Video, Camera, Mic, Smile } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EditableText } from "@/components/ui/EditableText";
-import { PlatformChatProps, getWallpaperStyle } from "./shared";
+import { PlatformChatProps, getWallpaperStyle, formatTime } from "./shared";
 
 export function SnapchatChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
@@ -9,7 +9,7 @@ export function SnapchatChat({ messages, people, activePerson, chatType, appeara
   const textColor = appearance.darkMode ? 'text-white' : 'text-black';
 
   return (
-    <div className={cn("flex flex-col h-full font-sans", bgColor)}>
+    <div className={cn("flex flex-col h-full font-sans", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-4 py-2 flex items-center border-b-[0.5px] border-b-gray-100", bgColor)}>
         <div className="w-10 h-10 rounded-full bg-gray-200 mr-3 flex items-center justify-center font-bold text-gray-500">
           {displayPerson?.avatar ? <img src={displayPerson.avatar} className="w-full h-full rounded-full object-cover" alt="" /> : displayPerson?.name?.charAt(0)}
@@ -42,10 +42,22 @@ export function SnapchatChat({ messages, people, activePerson, chatType, appeara
                 <p className={cn("text-[15px] font-medium leading-snug", indicatorColor)}>
                   <EditableText value={message.text} onSave={(newText) => onUpdateMessage?.(message.id, newText)} multiline />
                 </p>
+                {appearance.showTimestamps && (
+                  <p className="text-[10px] text-gray-400 mt-0.5">{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</p>
+                )}
               </div>
             </div>
           );
         })}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", appearance.darkMode ? "bg-[#1c1c1c]" : "bg-gray-100")}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("px-2 py-2 flex items-center gap-2", bgColor)}>
         <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">

@@ -17,7 +17,6 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const today = new Date();
 
-  // Telegram dark/light mode aware colors
   const bgClass = appearance.darkMode ? 'bg-[#0e1621]' : 'bg-[#efeff4]';
   const headerBg = appearance.darkMode ? 'bg-[#17212b]' : 'bg-white';
   const inputBg = appearance.darkMode ? 'bg-[#17212b]' : 'bg-white';
@@ -32,8 +31,18 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
   const timeColor = appearance.darkMode ? 'text-[#6ab2f2]' : 'text-[#aaaaaa]';
   const dateBadgeBg = appearance.darkMode ? 'bg-[#182533] text-[#6ab2f2]' : 'bg-[rgba(0,0,0,0.15)] text-white';
 
+  // Read receipt parity for own messages: even = single check, odd = double check
+  let ownMsgIndex = 0;
+  const receiptMap = new Map<string, 'sent' | 'read'>();
+  messages.forEach((m) => {
+    if (m.isOwn) {
+      ownMsgIndex++;
+      receiptMap.set(m.id, ownMsgIndex % 2 === 0 ? 'sent' : 'read');
+    }
+  });
+
   return (
-    <div className={cn("flex flex-col h-full font-telegram", bgClass)}>
+    <div className={cn("flex flex-col h-full font-telegram", appearance.transparentBackground ? 'bg-transparent' : bgClass)}>
       <div className={cn("px-3 py-2 flex items-center border-b", headerBg, appearance.darkMode ? "border-transparent" : "border-[#c8c8cc]")}>
         <button className="p-2"><ArrowLeft className={cn("w-5 h-5", iconColor)} /></button>
         {displayPerson?.avatar ? (
@@ -92,7 +101,20 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
                       <p className={cn("text-[15px] leading-[20px]", msgTextColor)}>
                         {message.text}
                       </p>
-                      {appearance.showTimestamps && <span className={cn("text-[11px] whitespace-nowrap", timeColor)}>{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
+                      <span className={cn("text-[11px] whitespace-nowrap flex items-center gap-0.5", timeColor)}>
+                        {appearance.showTimestamps && formatTime(message.timestamp, appearance.use24HourFormat ?? false)}
+                        {message.isOwn && receiptMap.get(message.id) === 'read' && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 7L9.5 15.5L6 12" stroke="#6ab2f2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M22 7L13.5 15.5L10 12" stroke="#6ab2f2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                        {message.isOwn && receiptMap.get(message.id) === 'sent' && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 7L9.5 15.5L6 12" stroke="#aaaaaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -118,6 +140,15 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
             </DropdownMenu>
           </div>
         ))}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", otherBubble)}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("p-2 flex items-center gap-2", inputBg)}>
         <button className={cn("p-2", iconColor)}><Smile className="w-6 h-6" /></button>

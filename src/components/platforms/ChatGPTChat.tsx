@@ -102,7 +102,7 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
     };
 
     return (
-        <div className={cn("flex flex-col h-full font-sans", bgColor, textColor)}>
+        <div className={cn("flex flex-col h-full font-sans", appearance.transparentBackground ? 'bg-transparent' : bgColor, textColor)}>
             {/* Header */}
             <header className={cn("px-4 py-2 flex items-center justify-between sticky top-0 z-10", headerBg)}>
                 <div className="w-8 flex items-center justify-center">

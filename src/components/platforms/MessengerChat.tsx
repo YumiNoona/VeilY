@@ -12,7 +12,7 @@ export function MessengerChat({ messages, people, activePerson, chatType, appear
   const ownBubbleGradient = "bg-gradient-to-r from-[#0084ff] to-[#00c6ff]";
 
   return (
-    <div className={cn("flex flex-col h-full", bgColor)}>
+    <div className={cn("flex flex-col h-full", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-3 py-2 flex items-center shadow-sm z-10", bgColor)}>
         <button className="p-1"><ArrowLeft className={cn("w-6 h-6", appearance.darkMode ? "text-white" : "text-[#0084ff]")} /></button>
         <div className="ml-2 flex items-center gap-3 flex-1">
@@ -82,6 +82,15 @@ export function MessengerChat({ messages, people, activePerson, chatType, appear
                 <img src={displayPerson.avatar} alt="Seen" className="w-3.5 h-3.5 rounded-full border border-white" /> :
                 <div className="w-3.5 h-3.5 rounded-full bg-gray-300 border border-white" />
               }
+            </div>
+          )}
+          {appearance.isTyping && (
+            <div className="flex justify-start mb-2">
+              <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", otherBubble)}>
+                <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+              </div>
             </div>
           )}
         </div>

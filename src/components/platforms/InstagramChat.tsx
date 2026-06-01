@@ -19,8 +19,10 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
   const otherBubble = appearance.darkMode ? 'bg-[#262626]' : 'bg-[#efefef]';
   const [editingMessage, setEditingMessage] = useState<{ id: string, text: string } | null>(null);
 
+  const lastOwnIdx = messages.map((m, i) => ({ m, i })).filter(x => x.m.isOwn).pop()?.i ?? -1;
+
   return (
-    <div className={cn("flex flex-col h-full font-instagram", bgColor)}>
+    <div className={cn("flex flex-col h-full font-instagram", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-3 py-2 flex items-center shadow-sm z-10", bgColor)}>
         <button className="p-1"><ArrowLeft className={cn("w-6 h-6", textColor)} /></button>
         <div className="ml-2 flex items-center gap-3 flex-1">
@@ -58,6 +60,7 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
           const msgDate = new Date(message.timestamp);
           const prevMsgDate = i > 0 ? new Date(messages[i - 1].timestamp) : null;
           const showDateSeparator = !prevMsgDate || !isSameDay(msgDate, prevMsgDate);
+          const isLastOwn = message.isOwn && i === lastOwnIdx;
           return (
             <div key={message.id} className="flex flex-col mb-1.5">
               {showDateSeparator && (
@@ -94,11 +97,29 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                {appearance.showTimestamps && <span className={cn("text-[10px] mt-0.5 px-2 opacity-60", subtextColor)}>{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
+                {appearance.showTimestamps && (
+                  <span className={cn("text-[10px] mt-0.5 px-2 opacity-60", subtextColor)}>
+                    {formatTime(message.timestamp, appearance.use24HourFormat ?? false)}
+                  </span>
+                )}
+                {isLastOwn && (
+                  <span className={cn("text-[10px] mt-0.5 px-2 opacity-60", subtextColor)}>
+                    Seen · {formatTime(new Date(), appearance.use24HourFormat ?? false)}
+                  </span>
+                )}
               </div>
             </div>
           );
         })}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", otherBubble)}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("p-3", bgColor)}>
         <div className={cn("flex items-center gap-3 rounded-full border px-4 py-2", appearance.darkMode ? "border-[#363636]" : "border-[#dbdbdb]")}>

@@ -10,7 +10,7 @@ export function TeamsChat({ messages, people, activePerson, chatType, appearance
   const subtextColor = appearance.darkMode ? 'text-[#c8c6c4]' : 'text-[#616161]';
 
   return (
-    <div className={cn("flex flex-col h-full", bgColor)}>
+    <div className={cn("flex flex-col h-full", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-4 py-2 flex items-center shadow-sm z-10", headerBg)}>
         <div className="flex items-center gap-3 flex-1">
           {displayPerson?.avatar ? (
@@ -47,16 +47,25 @@ export function TeamsChat({ messages, people, activePerson, chatType, appearance
                   <span className={cn("font-semibold text-[11px]", isOwn ? "text-white" : "text-[#242424]")}>
                     {isOwn ? 'You' : getSenderName(message.senderId, people)}
                   </span>
-                  <span className={cn("text-[10px]", isOwn ? "text-white/80" : "text-[#616161]")}>
-                    {formatTime(message.timestamp, true)}
-                  </span>
                 </div>
                 {message.image && <img src={message.image} alt="" className="max-w-full rounded mb-2" />}
                 <p className="text-[13px] leading-[1.4]">{message.text}</p>
               </div>
+              <span className={cn("text-[10px] mt-0.5 text-[#616161] px-1")}>
+                {formatTime(message.timestamp, true)}
+              </span>
             </div>
           );
         })}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", appearance.darkMode ? "bg-[#3b3b3b]" : "bg-white")}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("p-4", headerBg)}>
         <div className="flex items-center gap-3">

@@ -20,13 +20,13 @@ export const Layout = () => {
     const { updateAvailable, currentVersion, latestVersion, dismiss, releasesUrl } = useUpdateChecker();
     
     const tabs = [
-        { id: "chat", label: "Chat", path: "/", icon: MessageSquare },
-        { id: "ai-chat", label: "AI Chat", path: "/ai-chat", icon: Bot },
-        { id: "social", label: "Social", path: "/social", icon: Share2 },
-        { id: "comments", label: "Comments", path: "/comments", icon: MessageCircle },
-        { id: "stories", label: "Stories", path: "/stories", icon: GalleryVerticalEnd },
-        { id: "email", label: "Email", path: "/email", icon: AtSign },
-        { id: "group-call", label: "Call", path: "/group-call", icon: Phone },
+        { id: "chat", label: "Chat", path: "/app", icon: MessageSquare },
+        { id: "ai-chat", label: "AI Chat", path: "/app/ai-chat", icon: Bot },
+        { id: "social", label: "Social", path: "/app/social", icon: Share2 },
+        { id: "comments", label: "Comments", path: "/app/comments", icon: MessageCircle },
+        { id: "stories", label: "Stories", path: "/app/stories", icon: GalleryVerticalEnd },
+        { id: "email", label: "Email", path: "/app/email", icon: AtSign },
+        { id: "group-call", label: "Call", path: "/app/group-call", icon: Phone },
     ];
 
     // Dynamic page title per route

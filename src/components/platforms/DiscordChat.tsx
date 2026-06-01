@@ -14,19 +14,31 @@ export function DiscordChat({ messages, people, activePerson, chatType, appearan
   const subtextColor = appearance.darkMode ? 'text-[#dbdee1]' : 'text-[#5c5e66]';
   const iconColor = appearance.darkMode ? 'text-[#b5bac1]' : 'text-[#4e5058]';
   const inputBg = appearance.darkMode ? 'bg-[#383a40]' : 'bg-[#ebedef]';
+  const channelName = chatType === 'group' ? 'general' : (displayPerson?.name?.toLowerCase() || 'dm');
+  const onlineCount = 3 + (people.length % 5);
 
   return (
-    <div className={cn("flex flex-col h-full", bgColor)}>
+    <div className={cn("flex flex-col h-full", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-4 py-3 flex items-center border-b shadow-sm", headerBg, appearance.darkMode ? "border-[#1e1f22]" : "border-[#e1e2e4]")}>
-        {chatType === 'group' ? <Hash className={cn("w-6 h-6 mr-2", iconColor)} /> : <AtSign className={cn("w-6 h-6 mr-2", iconColor)} />}
-        <h3 className={cn("font-semibold", textColor)}>
-          {chatType === 'group' ? 'general' : (
-            <EditableText
-              value={displayPerson?.name || 'Contact'}
-              onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
-            />
-          )}
-        </h3>
+        <div className="flex items-center gap-2">
+          {chatType === 'group' ? <Hash className={cn("w-6 h-6", iconColor)} /> : <AtSign className={cn("w-6 h-6", iconColor)} />}
+          <div>
+            <h3 className={cn("font-semibold text-[15px] leading-tight", textColor)}>
+              {chatType === 'group' ? channelName : (
+                <EditableText
+                  value={displayPerson?.name || 'Contact'}
+                  onSave={(newName) => displayPerson && onUpdatePerson?.({ ...displayPerson, name: newName })}
+                />
+              )}
+            </h3>
+            {chatType === 'group' && (
+              <p className={cn("text-[11px] leading-tight", appearance.darkMode ? "text-[#949ba4]" : "text-[#5c5e66]")}>
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#23a55a] mr-1.5 align-middle" />
+                {onlineCount} online
+              </p>
+            )}
+          </div>
+        </div>
         <div className="ml-auto flex items-center gap-4"><Search className={cn("w-5 h-5", iconColor)} /><Inbox className={cn("w-5 h-5", iconColor)} /></div>
       </div>
       <div className={cn("flex-1 overflow-y-auto p-4 space-y-4", bgColor)} style={getWallpaperStyle(appearance)}>
@@ -70,11 +82,20 @@ export function DiscordChat({ messages, people, activePerson, chatType, appearan
             </div>
           );
         })}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", appearance.darkMode ? "bg-[#383a40]" : "bg-[#ebedef]")}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("p-4", bgColor)}>
         <div className={cn("rounded-lg flex items-center px-4 py-2.5", inputBg)}>
           <Plus className={cn("w-6 h-6 mr-3", iconColor)} />
-          <input type="text" placeholder={`Message ${chatType === 'group' ? '#general' : displayPerson?.name}`} className={cn("flex-1 bg-transparent outline-none", textColor, appearance.darkMode ? "placeholder:text-[#6d6f78]" : "placeholder:text-[#5c5e66]")} readOnly />
+          <input type="text" placeholder={`Message ${chatType === 'group' ? '#' + channelName : displayPerson?.name}`} className={cn("flex-1 bg-transparent outline-none", textColor, appearance.darkMode ? "placeholder:text-[#6d6f78]" : "placeholder:text-[#5c5e66]")} readOnly />
           <div className="flex items-center gap-3"><Gift className={cn("w-6 h-6", iconColor)} /><Sticker className={cn("w-6 h-6", iconColor)} /><Smile className={cn("w-6 h-6", iconColor)} /></div>
         </div>
       </div>

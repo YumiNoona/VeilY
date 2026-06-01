@@ -11,7 +11,7 @@ export function XChat({ messages, people, activePerson, chatType, appearance, on
   const borderColor = appearance.darkMode ? 'border-[#2f3336]' : 'border-[#eff3f4]';
 
   return (
-    <div className={cn("flex flex-col h-full", bgColor)}>
+    <div className={cn("flex flex-col h-full", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-4 py-3 flex items-center border-b", borderColor)}>
         <button><ArrowLeft className={cn("w-5 h-5", textColor)} /></button>
         {displayPerson?.avatar ? (
@@ -36,6 +36,15 @@ export function XChat({ messages, people, activePerson, chatType, appearance, on
             {appearance.showTimestamps && <span className={cn("text-[11px] mt-1", subtextColor)}>{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
           </div>
         ))}
+        {appearance.isTyping && (
+          <div className="flex justify-start mb-2">
+            <div className={cn("px-3 py-2 rounded-lg shadow-sm flex items-center gap-1", appearance.darkMode ? "bg-[#2f3336]" : "bg-[#eff3f4]")}>
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
+            </div>
+          </div>
+        )}
       </div>
       <div className={cn("p-4 border-t", borderColor)}>
         <div className={cn("flex items-center gap-3 rounded-2xl border px-4 py-2", borderColor)}>

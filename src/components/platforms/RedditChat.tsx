@@ -15,7 +15,7 @@ export function RedditChat({ messages, people, activePerson, chatType, appearanc
   const textColor = appearance.darkMode ? 'text-[#d7dadc]' : 'text-black';
 
   return (
-    <div className={cn("flex flex-col h-full", bgColor)}>
+    <div className={cn("flex flex-col h-full", appearance.transparentBackground ? 'bg-transparent' : bgColor)}>
       <div className={cn("px-4 py-2 flex items-center border-b", headerBg, appearance.darkMode ? "border-[#343536]" : "border-[#edeff1]")}>
         <button><ArrowLeft className={cn("w-6 h-6 mr-4", textColor)} /></button>
         <h3 className={cn("font-bold text-[16px]", textColor)}>{chatType === 'group' ? 'Group Chat' : (

@@ -6,7 +6,7 @@
 
 Create pixel-perfect chat screenshots for 20+ platforms. No signup. No paywall. Just beautiful mockups.
 
-[![Live Web App](https://img.shields.io/badge/🌐_Live_App-veily.app-00ff41?style=for-the-badge)](https://veily.app)
+[![Live Web App](https://img.shields.io/badge/🌐_Live_App-veily.app-00ff41?style=for-the-badge)]([https://veily.app](https://veily.venusapp.in/))
 [![Download Desktop](https://img.shields.io/badge/⬇️_Download-.exe-ff6600?style=for-the-badge)](https://github.com/YumiNoona/VeilY/releases/latest)
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)

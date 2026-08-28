@@ -20,7 +20,7 @@ export const TitleBar = () => {
     };
 
     // Return null if not in Electron/Tauri environment
-    if (!(window as any).electronAPI && !(window as any).__TAURI_INTERNALS__) return null;
+    if (!window.electronAPI && !window.__TAURI_INTERNALS__) return null;
 
     return (
         <div data-tauri-drag-region className="h-10 w-full bg-[#0f0f0f] flex items-center select-none border-b border-white/5 relative z-[9999]">

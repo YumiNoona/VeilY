@@ -5,11 +5,20 @@ import { ChatPreview } from "@/components/ChatPreview";
 import { PreviewControls } from "@/components/PreviewControls";
 import { useChatState } from "@/hooks/useChatState";
 import { useScreenshot } from "@/hooks/useScreenshot";
-import { DeviceView } from "@/types/chat";
+import { DeviceView, Platform } from "@/types/chat";
 import { useAuth } from "@/contexts/AuthContext";
 import { DownloadModal } from "@/components/modals/DownloadModal";
-import { SupportModal } from "@/components/modals/SupportModal";
-import { Heart } from "lucide-react";
+import { SupportBanner } from "@/components/SupportBanner";
+import { supportsDesktopChatPreview } from "@/lib/platform-capabilities";
+
+const CHAT_PLATFORMS: Platform[] = [
+  'whatsapp', 'discord', 'imessage', 'instagram', 'telegram', 'messenger',
+  'tiktok', 'slack', 'reddit', 'snapchat', 'line', 'teams', 'signal',
+  'tinder', 'wechat', 'x',
+];
+
+const isChatPlatform = (value: string): value is Platform =>
+  CHAT_PLATFORMS.includes(value as Platform);
 
 const Index = () => {
   const {
@@ -44,24 +53,30 @@ const Index = () => {
   useEffect(() => {
     const platformParam = searchParams.get('platform');
     if (platformParam) {
-      const validPlatforms = ['whatsapp','discord','imessage','instagram','telegram','messenger','tiktok','slack','reddit','snapchat','line','teams','signal','tinder','wechat','x','chatgpt','claude','gemini','grok'];
-      if (validPlatforms.includes(platformParam)) {
-        handlePlatformChange(platformParam as any);
+      if (isChatPlatform(platformParam)) {
+        handlePlatformChange(platformParam);
       }
     }
-  }, []);
+  }, [handlePlatformChange, searchParams]);
 
    const { setDownloadModalOpen } = useAuth();
    const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
    const [isAnimating, setIsAnimating] = useState(false);
-   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
    const chatPreviewRef = useRef<HTMLDivElement>(null);
    const { copyScreenshot } = useScreenshot(chatPreviewRef);
 
    const activePerson = chatState.people.find(p => p.id === 'user') || null;
 
+  const desktopPreviewAvailable = supportsDesktopChatPreview(chatState.platform);
+
+  useEffect(() => {
+    if (!desktopPreviewAvailable && deviceView === 'desktop') {
+      setDeviceView('mobile');
+    }
+  }, [desktopPreviewAvailable, deviceView]);
+
   return (
-    <div className="flex h-full bg-background overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full bg-background overflow-hidden">
       <Sidebar
         chatState={chatState}
         onPlatformChange={handlePlatformChange}
@@ -82,7 +97,7 @@ const Index = () => {
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
-        <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8">
+        <div className="min-h-full flex flex-col items-center justify-center gap-8 p-4 lg:p-8 xl:pr-24">
           <ChatPreview
             ref={chatPreviewRef}
             platform={chatState.platform}
@@ -99,6 +114,7 @@ const Index = () => {
             isAnimating={isAnimating}
             onAnimationComplete={() => setIsAnimating(false)}
           />
+          <SupportBanner />
         </div>
 
         <PreviewControls
@@ -108,29 +124,11 @@ const Index = () => {
           onCopy={copyScreenshot}
           isAnimating={isAnimating}
           onToggleAnimation={() => setIsAnimating(!isAnimating)}
+          availableViews={desktopPreviewAvailable ? ['desktop', 'mobile'] : ['mobile']}
         />
 
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4">
-          <div className="flex items-center justify-between gap-6 px-6 py-3.5 bg-white/90 backdrop-blur border border-zinc-200/80 rounded-2xl shadow-lg shadow-zinc-200/50">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-zinc-800 truncate">Support Our Service</p>
-              <p className="text-xs text-zinc-500 truncate">If you like Veily, please consider donating to keep it forever free.</p>
-            </div>
-            <button
-              onClick={() => setIsSupportModalOpen(true)}
-              className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white text-xs font-bold rounded-full shadow-md hover:from-rose-600 hover:to-pink-700 transition-all duration-300 hover:scale-105"
-            >
-              <Heart className="w-3.5 h-3.5 fill-white" />
-              Donate
-            </button>
-          </div>
-        </div>
       </main>
       <DownloadModal previewRef={chatPreviewRef} />
-      <SupportModal
-        isOpen={isSupportModalOpen}
-        onOpenChange={setIsSupportModalOpen}
-      />
     </div>
   );
 };

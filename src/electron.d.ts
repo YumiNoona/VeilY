@@ -7,6 +7,7 @@ export interface IElectronAPI {
 declare global {
   interface Window {
     electronAPI?: IElectronAPI;
-    __TAURI__?: any;
+    __TAURI__?: unknown;
+    __TAURI_INTERNALS__?: unknown;
   }
 }

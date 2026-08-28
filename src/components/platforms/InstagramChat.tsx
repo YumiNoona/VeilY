@@ -28,7 +28,7 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
         <div className="ml-2 flex items-center gap-3 flex-1">
           {displayPerson?.avatar ? (
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#f09433] via-[#dc2743] to-[#bc1888] p-[2px]">
-              <img src={displayPerson.avatar} alt="" className="w-full h-full rounded-full object-cover border-2 border-black" />
+              <img src={displayPerson.avatar} alt="" className={cn("w-full h-full rounded-full object-cover border-2", appearance.darkMode ? "border-black" : "border-white")} />
             </div>
           ) : (
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#f09433] via-[#dc2743] to-[#bc1888] p-[2px]">
@@ -73,7 +73,7 @@ export function InstagramChat({ messages, people, activePerson, chatType, appear
                   <DropdownMenuTrigger asChild>
                     <div className={cn("max-w-[80%] px-4 py-2 rounded-[22px] cursor-pointer group hover:brightness-95 transition-all outline-none relative", message.isOwn ? "bg-[#3797f0] text-white" : cn(otherBubble, textColor))} style={{ wordBreak: 'break-word' }}>
                       {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-                      <p className="text-[15px] leading-[20px]">
+                      <p data-chat-message className="text-[15px] leading-[20px]">
                         {message.text}
                       </p>
                     </div>

@@ -17,7 +17,7 @@ export const parseWhatsApp = (text: string): ParsedChat => {
     const nameToId = new Map<string, string>();
     
     // Robust regex to handle various WhatsApp formats across regions and OS versions
-    const regex = /^\[?(\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4},?\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s*[ap]m)?)\]?\s*(?:-?\s+)?([^:]+):\s*(.*)$/i;
+    const regex = /^\[?(\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4},?\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s*[ap]m)?)\]?\s*(?:-?\s+)?([^:]+):\s*(.*)$/i;
 
     lines.forEach((line) => {
         const match = line.match(regex);
@@ -71,11 +71,11 @@ export const parseWhatsApp = (text: string): ParsedChat => {
                     const dateParts = cleanTS.split(', ');
                     if (dateParts.length >= 2) {
                         const [dPart, tPart] = dateParts;
-                        const [d, m, y] = dPart.split(/[\/\.-]/).map(Number);
+                        const [d, m, y] = dPart.split(/[/.-]/).map(Number);
                         // Very basic time parse (8:44 pm)
                         const timeMatch = tPart.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([ap]m)?/i);
                         if (timeMatch) {
-                            let [_, hours, mins, secs, ampm] = timeMatch;
+                            const [, hours, mins, secs, ampm] = timeMatch;
                             let h = parseInt(hours);
                             if (ampm?.toLowerCase() === 'pm' && h < 12) h += 12;
                             if (ampm?.toLowerCase() === 'am' && h === 12) h = 0;

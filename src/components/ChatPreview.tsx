@@ -1,7 +1,7 @@
 import { Message, Person, Platform, ChatType, DeviceView } from "@/types/chat";
 import { cn } from "@/lib/utils";
 import { PLATFORM_CHAT_MAP } from "./platforms/index";
-import { forwardRef, useMemo, useState, useEffect, useRef, useCallback, useId } from "react";
+import { forwardRef, useMemo, useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
 import { Watermark } from "@/components/Watermark";
 import { AppearanceSettings } from "@/types/chat";
 import { Signal, Wifi } from "lucide-react";
@@ -53,6 +53,13 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
     const [isTyping, setIsTyping] = useState(false);
     const animRef = useRef(false);
     const cancelledRef = useRef(false);
+    const previewRootRef = useRef<HTMLDivElement | null>(null);
+
+    const setPreviewRef = useCallback((node: HTMLDivElement | null) => {
+      previewRootRef.current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) ref.current = node;
+    }, [ref]);
 
     const runAnimation = useCallback(() => {
       cancelledRef.current = false;
@@ -96,16 +103,25 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
       }
       animRef.current = true;
       runAnimation();
-    }, [isAnimating, runAnimation]);
+    }, [isAnimating, messages.length, runAnimation]);
 
     const visibleMessages = useMemo(() => messages.slice(0, visibleCount), [messages, visibleCount]);
 
-    const showFrame = appearance.showDeviceFrame ?? true;
-    const showStatusBar = appearance.showDeviceStatusBar ?? true;
+    useEffect(() => {
+      const frame = requestAnimationFrame(() => {
+        const scroller = previewRootRef.current?.querySelector<HTMLElement>('[data-chat-scroll]')
+          ?? previewRootRef.current?.querySelector<HTMLElement>('.overflow-y-auto');
+        if (scroller) scroller.scrollTop = scroller.scrollHeight;
+      });
+      return () => cancelAnimationFrame(frame);
+    }, [platform, visibleMessages.length, isTyping]);
+
+    const showFrame = deviceView === 'mobile' && (appearance.showDeviceFrame ?? true);
+    const showStatusBar = deviceView === 'mobile' && (appearance.showDeviceStatusBar ?? true);
 
     const deviceStyles = deviceView === 'desktop'
-      ? 'w-full max-w-[667px] h-[375px]'
-      : 'w-full max-w-[375px] h-[600px] sm:h-[756px]';
+      ? 'w-full max-w-[1040px] h-[min(620px,calc(100vh-15rem))] min-h-[420px]'
+      : 'w-full max-w-[375px] h-[600px] sm:h-[min(756px,calc(100vh-8rem))]';
 
     const PlatformChat = useMemo(() => {
       return PLATFORM_CHAT_MAP[platform] ?? PLATFORM_CHAT_MAP['whatsapp'];
@@ -116,38 +132,37 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
       people,
       activePerson,
       chatType,
-      appearance,
+      deviceView,
+      appearance: isTyping ? { ...appearance, isTyping: true } : appearance,
       aiModel,
       isTyping,
       onUpdateMessage,
       onRemoveMessage,
       onUpdatePerson,
-    }), [visibleMessages, people, activePerson, chatType, appearance, aiModel, isTyping, onUpdateMessage, onRemoveMessage, onUpdatePerson]);
+    }), [visibleMessages, people, activePerson, chatType, deviceView, appearance, aiModel, isTyping, onUpdateMessage, onRemoveMessage, onUpdatePerson]);
 
     const fontSizeMap = { xs: '0.75rem', sm: '0.875rem', base: '1rem', lg: '1.125rem' };
     const fontFamilyMap = { sans: 'ui-sans-serif, system-ui, sans-serif', serif: 'Georgia, serif', mono: 'ui-monospace, monospace' };
     const fontSize = fontSizeMap[appearance.fontSize ?? 'sm'];
     const fontFamily = fontFamilyMap[appearance.fontFamily ?? 'sans'];
-    const chatId = useId().replace(/:/g, '');
+    const chatStyle = {
+      '--chat-message-font-size': fontSize,
+      '--chat-message-font-family': fontFamily,
+    } as CSSProperties;
 
     return (
-      <>
-        <style>{`
-          #${chatId} * {
-            font-size: ${fontSize} !important;
-            font-family: ${fontFamily} !important;
-          }
-        `}</style>
       <div
-        ref={ref}
+        ref={setPreviewRef}
+        style={chatStyle}
         className={cn(
-          "overflow-hidden shadow-2xl transition-all duration-300 mx-auto",
+          "chat-preview-shell overflow-hidden shadow-2xl transition-all duration-300 mx-auto mt-16 md:mt-0",
           showFrame && !appearance.transparentBackground ? "rounded-[40px] border-[8px] border-black bg-black" : "rounded-xl",
+          !showFrame && !appearance.transparentBackground && "ring-1 ring-black/5",
           appearance.transparentBackground && "bg-transparent border-transparent",
           deviceStyles
         )}
       >
-        <div id={chatId} className={cn(
+        <div className={cn(
           "w-full h-full overflow-hidden flex flex-col relative",
           showFrame ? "rounded-[32px]" : "rounded-xl",
           !appearance.transparentBackground && (appearance.darkMode ? "bg-black" : "bg-white")
@@ -159,7 +174,6 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
           <Watermark isDark={appearance.darkMode} />
         </div>
       </div>
-      </>
     );
   }
 );

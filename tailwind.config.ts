@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -15,6 +16,12 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      transitionDuration: {
+        '10000': '10000ms',
+      },
+      transitionTimingFunction: {
+        springy: 'cubic-bezier(0.34,1.56,0.64,1)',
       },
       colors: {
         border: "hsl(var(--border))",
@@ -118,5 +125,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [animate],
 } satisfies Config;

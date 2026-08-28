@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -84,7 +84,8 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
                     <div className="relative z-10 p-6 space-y-7">
                         {/* Header */}
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-bold tracking-tight text-zinc-900">Download mockup</h2>
+                            <DialogTitle className="text-xl font-bold tracking-tight text-zinc-900">Download mockup</DialogTitle>
+                            <DialogDescription className="sr-only">Choose image quality and a file name for the exported mockup.</DialogDescription>
                         </div>
 
                         {/* Export Type Section */}

@@ -11,6 +11,7 @@ import { MessagesSection } from "./sidebar/sections/MessagesSection";
 import { AppearanceSection } from "./sidebar/sections/AppearanceSection";
 import { AIModelSection } from "./sidebar/sections/AIModelSection";
 import { CallSection } from "./sidebar/sections/CallSection";
+import { CallPlatformSection } from "./sidebar/sections/CallPlatformSection";
 import { CHAT_TEMPLATES, AI_CHAT_TEMPLATES } from "@/lib/templates";
 import { SmartFillModal } from "./modals/SmartFillModal";
 import {
@@ -82,7 +83,7 @@ export function Sidebar({
 
   return (
     <TooltipProvider>
-      <aside className="w-full lg:w-[450px] bg-sidebar-bg border-r border-sidebar-border h-full flex flex-col">
+      <aside className="w-full md:w-[380px] xl:w-[450px] h-[45%] md:h-full shrink-0 bg-sidebar-bg border-b md:border-b-0 md:border-r border-sidebar-border flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-3 pt-5 pb-2 border-b border-sidebar-border shrink-0 min-h-[64px]">
           <div className="flex items-center gap-1.5 flex-1">
@@ -179,13 +180,14 @@ export function Sidebar({
 
             {onRandomize && !onSmartFill && (
               <Select
-                value={chatState.appearance.chatStyle ?? 'global'}
+                value={chatState.appearance.chatStyle ?? 'mixed'}
                 onValueChange={(val) => onAppearanceChange?.({ ...chatState.appearance, chatStyle: val as any })}
               >
                 <SelectTrigger className="h-8 w-auto text-[11px] font-medium gap-1 px-2 border-dashed border-zinc-300">
                   <SelectValue placeholder="Style" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="mixed">Mixed</SelectItem>
                   <SelectItem value="global">Global</SelectItem>
                   <SelectItem value="indian">Indian</SelectItem>
                 </SelectContent>
@@ -244,10 +246,17 @@ export function Sidebar({
               />
             )}
 
-            {(mode === 'default' || mode === 'call') && (
+            {mode === 'default' && (
               <AppSection
                 platform={chatState.platform}
                 onPlatformChange={onPlatformChange}
+              />
+            )}
+
+            {mode === 'call' && callState && (
+              <CallPlatformSection
+                platform={callState.platform}
+                onPlatformChange={(platform) => onPlatformChange(platform as any)}
               />
             )}
 

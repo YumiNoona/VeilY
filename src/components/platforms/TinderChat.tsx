@@ -30,7 +30,7 @@ export function TinderChat({ messages, people, activePerson, chatType, appearanc
           <div key={message.id} className={cn("flex flex-col", message.isOwn ? "items-end" : "items-start")}>
             <div className={cn("max-w-[75%] px-4 py-3 rounded-2xl", message.isOwn ? "bg-gradient-to-r from-[#fd267a] to-[#ff6036] text-white" : appearance.darkMode ? "bg-[#2d3139] text-white" : "bg-[#f0f2f4] text-[#21262e]")} style={{ wordBreak: 'break-word' }}>
               {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-              <p className="text-[15px]">{message.text}</p>
+              <p data-chat-message className="text-[15px]">{message.text}</p>
             </div>
             {appearance.showTimestamps && <span className={cn("text-[10px] mt-1", subtextColor)}>{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
           </div>

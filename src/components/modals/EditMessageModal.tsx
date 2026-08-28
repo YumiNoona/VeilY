@@ -4,6 +4,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
     DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ export function EditMessageModal({ isOpen, onClose, onSave, initialText }: EditM
                         </div>
                         Edit Message
                     </DialogTitle>
+                    <DialogDescription className="sr-only">Change the text of this chat message.</DialogDescription>
                 </DialogHeader>
 
                 <div className="py-4">

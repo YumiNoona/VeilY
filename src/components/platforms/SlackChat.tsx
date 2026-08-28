@@ -47,7 +47,7 @@ export function SlackChat({ messages, people, activePerson, chatType, appearance
                   <span className={cn("font-black text-[15px]", textColor)}>{isOwn ? 'You' : (sender?.name || 'User')}</span>
                   <span className={cn("text-[12px]", subtextColor)}>{formatTime(message.timestamp, true)}</span>
                 </div>
-                <div className={cn("text-[15px] leading-[1.46668]", textColor)}>
+                <div data-chat-message className={cn("text-[15px] leading-[1.46668]", textColor)}>
                   {message.image && <img src={message.image} alt="" className="max-w-[300px] rounded-lg mb-1 mt-1 border" />}
                   <EditableText value={message.text} onSave={(newText) => onUpdateMessage?.(message.id, newText)} multiline />
                 </div>

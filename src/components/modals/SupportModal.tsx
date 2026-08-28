@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Copy, Check, Heart, Loader2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
@@ -45,6 +45,9 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onOpenChange
             <Heart className="w-5 h-5 text-rose-500 inline-block mr-1.5 -mt-0.5 fill-rose-500" />
             Support VeilY
           </DialogTitle>
+          <DialogDescription className="text-center">
+            Donate to help keep Veily free.
+          </DialogDescription>
         </DialogHeader>
 
         <p className="text-center text-sm text-zinc-500 mb-6">

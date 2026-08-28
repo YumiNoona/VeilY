@@ -52,7 +52,7 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
         <div className="mx-1 space-y-3">
           <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-xl border border-zinc-100">
             <span className="text-sm font-semibold text-zinc-500">Current version</span>
-            <span className="text-sm font-bold text-zinc-800">v{currentVersion || "—"}</span>
+            <span className="text-sm font-bold text-zinc-800">v{currentVersion || "N/A"}</span>
           </div>
           <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-xl border border-zinc-100">
             <div className="flex items-center gap-2">
@@ -61,7 +61,7 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
                 <Sparkles className="w-3 h-3" /> Latest
               </span>
             </div>
-            <span className="text-sm font-bold text-zinc-800">v{latestVersion || "—"}</span>
+            <span className="text-sm font-bold text-zinc-800">v{latestVersion || "N/A"}</span>
           </div>
         </div>
 

@@ -3,20 +3,39 @@ import { ChatState, Message, Person, Platform, ChatType, AppearanceSettings } fr
 import { ParsedChat } from "@/lib/parsers";
 import { getAvatarUrl } from '@/lib/avatar-utils';
 import { toast } from "sonner";
-import { aiScenarios, globalScenarios, indianScenarios } from './scenarios';
+import { aiScenarios } from './scenarios';
+import { globalScenarios, indianScenarios } from './scenarios-natural';
+
+const MINUTE = 60_000;
+const DAY = 24 * 60 * MINUTE;
+
+const getConversationTimestamp = (index: number, total: number, now = Date.now()): Date => {
+    const olderExchangeEnd = Math.min(4, Math.max(2, total - 7));
+    const recentExchangeEnd = olderExchangeEnd + Math.ceil((total - olderExchangeEnd) * 0.4);
+
+    if (index < olderExchangeEnd) {
+        return new Date(now - (7 * DAY) + (index * 3 * MINUTE));
+    }
+
+    if (index < recentExchangeEnd) {
+        return new Date(now - (2 * DAY) + ((index - olderExchangeEnd) * 4 * MINUTE));
+    }
+
+    return new Date(now - ((total - index) * 2 * MINUTE));
+};
 
 const initialMessages: Message[] = [
-    { id: '1', text: "yo have you checked out Veily? its this dope mockup tool for creating chat screenshots that look super clean", senderId: 'user', timestamp: new Date(), isOwn: false },
-    { id: '2', text: "wait really? like those screenshots people use in design portfolios?", senderId: 'friend', timestamp: new Date(), isOwn: true },
-    { id: '3', text: "yeah exactly! you can set up WhatsApp, iMessage, Discord, literally any platform. they have templates and everything, all completely free", senderId: 'user', timestamp: new Date(), isOwn: false },
-    { id: '4', text: "no way i need this for my UX case studies. is it actually free?", senderId: 'friend', timestamp: new Date(), isOwn: true },
-    { id: '5', text: "100% free, every feature unlocked. oh and check out vexo.venusapp.in too they have some really cool projects", senderId: 'user', timestamp: new Date(), isOwn: false },
-    { id: '6', text: "bro you just made my day, building my portfolio mockups tonight 🙌", senderId: 'friend', timestamp: new Date(), isOwn: true },
+    { id: '1', text: "Kal wali client call ka recording mila?", senderId: 'user', timestamp: getConversationTimestamp(0, 6), isOwn: false },
+    { id: '2', text: "Haan, Drive folder mein daal diya. 18 minute tak unka screen share blank tha.", senderId: 'friend', timestamp: getConversationTimestamp(1, 6), isOwn: true },
+    { id: '3', text: "Classic. Main notes clean karke bhej deta hoon.", senderId: 'user', timestamp: getConversationTimestamp(2, 6), isOwn: false },
+    { id: '4', text: "Please. Point 6 ka actual decision abhi bhi unclear hai.", senderId: 'friend', timestamp: getConversationTimestamp(3, 6), isOwn: true },
+    { id: '5', text: "Deck update kar diya. Slide 9 ek baar check kar lena.", senderId: 'user', timestamp: getConversationTimestamp(4, 6), isOwn: false },
+    { id: '6', text: "Dekh raha hoon. Numbers sahi hain, title thoda chhota lag raha hai.", senderId: 'friend', timestamp: getConversationTimestamp(5, 6), isOwn: true },
 ];
 
 const initialPeople: Person[] = [
     { id: 'friend', name: 'You', isOnline: true },
-    { id: 'user', name: 'Alex Rivera', isOnline: true, avatar: getAvatarUrl('Alex Rivera') },
+    { id: 'user', name: 'Rohan Mehta', isOnline: true, avatar: getAvatarUrl('Rohan Mehta') },
 ];
 
 const initialAppearance: AppearanceSettings = {
@@ -31,9 +50,8 @@ const initialAppearance: AppearanceSettings = {
     statusText: 'last seen today at 12:00 PM',
     transparentBackground: false,
     isTyping: false,
+    chatStyle: 'mixed',
 };
-
-const CHAT_STATE_STORAGE_KEY = 'chatState';
 
 const initialChatState: ChatState = {
     platform: 'whatsapp',
@@ -44,13 +62,36 @@ const initialChatState: ChatState = {
     aiModel: 'claude-4.8-opus',
 };
 
-const loadStateFromLocalStorage = (storageKey: string): ChatState => {
+const loadStateFromLocalStorage = (storageKey: string, fallbackState: ChatState): ChatState => {
     try {
         const serializedState = localStorage.getItem(storageKey);
         if (serializedState === null) {
-            return initialChatState;
+            return fallbackState;
         }
-        const storedState: ChatState = JSON.parse(serializedState);
+        let storedState: ChatState = JSON.parse(serializedState);
+
+        // Migrate the old ambiguous "Family group" random scenario into a clearly
+        // identified direct conversation instead of preserving it indefinitely.
+        if (storedState.messages?.some(message => message.text.includes('mummy ne kheer banayi hai'))) {
+            const dinnerScenario = indianScenarios.find(scenario => scenario.name === 'Dinner at home');
+            if (dinnerScenario) {
+                storedState = {
+                    ...storedState,
+                    chatType: 'direct',
+                    people: [
+                        { id: 'friend', name: 'You', isOnline: true },
+                        { id: 'user', name: 'Mom', isOnline: true, avatar: getAvatarUrl('Mom') },
+                    ],
+                    messages: dinnerScenario.messages.map((message, index) => ({
+                        id: `dinner-${index + 1}`,
+                        text: message.text,
+                        senderId: message.isOwn ? 'friend' : 'user',
+                        timestamp: getConversationTimestamp(index, dinnerScenario.messages.length),
+                        isOwn: message.isOwn,
+                    })),
+                };
+            }
+        }
 
         // Ensure timestamps are Date objects
         const messagesWithDates = storedState.messages.map(msg => ({
@@ -59,18 +100,18 @@ const loadStateFromLocalStorage = (storageKey: string): ChatState => {
         }));
 
         return {
-            ...initialChatState, // Use initial state as a base to pick up new fields
+            ...fallbackState, // Use the requested editor defaults as a base to pick up new fields
             ...storedState,
             messages: messagesWithDates,
         };
     } catch (error) {
         console.error("Error loading state from localStorage:", error);
-        return initialChatState;
+        return fallbackState;
     }
 };
 
-export const useChatState = (storageKey: string = 'chatState') => {
-    const [chatState, setChatState] = useState<ChatState>(() => loadStateFromLocalStorage(storageKey));
+export const useChatState = (storageKey: string = 'chatState', fallbackState: ChatState = initialChatState) => {
+    const [chatState, setChatState] = useState<ChatState>(() => loadStateFromLocalStorage(storageKey, fallbackState));
 
     useEffect(() => {
         try {
@@ -82,8 +123,7 @@ export const useChatState = (storageKey: string = 'chatState') => {
     }, [chatState, storageKey]);
 
     const handlePlatformChange = useCallback((platform: Platform) => {
-        setChatState(prev => ({ ...prev, platform }));
-        toast.success(`Switched to ${platform}`);
+        setChatState(prev => prev.platform === platform ? prev : ({ ...prev, platform }));
     }, []);
 
     const handleChatTypeChange = useCallback((chatType: ChatType) => {
@@ -111,7 +151,18 @@ export const useChatState = (storageKey: string = 'chatState') => {
     const handleUpdatePerson = useCallback((updatedPerson: Person) => {
         setChatState(prev => ({
             ...prev,
-            people: prev.people.map(p => p.id === updatedPerson.id ? updatedPerson : p),
+            people: prev.people.map(person => {
+                if (person.id !== updatedPerson.id) return person;
+
+                const nameChanged = person.name !== updatedPerson.name;
+                const usedGeneratedAvatar = !person.avatar || person.avatar === getAvatarUrl(person.name);
+                return {
+                    ...updatedPerson,
+                    avatar: nameChanged && usedGeneratedAvatar
+                        ? getAvatarUrl(updatedPerson.name)
+                        : updatedPerson.avatar,
+                };
+            }),
         }));
     }, []);
 
@@ -173,10 +224,10 @@ export const useChatState = (storageKey: string = 'chatState') => {
     }, []);
 
     const handleResetState = useCallback(() => {
-        setChatState(initialChatState);
+        setChatState(fallbackState);
         localStorage.removeItem(storageKey);
         toast.success("Chat state reset to defaults.");
-    }, [storageKey]);
+    }, [fallbackState, storageKey]);
 
     const handleLoadTemplate = useCallback((template: ChatState) => {
         // Revive timestamps
@@ -208,8 +259,18 @@ export const useChatState = (storageKey: string = 'chatState') => {
     const randomizeState = useCallback(() => {
         const isAIPlatform = ['chatgpt', 'claude', 'gemini', 'grok'].includes(chatState.platform);
         
-        const indianNames = ["Rohan", "Arjun", "Priya", "Kavya", "Rahul", "Neha", "Aarav", "Ananya", "Ishaan", "Diya"];
-        const westernNames = ["Jake", "Sarah", "Tyler", "Zoe", "Marcus", "Emma", "Liam", "Olivia", "Ethan", "Sophia"];
+        const indianNames = [
+            "Rohan Mehta", "Arjun Kapoor", "Priya Sharma", "Kavya Nair", "Rahul Verma",
+            "Neha Joshi", "Aarav Patel", "Ananya Rao", "Ishaan Malhotra", "Diya Shah",
+            "Meera Iyer", "Kabir Singh", "Tara Desai", "Vikram Sethi", "Saanvi Gupta",
+            "Aditya Bose", "Leena Menon", "Nikhil Jain", "Riya Kulkarni", "Dev Khanna",
+        ];
+        const westernNames = [
+            "Jake Miller", "Sarah Collins", "Tyler Brooks", "Zoe Bennett", "Marcus Reed",
+            "Emma Wilson", "Liam Carter", "Olivia Parker", "Ethan Hayes", "Sophia Turner",
+            "Maya Chen", "Daniel Kim", "Sofia Martinez", "Noah Williams", "Ava Thompson",
+            "Lucas Martin", "Chloe Anderson", "Elena Rossi", "Mia Johnson", "Theo Morgan",
+        ];
         
         if (isAIPlatform) {
             const scenario = aiScenarios[Math.floor(Math.random() * aiScenarios.length)];
@@ -219,7 +280,7 @@ export const useChatState = (storageKey: string = 'chatState') => {
                 id: crypto.randomUUID(),
                 text: m.text,
                 senderId: m.isOwn ? 'friend' : 'user',
-                timestamp: new Date(Date.now() - (scenario.messages.length - i) * 120000),
+                timestamp: getConversationTimestamp(i, scenario.messages.length),
                 isOwn: m.isOwn
             }));
 
@@ -241,18 +302,21 @@ export const useChatState = (storageKey: string = 'chatState') => {
 
             toast.success("Randomized AI chat");
         } else {
-            const isIndian = Math.random() > 0.5;
+            const selectedStyle = chatState.appearance.chatStyle ?? 'mixed';
+            const isIndian = selectedStyle === 'indian' || (selectedStyle === 'mixed' && Math.random() < 0.5);
             const scenarios = isIndian ? indianScenarios : globalScenarios;
             const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
-            const platform = ['whatsapp', 'imessage', 'discord', 'instagram'][Math.floor(Math.random() * 4)] as Platform;
-            
-            const senderName = isIndian ? indianNames[Math.floor(Math.random() * indianNames.length)] : westernNames[Math.floor(Math.random() * westernNames.length)];
+            const platform = chatState.platform;
+
+            const senderName = scenario.contactName || (isIndian
+                ? indianNames[Math.floor(Math.random() * indianNames.length)]
+                : westernNames[Math.floor(Math.random() * westernNames.length)]);
 
             const newMessages: Message[] = scenario.messages.map((m, i) => ({
                 id: crypto.randomUUID(),
                 text: m.text,
                 senderId: m.isOwn ? 'friend' : 'user',
-                timestamp: new Date(Date.now() - (scenario.messages.length - i) * 120000),
+                timestamp: getConversationTimestamp(i, scenario.messages.length),
                 isOwn: m.isOwn
             }));
 
@@ -264,18 +328,20 @@ export const useChatState = (storageKey: string = 'chatState') => {
             setChatState(prev => ({
                 ...prev,
                 platform,
+                chatType: 'direct',
                 people: newPeople,
                 messages: newMessages,
                 appearance: {
                     ...prev.appearance,
                     darkMode: Math.random() > 0.5,
-                    use24HourFormat: isIndian
+                    use24HourFormat: false,
+                    chatStyle: selectedStyle,
                 }
             }));
 
             toast.success(`Randomized: ${scenario.name}`);
         }
-    }, [chatState.platform]);
+    }, [chatState.appearance.chatStyle, chatState.platform]);
 
     return {
         chatState,

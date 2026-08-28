@@ -30,7 +30,7 @@ const Stories = () => {
     const previewRef = useRef<StoriesPreviewRef>(null);
 
     return (
-        <div className="flex h-full overflow-hidden bg-background relative">
+        <div className="flex flex-col md:flex-row h-full overflow-hidden bg-background relative">
             <StoriesSidebar
                 state={state}
                 setPlatform={setPlatform}

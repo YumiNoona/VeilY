@@ -59,7 +59,7 @@ export interface AppearanceSettings {
   fontSize?: 'xs' | 'sm' | 'base' | 'lg';
   fontFamily?: 'sans' | 'serif' | 'mono';
   // Chat style
-  chatStyle?: 'global' | 'indian';
+  chatStyle?: 'mixed' | 'global' | 'indian';
 }
 
 export interface ChatState {

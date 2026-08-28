@@ -165,13 +165,14 @@ export function AppearanceSection({ appearance, onAppearanceChange, mode = 'defa
                             <div className="flex items-center justify-between py-1">
                                 <Label htmlFor="chat-style" className="text-sm">Chat style</Label>
                                 <Select
-                                    value={appearance.chatStyle ?? 'global'}
+                                    value={appearance.chatStyle ?? 'mixed'}
                                     onValueChange={(value) => onAppearanceChange({ ...appearance, chatStyle: value as any })}
                                 >
                                     <SelectTrigger className="w-24 h-7 text-xs">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
+                                        <SelectItem value="mixed">Mixed</SelectItem>
                                         <SelectItem value="global">Global</SelectItem>
                                         <SelectItem value="indian">Indian</SelectItem>
                                     </SelectContent>

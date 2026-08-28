@@ -42,7 +42,7 @@ export function RedditChat({ messages, people, activePerson, chatType, appearanc
                   <span className="text-xs text-gray-500">{formatTime(message.timestamp, true)}</span>
                 </div>
                 {message.image && <img src={message.image} alt="" className="max-w-full rounded mb-1 mt-1" />}
-                <p className={cn("text-[15px] leading-snug mt-0.5", textColor)}>
+                <p data-chat-message className={cn("text-[15px] leading-snug mt-0.5", textColor)}>
                   <EditableText value={message.text} onSave={(newText) => onUpdateMessage?.(message.id, newText)} multiline />
                 </p>
               </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { X, CheckCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,10 +24,10 @@ export const AuthModal = () => {
                     </div>
 
                     <div className="space-y-1">
-                        <h2 className="text-xl font-bold tracking-tight text-zinc-900">You're all set</h2>
-                        <p className="text-sm text-zinc-500">
-                            Running in local mode — all features are unlocked. No account needed.
-                        </p>
+                        <DialogTitle className="text-xl font-bold tracking-tight text-zinc-900">You're all set</DialogTitle>
+                        <DialogDescription className="text-sm text-zinc-500">
+                            Running in local mode. All features are unlocked, and no account is needed.
+                        </DialogDescription>
                     </div>
 
                     <Button

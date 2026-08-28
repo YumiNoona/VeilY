@@ -11,6 +11,7 @@ const createChatAppearance = (darkMode = false): AppearanceSettings => ({
   statusBarTime: '9:41',
   batteryLevel: 85,
   transparentBackground: false,
+  isTyping: false,
 });
 
 export const STORIES_TEMPLATES = {

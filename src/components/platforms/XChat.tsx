@@ -31,7 +31,7 @@ export function XChat({ messages, people, activePerson, chatType, appearance, on
           <div key={message.id} className={cn("flex flex-col", message.isOwn ? "items-end" : "items-start")}>
             <div className={cn("max-w-[75%] px-4 py-3 rounded-2xl", message.isOwn ? "bg-[#1d9bf0] text-white rounded-br-sm" : appearance.darkMode ? "bg-[#2f3336] text-white rounded-bl-sm" : "bg-[#eff3f4] text-black rounded-bl-sm")} style={{ wordBreak: 'break-word' }}>
               {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-              <p className="text-[15px]">{message.text}</p>
+              <p data-chat-message className="text-[15px]">{message.text}</p>
             </div>
             {appearance.showTimestamps && <span className={cn("text-[11px] mt-1", subtextColor)}>{formatTime(message.timestamp, appearance.use24HourFormat ?? false)}</span>}
           </div>

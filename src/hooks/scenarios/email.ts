@@ -116,7 +116,7 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'Today, 8:00 AM',
-        body: "Hey there! 👋\n\nWelcome to the **Veily Weekly Digest** — your curated roundup of everything happening in tech, privacy, and design.\n\nHere's what you can expect every Friday:\n\n- **Top privacy tools** we're loving\n- **Industry insights** from our team\n- **Exclusive tutorials** and early access\n\nReply to this email anytime — we actually read them!\n\nCheers,\nThe Veily Team"
+        body: "Hey there! 👋\n\nWelcome to the **Veily Weekly Digest**, your curated roundup of everything happening in tech, privacy, and design.\n\nHere's what you can expect every Friday:\n\n- **Top privacy tools** we're loving\n- **Industry insights** from our team\n- **Exclusive tutorials** and early access\n\nReply to this email anytime. We actually read them!\n\nCheers,\nThe Veily Team"
       }
     ]
   },
@@ -156,7 +156,7 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'May 30, 2026 at 9:00 AM',
-        body: "Dear Alex,\n\nThis is a friendly reminder that your invoice **#INV-2026-0891** for **$4,200** is due on June 5, 2026. The project — Q2 Dashboard Redesign — was completed and signed off on May 15th.\n\nPayment can be made via wire transfer or ACH. Details are on the attached invoice.\n\nPlease confirm receipt.\n\nRegards,\nBilling Team"
+        body: "Dear Alex,\n\nThis is a friendly reminder that your invoice **#INV-2026-0891** for **$4,200** is due on June 5, 2026. The Q2 Dashboard Redesign project was completed and signed off on May 15th.\n\nPayment can be made via wire transfer or ACH. Details are on the attached invoice.\n\nPlease confirm receipt.\n\nRegards,\nBilling Team"
       }
     ]
   },
@@ -196,7 +196,7 @@ export const emailScenarios: EmailScenario[] = [
   },
   {
     name: "Meeting Minutes",
-    subject: "Q3 Planning Sync — Meeting Notes & Action Items",
+    subject: "Q3 Planning Sync: Meeting Notes & Action Items",
     attachment: "Q3_Planning_Notes.docx",
     participants: [
       { id: 'p1', name: "Emma Wilson", email: "emma.w@veily.app", redactName: false, redactEmail: false },
@@ -207,13 +207,13 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'Today, 4:00 PM',
-        body: "Hi everyone,\n\nThanks for the productive Q3 planning session! Here's a summary:\n\n**Key Decisions:**\n- Launch **dark mode** by July 15th\n- Migrate to **React 19** in August\n- Begin user research for **mobile app** in September\n\n**Action Items:**\n- @Alex — Finalize dark mode design specs (due June 7)\n- @Rohan — Audit current dependencies for React 19 compatibility (due June 14)\n- @Priya — Prepare user research survey draft (due June 21)\n\nPlease review the attached notes and let me know if I missed anything.\n\nBest,\nEmma"
+        body: "Hi everyone,\n\nThanks for the productive Q3 planning session! Here's a summary:\n\n**Key Decisions:**\n- Launch **dark mode** by July 15th\n- Migrate to **React 19** in August\n- Begin user research for **mobile app** in September\n\n**Action Items:**\n- @Alex: Finalize dark mode design specs (due June 7)\n- @Rohan: Audit current dependencies for React 19 compatibility (due June 14)\n- @Priya: Prepare user research survey draft (due June 21)\n\nPlease review the attached notes and let me know if I missed anything.\n\nBest,\nEmma"
       }
     ]
   },
   {
     name: "Password Reset",
-    subject: "Verify Your Identity — Password Reset Request",
+    subject: "Verify Your Identity: Password Reset Request",
     attachment: "",
     participants: [
       { id: 'p1', name: "Security Bot", email: "no-reply@veily.app", redactName: false, redactEmail: false },
@@ -224,13 +224,13 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'Just now',
-        body: "Hi Kavya,\n\nWe received a request to reset the password for your Veily account. If this was you, click the link below to create a new password:\n\n[**Reset Your Password**](https://veily.app/reset?token=abc123)\n\nThis link will **expire in 1 hour**. If you didn't request this, you can safely ignore this email — your account is secure.\n\nStay safe,\nVeily Security Team"
+        body: "Hi Kavya,\n\nWe received a request to reset the password for your Veily account. If this was you, click the link below to create a new password:\n\n[**Reset Your Password**](https://veily.app/reset?token=abc123)\n\nThis link will **expire in 1 hour**. If you didn't request this, you can safely ignore this email. Your account is secure.\n\nStay safe,\nVeily Security Team"
       }
     ]
   },
   {
     name: "Project Deadline Extension",
-    subject: "Re: Sprint 24 Delivery — Extension Request",
+    subject: "Re: Sprint 24 Delivery Extension Request",
     attachment: "",
     participants: [
       { id: 'p1', name: "Rahul Mehta", email: "rahul.m@veily.app", redactName: false, redactEmail: false },
@@ -241,7 +241,7 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'Today, 1:30 PM',
-        body: "Hi PM Team,\n\nI'm requesting a **48-hour extension** on the Sprint 24 deliverables. The **payment gateway integration** with Stripe has uncovered some edge cases in our billing system that need additional testing. We've already handled 80% of the issues — the remaining work involves writing comprehensive **integration tests** and updating documentation.\n\nNew proposed deadline: **June 3rd, 6 PM**.\n\nHappy to jump on a quick call to discuss if needed.\n\nThanks,\nRahul"
+        body: "Hi PM Team,\n\nI'm requesting a **48-hour extension** on the Sprint 24 deliverables. The **payment gateway integration** with Stripe has uncovered some edge cases in our billing system that need additional testing. We've already handled 80% of the issues. The remaining work involves writing comprehensive **integration tests** and updating documentation.\n\nNew proposed deadline: **June 3rd, 6 PM**.\n\nHappy to jump on a quick call to discuss if needed.\n\nThanks,\nRahul"
       }
     ]
   },
@@ -258,7 +258,7 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'Yesterday, 9:15 PM',
-        body: "Hey Rohan! 👋\n\nHope you're doing well! I saw that Google has a **Software Engineer, Frontend** opening that I'm really excited about. I know you've been there for a couple of years now — would you be open to submitting a **referral** for me?\n\nI've attached my updated resume. The job ID is **G-2026-FE-SF** and here's the link: [Google Careers].\n\nTotally understand if it's not possible, just thought I'd ask! Coffee on me next time you're in town either way. ☕\n\nThanks,\nAnanya"
+        body: "Hey Rohan! 👋\n\nHope you're doing well! I saw that Google has a **Software Engineer, Frontend** opening that I'm really excited about. I know you've been there for a couple of years now. Would you be open to submitting a **referral** for me?\n\nI've attached my updated resume. The job ID is **G-2026-FE-SF** and here's the link: [Google Careers].\n\nTotally understand if it's not possible, just thought I'd ask! Coffee on me next time you're in town either way. ☕\n\nThanks,\nAnanya"
       }
     ]
   },
@@ -275,13 +275,13 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'Jun 1, 2026 at 6:00 AM',
-        body: "Dear Veily Users,\n\nWe will be performing **scheduled database maintenance** on June 8th, 2026, starting at **2:00 AM UTC**. Expected downtime is **45 minutes**.\n\n**What to expect:**\n- The platform will be **unavailable** during this window\n- All scheduled tasks and notifications will be **queued** and delivered once maintenance completes\n- No data loss is expected — this is a routine upgrade\n\nWe apologize for any inconvenience and appreciate your patience as we work to keep Veily running smoothly.\n\nVeily Infrastructure Team"
+        body: "Dear Veily Users,\n\nWe will be performing **scheduled database maintenance** on June 8th, 2026, starting at **2:00 AM UTC**. Expected downtime is **45 minutes**.\n\n**What to expect:**\n- The platform will be **unavailable** during this window\n- All scheduled tasks and notifications will be **queued** and delivered once maintenance completes\n- No data loss is expected. This is a routine upgrade\n\nWe apologize for any inconvenience and appreciate your patience as we work to keep Veily running smoothly.\n\nVeily Infrastructure Team"
       }
     ]
   },
   {
     name: "Conference Acceptance",
-    subject: "Congratulations! Your Talk Has Been Accepted — ReactConf 2026",
+    subject: "Congratulations! Your Talk Has Been Accepted for ReactConf 2026",
     attachment: "speaker_guide.pdf",
     participants: [
       { id: 'p1', name: "ReactConf Committee", email: "cfp@reactconf.com", redactName: false, redactEmail: false },
@@ -292,13 +292,13 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'May 25, 2026 at 10:30 AM',
-        body: "Dear Alex,\n\nWe're thrilled to let you know that your talk — **\"Building Resilient UI: Lessons from 10 Million Renders\"** — has been accepted for **ReactConf 2026**! 🎉\n\nYour session is scheduled for **Day 2 (November 5th) at 2:30 PM** in the main auditorium.\n\n**Next steps:**\n- Review the attached speaker guide\n- Confirm your availability by **June 10th**\n- Submit your final slides by **October 15th**\n\nWe received over 800 submissions this year, and yours stood out for its depth and practical insights. Congratulations again!\n\nReactConf Program Committee"
+        body: "Dear Alex,\n\nWe're thrilled to let you know that your talk, **\"Building Resilient UI: Lessons from 10 Million Renders\"**, has been accepted for **ReactConf 2026**! 🎉\n\nYour session is scheduled for **Day 2 (November 5th) at 2:30 PM** in the main auditorium.\n\n**Next steps:**\n- Review the attached speaker guide\n- Confirm your availability by **June 10th**\n- Submit your final slides by **October 15th**\n\nWe received over 800 submissions this year, and yours stood out for its depth and practical insights. Congratulations again!\n\nReactConf Program Committee"
       }
     ]
   },
   {
     name: "Data Breach Notification",
-    subject: "IMPORTANT: Security Incident Notification — Action Required",
+    subject: "IMPORTANT: Security Incident Notification, Action Required",
     attachment: "",
     participants: [
       { id: 'p1', name: "Chief Security Officer", email: "cso@banksecure.com", redactName: false, redactEmail: false },
@@ -315,7 +315,7 @@ export const emailScenarios: EmailScenario[] = [
   },
   {
     name: "Vendor Negotiation",
-    subject: "Re: SaaS Contract Renewal — Counter Proposal",
+    subject: "Re: SaaS Contract Renewal Counter Proposal",
     attachment: "Updated_Contract_Terms.pdf",
     participants: [
       { id: 'p1', name: "Legal Team", email: "legal@veily.app", redactName: false, redactEmail: false },
@@ -332,7 +332,7 @@ export const emailScenarios: EmailScenario[] = [
   },
   {
     name: "Birthday Celebration",
-    subject: "🎂 Happy Birthday, Sarah! — Virtual Card from the Team",
+    subject: "🎂 Happy Birthday, Sarah! Virtual Card from the Team",
     attachment: "birthday_e_card.gif",
     participants: [
       { id: 'p1', name: "Team Veily", email: "team@veily.app", redactName: false, redactEmail: false },
@@ -343,7 +343,7 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'Today, 12:00 AM',
-        body: "Happy Birthday, Sarah! 🎉🎈\n\nThe entire Veily team wanted to wish you the most amazing day. Your **leadership** and **positivity** make every standup better (and we all know how rare that is 😄).\n\nWe've arranged a little something — check your desk when you come in!\n\n**Birthday fun facts about Sarah:**\n- Started at Veily as the 4th employee\n- Has never lost a Mario Kart race against the team\n- Makes the office's best banana bread (we're still waiting for the recipe)\n\nHave the best day! 🎂\n\n— The Veily Crew"
+        body: "Happy Birthday, Sarah! 🎉🎈\n\nThe entire Veily team wanted to wish you the most amazing day. Your **leadership** and **positivity** make every standup better (and we all know how rare that is 😄).\n\nWe've arranged a little something. Check your desk when you come in!\n\n**Birthday fun facts about Sarah:**\n- Started at Veily as the 4th employee\n- Has never lost a Mario Kart race against the team\n- Makes the office's best banana bread (we're still waiting for the recipe)\n\nHave the best day! 🎂\n\nThe Veily Crew"
       }
     ]
   },
@@ -360,7 +360,7 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'Jun 1, 2026 at 9:30 AM',
-        body: "Hi Rohan,\n\nConfirming that your **exit interview** is scheduled for **October 14th at 3:00 PM** with Sarah from HR. This is a casual conversation — we value honest feedback on your experience at Veily.\n\n**Offboarding checklist (due by October 15th):**\n- Return laptop and access badge to IT\n- Complete **knowledge transfer** documentation for your active projects\n- Confirm forwarding email address\n- Submit final expense reports\n\nWe're sad to see you go but wish you the absolute best in your next chapter! Don't be a stranger.\n\nBest,\nVeily HR"
+        body: "Hi Rohan,\n\nConfirming that your **exit interview** is scheduled for **October 14th at 3:00 PM** with Sarah from HR. This is a casual conversation, and we value honest feedback on your experience at Veily.\n\n**Offboarding checklist (due by October 15th):**\n- Return laptop and access badge to IT\n- Complete **knowledge transfer** documentation for your active projects\n- Confirm forwarding email address\n- Submit final expense reports\n\nWe're sad to see you go but wish you the absolute best in your next chapter! Don't be a stranger.\n\nBest,\nVeily HR"
       }
     ]
   }

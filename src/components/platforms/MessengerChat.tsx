@@ -68,7 +68,7 @@ export function MessengerChat({ messages, people, activePerson, chatType, appear
                     message.isOwn ? cn(ownBubbleGradient, "text-white rounded-[18px]") : cn(otherBubble, textColor, "rounded-[18px]")
                   )} style={{ wordBreak: 'break-word' }}>
                     {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-                    <p>
+                    <p data-chat-message>
                       <EditableText value={message.text} onSave={(newText) => onUpdateMessage?.(message.id, newText)} multiline />
                     </p>
                   </div>

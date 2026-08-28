@@ -7,10 +7,65 @@ const femaleNames = new Set([
   "riley", "nora", "ellie", "hazel", "violet", "aurora", "savannah", "audrey",
   "brooklyn", "bella", "claire", "skylar", "lucy", "anna", "samantha", "caroline",
   "maya", "katherine", "alice", "julia", "sadie", "eva", "jessica", "rachel",
-  "natasha", "tanya", "meera", "divya", "sonia", "lisa", "diana", "clara"
+  "natasha", "tanya", "meera", "divya", "sonia", "lisa", "diana", "clara",
+  "sofia", "mom", "mira", "leena", "saanvi", "tara"
 ]);
 
+const namedAvatars: Record<string, string> = {
+  "maya chen": "/avatars/maya-chen.png",
+  "daniel kim": "/avatars/daniel-kim.png",
+  "sofia martinez": "/avatars/sofia-martinez.png",
+  "liam carter": "/avatars/liam-carter.png",
+  "rohan mehta": "/avatars/indian/indian-01.png",
+  "priya sharma": "/avatars/indian/indian-02.png",
+  "aarav patel": "/avatars/indian/indian-03.png",
+  "ananya rao": "/avatars/indian/indian-04.png",
+  "meera iyer": "/avatars/indian/indian-05.png",
+  "kabir singh": "/avatars/indian/indian-06.png",
+  "kavya nair": "/avatars/indian/indian-07.png",
+  "vikram sethi": "/avatars/indian/indian-08.png",
+  "rahul verma": "/avatars/indian/indian-09.png",
+  "tara desai": "/avatars/indian/indian-10.png",
+  "aditya bose": "/avatars/indian/indian-11.png",
+  "neha joshi": "/avatars/indian/indian-12.png",
+  "diya shah": "/avatars/indian/indian-13.png",
+  "nikhil jain": "/avatars/indian/indian-14.png",
+  "saanvi gupta": "/avatars/indian/indian-15.png",
+  "ishaan malhotra": "/avatars/indian/indian-16.png",
+  "mom": "/avatars/indian/indian-13.png",
+  "dad": "/avatars/indian/indian-09.png",
+  "arjun kapoor": "/avatars/indian/indian-08.png",
+  "leena menon": "/avatars/indian/indian-05.png",
+  "riya kulkarni": "/avatars/indian/indian-10.png",
+  "dev khanna": "/avatars/indian/indian-03.png",
+};
+
+const indianMaleAvatars = [
+  "/avatars/indian/indian-01.png",
+  "/avatars/indian/indian-03.png",
+  "/avatars/indian/indian-06.png",
+  "/avatars/indian/indian-08.png",
+  "/avatars/indian/indian-09.png",
+  "/avatars/indian/indian-11.png",
+  "/avatars/indian/indian-14.png",
+  "/avatars/indian/indian-16.png",
+];
+
+const indianFemaleAvatars = [
+  "/avatars/indian/indian-02.png",
+  "/avatars/indian/indian-04.png",
+  "/avatars/indian/indian-05.png",
+  "/avatars/indian/indian-07.png",
+  "/avatars/indian/indian-10.png",
+  "/avatars/indian/indian-12.png",
+  "/avatars/indian/indian-13.png",
+  "/avatars/indian/indian-15.png",
+];
+
 const maleAvatars = [
+  ...indianMaleAvatars,
+  "/avatars/daniel-kim.png",
+  "/avatars/liam-carter.png",
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
   "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
   "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=150&h=150&fit=crop",
@@ -39,6 +94,9 @@ const maleAvatars = [
 ];
 
 const femaleAvatars = [
+  ...indianFemaleAvatars,
+  "/avatars/maya-chen.png",
+  "/avatars/sofia-martinez.png",
   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
   "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
   "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop",
@@ -76,6 +134,9 @@ function hashCode(s: string): number {
 }
 
 export function getAvatarUrl(name: string): string {
+  const normalizedName = name.trim().toLowerCase();
+  if (namedAvatars[normalizedName]) return namedAvatars[normalizedName];
+
   const firstName = name.split(" ")[0].toLowerCase();
   const isFemale = femaleNames.has(firstName);
   const pool = isFemale ? femaleAvatars : maleAvatars;

@@ -128,7 +128,7 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
                             {!isUser && (
                                 <div className="max-w-[100%] pr-2">
                                     <div className="space-y-1">
-                                        <div className="text-[16px] leading-[1.6]">
+                                        <div data-chat-message className="text-[16px] leading-[1.6]">
                                             <EditableText
                                                 value={message.text}
                                                 displayValue={formatMessageText(message.text)}
@@ -162,7 +162,7 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
 
                             {/* User Layout */}
                             {isUser && (
-                                <div className={cn("max-w-[90%] px-5 py-3 rounded-[26px] text-[16px] leading-[1.5] mb-2", userBubble, userText)}>
+                                <div data-chat-message className={cn("max-w-[90%] px-5 py-3 rounded-[26px] text-[16px] leading-[1.5] mb-2", userBubble, userText)}>
                                     <EditableText
                                         value={message.text}
                                         onSave={(newText) => onUpdateMessage?.(message.id, newText)}

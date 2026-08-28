@@ -29,7 +29,7 @@ export function TikTokChat({ messages, people, activePerson, chatType, appearanc
           <div key={message.id} className={cn("flex flex-col", message.isOwn ? "items-end" : "items-start")}>
             <div className={cn("max-w-[70%] px-4 py-2 rounded-2xl", message.isOwn ? "bg-[#fe2c55] text-white" : cn(otherBubble, textColor))} style={{ wordBreak: 'break-word' }}>
               {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-              <p className="text-[15px]">
+              <p data-chat-message className="text-[15px]">
                 <EditableText value={message.text} onSave={(newText) => onUpdateMessage?.(message.id, newText)} multiline />
               </p>
             </div>

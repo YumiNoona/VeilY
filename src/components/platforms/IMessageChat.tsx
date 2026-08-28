@@ -53,7 +53,7 @@ export function IMessageChat({ messages, people, activePerson, chatType, appeara
                   {message.isVoiceNote ? (
                     <VoiceNoteBubble duration={message.voiceDuration || "0:05"} isOwn={message.isOwn} platform="imessage" darkMode={appearance.darkMode} />
                   ) : (
-                    <p className="text-[17px] leading-[22px]">
+                    <p data-chat-message className="text-[17px] leading-[22px]">
                       <EditableText value={message.text} onSave={(newText) => onUpdateMessage?.(message.id, newText)} multiline />
                     </p>
                   )}

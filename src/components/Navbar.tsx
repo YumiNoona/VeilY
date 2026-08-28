@@ -4,15 +4,16 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "./Logo";
-import { 
-    MessageSquare, 
-    Share2, 
-    Bot, 
-    MessageCircle, 
-    User as UserIcon, 
+import {
+    MessagesSquare,
+    LayoutGrid,
+    Sparkles,
+    MessageCircleMore,
+    User as UserIcon,
     LogOut,
-    GalleryVerticalEnd,
-    AtSign
+    CirclePlay,
+    Mail,
+    Video
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -45,12 +46,13 @@ export const Navbar = () => {
     } = useAuth();
 
     const tabs = [
-        { id: "chat", label: "Chat", path: "/app", icon: MessageSquare },
-        { id: "ai-chat", label: "AI Chat", path: "/app/ai-chat", icon: Bot },
-        { id: "social", label: "Social", path: "/app/social", icon: Share2 },
-        { id: "comments", label: "Comments", path: "/app/comments", icon: MessageCircle },
-        { id: "stories", label: "Stories", path: "/app/stories", icon: GalleryVerticalEnd },
-        { id: "email", label: "Email", path: "/app/email", icon: AtSign },
+        { id: "chat", label: "Chat", path: "/app", icon: MessagesSquare },
+        { id: "ai-chat", label: "AI Chat", path: "/app/ai-chat", icon: Sparkles },
+        { id: "social", label: "Social", path: "/app/social", icon: LayoutGrid },
+        { id: "comments", label: "Comments", path: "/app/comments", icon: MessageCircleMore },
+        { id: "stories", label: "Stories", path: "/app/stories", icon: CirclePlay },
+        { id: "email", label: "Email", path: "/app/email", icon: Mail },
+        { id: "group-call", label: "Call", path: "/app/group-call", icon: Video },
     ];
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -70,7 +72,7 @@ export const Navbar = () => {
       }
       // Mark mounted after first measurement so the entrance transition doesn't play
       if (!mounted) setMounted(true);
-    }, [location.pathname]);
+    }, [activeTab.id, mounted]);
 
     const setTabRef = (id: string, el: HTMLAnchorElement | null) => {
       if (el) tabRefs.current.set(id, el);
@@ -79,12 +81,12 @@ export const Navbar = () => {
 
     const userInitial = (fullName || user?.email || 'U').charAt(0).toUpperCase();
 
-    const isTauriApp = typeof window !== 'undefined' && !!(window as any).__TAURI_INTERNALS__;
+    const isTauriApp = typeof window !== 'undefined' && !!window.__TAURI_INTERNALS__;
 
     return (
         <nav
             className={cn(
-                "h-16 border-b border-border px-6 flex items-center sticky top-0 z-50 shrink-0",
+                "h-16 border-b border-border px-4 sm:px-6 flex items-center sticky top-0 z-50 shrink-0",
                 isTauriApp ? "bg-white" : "bg-white/80 backdrop-blur-md"
             )}
         >
@@ -102,14 +104,14 @@ export const Navbar = () => {
             />
             
             {/* MIDDLE: Navigation Tabs with Animated Pill */}
-            <div className="hidden md:flex justify-center shrink-0">
+            <div className="hidden lg:flex justify-center shrink-0">
                 <div
                     ref={containerRef}
                     className="relative flex items-center gap-1 bg-muted/30 p-1 rounded-full border border-border/50"
                 >
                     {/* Animated pill indicator */}
                     <div
-                        className="absolute top-1 bottom-1 rounded-full bg-primary shadow-sm transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+                        className="absolute top-1 bottom-1 rounded-full bg-primary shadow-sm transition-all duration-300 ease-springy"
                         style={{
                             left: `${pill.left}px`,
                             width: `${pill.width}px`,
@@ -147,7 +149,7 @@ export const Navbar = () => {
             />
 
             {/* RIGHT: User Actions */}
-            <div className="flex items-center justify-end gap-3 w-auto min-w-[200px]">
+            <div className="flex items-center justify-end gap-3 w-auto min-w-0 lg:min-w-[200px]">
                 {!user ? (
                     <Button 
                         variant="ghost" 

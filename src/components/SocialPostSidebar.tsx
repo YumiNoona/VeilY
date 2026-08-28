@@ -17,9 +17,10 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Upload, X, Twitter, Instagram, Linkedin, Facebook, MessageSquare, Wand2, ChevronDown, ChevronRight, RotateCcw, User, FileText, MessageCircle, BarChart2, Palette, Sparkles } from 'lucide-react';
+import { Upload, X, Wand2, ChevronDown, ChevronRight, RotateCcw, User, FileText, MessageCircle, BarChart2, Palette, Sparkles } from 'lucide-react';
 import { SmartFillModal } from './modals/SmartFillModal';
 import { ParsedChat } from '@/lib/parsers';
+import { PlatformIcon } from './icons/PlatformIcons';
 
 interface SocialPostSidebarProps {
     state: ReturnType<typeof useSocialPostState>['state'];
@@ -193,7 +194,7 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectLabel>X (Twitter)</SelectLabel>
+                                <SelectLabel>X</SelectLabel>
                                 <SelectItem value="viralTweet">Growth Playbook</SelectItem>
                                 <SelectItem value="techNewsX">Tech News</SelectItem>
                             </SelectGroup>
@@ -269,23 +270,23 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                 >
                     <TabsList ref={pillRefs.containerRef} className="relative grid w-full grid-cols-5 h-10">
                         <div
-                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-0"
+                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-springy z-0"
                             style={{
                                 left: `${pillRefs.pillStyle.left}px`,
                                 width: `${pillRefs.pillStyle.width}px`,
                                 opacity: pillRefs.mounted ? 1 : 0,
                             }}
                         />
-                        <TabsTrigger value="twitter" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10"><Twitter className="w-4 h-4" /></TabsTrigger>
-                        <TabsTrigger value="instagram" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10"><Instagram className="w-4 h-4" /></TabsTrigger>
+                        <TabsTrigger value="twitter" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10"><PlatformIcon platform="x" className="w-4 h-4" /></TabsTrigger>
+                        <TabsTrigger value="instagram" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10"><PlatformIcon platform="instagram" className="w-4 h-4" /></TabsTrigger>
                         <TabsTrigger value="linkedin" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
-                            <Linkedin className="w-4 h-4" />
+                            <PlatformIcon platform="linkedin" className="w-4 h-4" />
                         </TabsTrigger>
                         <TabsTrigger value="facebook" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
-                            <Facebook className="w-4 h-4" />
+                            <PlatformIcon platform="facebook" className="w-4 h-4" />
                         </TabsTrigger>
                         <TabsTrigger value="reddit" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
-                            <MessageSquare className="w-4 h-4" />
+                            <PlatformIcon platform="reddit" className="w-4 h-4" />
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>

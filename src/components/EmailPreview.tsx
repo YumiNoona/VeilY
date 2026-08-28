@@ -250,7 +250,7 @@ const EmailCard: React.FC<{ state: EmailState }> = ({ state }) => {
                         <div key={email.id}>
                             {idx > 0 && sender && (
                                 <p className="text-[13px] text-gray-500 mb-4 italic opacity-80">
-                                    — {sender.redactName
+                                    · {sender.redactName
                                         ? <span className="inline-block bg-black text-black rounded-sm px-1">{sender.name}</span>
                                         : sender.name
                                     } on {formatEmailDate(email.dateTime)} wrote:

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,6 +47,7 @@ export const ProfileModal = () => {
                         <User className="w-5 h-5" />
                         Profile
                     </DialogTitle>
+                    <DialogDescription>Update the display name shown in Veily.</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-5 py-2">

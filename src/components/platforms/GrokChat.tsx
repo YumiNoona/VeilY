@@ -118,7 +118,7 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
                             {!isUser && (
                                 <div className="max-w-[100%] pr-2">
                                     <div className="space-y-1">
-                                        <div className="text-[16px] leading-[1.6]">
+                                        <div data-chat-message className="text-[16px] leading-[1.6]">
                                             {formatMessageText(message.text)}
                                         </div>
                                     </div>
@@ -146,7 +146,7 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
 
                             {/* User Layout */}
                             {isUser && (
-                                <div className={cn("max-w-[85%] border px-4 py-3 rounded-[16px] text-[16px] leading-[1.5]", userBubble, userText)}>
+                                <div data-chat-message className={cn("max-w-[85%] border px-4 py-3 rounded-[16px] text-[16px] leading-[1.5]", userBubble, userText)}>
                                     {message.text}
                                 </div>
                             )}

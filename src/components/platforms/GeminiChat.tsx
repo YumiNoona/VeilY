@@ -122,7 +122,7 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
                                             <Sparkles className={cn("w-5 h-5", iconColor)} />
                                         </div>
                                         <div className="flex-1">
-                                            <div className="text-[16px] leading-[1.6]">
+                                            <div data-chat-message className="text-[16px] leading-[1.6]">
                                                 {formatMessageText(message.text)}
                                             </div>
 
@@ -156,7 +156,7 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
 
                             {/* User Layout */}
                             {isUser && (
-                                <div className={cn("max-w-[85%] px-4 py-3 rounded-[20px] text-[16px] leading-[1.5]", userBubble, userText)}>
+                                <div data-chat-message className={cn("max-w-[85%] px-4 py-3 rounded-[20px] text-[16px] leading-[1.5]", userBubble, userText)}>
                                     {message.text}
                                 </div>
                             )}

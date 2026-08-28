@@ -10,6 +10,7 @@ interface PreviewControlsProps {
   onDownload: () => void;
   onCopy?: () => void;
   showDeviceToggle?: boolean;
+  availableViews?: DeviceView[];
   isAnimating?: boolean;
   onToggleAnimation?: () => void;
 }
@@ -20,19 +21,21 @@ export function PreviewControls({
   onDownload, 
   onCopy,
   showDeviceToggle = true,
+  availableViews = ['desktop', 'mobile'],
   isAnimating = false,
   onToggleAnimation
 }: PreviewControlsProps) {
-  const views: { id: DeviceView; icon: React.ElementType; label: string }[] = [
+  const allViews: { id: DeviceView; icon: React.ElementType; label: string }[] = [
     { id: 'desktop', icon: Monitor, label: 'Desktop' },
     { id: 'mobile', icon: Smartphone, label: 'Mobile' },
   ];
+  const views = allViews.filter(view => availableViews.includes(view.id));
 
   return (
-    <div className="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 bg-card border border-border rounded-full py-4 px-2 shadow-lg z-50 will-change-transform transform-gpu">
-      {showDeviceToggle && (
+    <div className="absolute md:fixed right-3 md:right-2 xl:right-6 top-3 md:top-1/2 translate-y-0 md:-translate-y-1/2 flex flex-row md:flex-col items-center gap-2 md:gap-4 bg-card border border-border rounded-2xl md:rounded-full py-2 md:py-4 px-2 shadow-lg z-50 will-change-transform transform-gpu">
+      {showDeviceToggle && views.length > 1 && (
         <>
-          <div className="flex flex-col items-center bg-secondary rounded-full p-1 gap-1">
+          <div className="flex flex-row md:flex-col items-center bg-secondary rounded-full p-1 gap-1">
             {views.map((view) => {
               const Icon = view.icon;
               return (
@@ -52,11 +55,11 @@ export function PreviewControls({
               );
             })}
           </div>
-          <div className="w-6 h-px bg-border" />
+          <div className="h-6 w-px md:h-px md:w-6 bg-border" />
         </>
       )}
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-row md:flex-col gap-2">
         {onCopy && (
           <Button onClick={onCopy} variant="outline" size="icon" className="rounded-full w-10 h-10" title="Copy Image">
             <Copy className="w-4 h-4" />

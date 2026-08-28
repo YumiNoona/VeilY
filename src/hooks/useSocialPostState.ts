@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { socialScenarios } from './scenarios/social';
 import { getAvatarUrl } from '@/lib/avatar-utils';
@@ -120,8 +120,8 @@ export const useSocialPostState = () => {
     setState(defaultState);
   };
 
-  const setPlatform = (platform: SocialPlatform) => 
-    setState(prev => ({ ...prev, platform }));
+  const setPlatform = useCallback((platform: SocialPlatform) =>
+    setState(prev => prev.platform === platform ? prev : ({ ...prev, platform })), []);
 
   const setAuthor = (author: Partial<SocialPostState['author']>) => 
     setState(prev => ({ ...prev, author: { ...prev.author, ...author } }));

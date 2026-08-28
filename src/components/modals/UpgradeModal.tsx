@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Crown, X, Check } from 'lucide-react';
@@ -26,12 +26,12 @@ export const UpgradeModal = () => {
                     </div>
 
                     <div className="space-y-1">
-                        <h2 className="text-2xl font-black tracking-tight text-zinc-900">
+                        <DialogTitle className="text-2xl font-black tracking-tight text-zinc-900">
                             Premium Active
-                        </h2>
-                        <p className="text-sm text-zinc-500 font-medium">
-                            You're on the Premium plan — all features are unlocked!
-                        </p>
+                        </DialogTitle>
+                        <DialogDescription className="text-sm text-zinc-500 font-medium">
+                            You're on the Premium plan. All features are unlocked!
+                        </DialogDescription>
                     </div>
 
                     <div className="space-y-2 text-left bg-zinc-50 rounded-xl p-4 border border-zinc-100">

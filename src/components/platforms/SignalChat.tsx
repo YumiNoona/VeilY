@@ -26,7 +26,7 @@ export function SignalChat({ messages, people, activePerson, chatType, appearanc
         <div className="flex gap-5 text-[#2C6BED]">
           <Video className="w-6 h-6" />
           <Phone className="w-6 h-6" />
-          <MoreVertical className="w-6 h-6 text-black" />
+          <MoreVertical className="w-6 h-6" />
         </div>
       </div>
       <div className="flex-1 overflow-y-auto p-3 space-y-1.5" style={getWallpaperStyle(appearance)}>
@@ -39,7 +39,7 @@ export function SignalChat({ messages, people, activePerson, chatType, appearanc
             <div key={message.id} className="flex flex-col">
               {showDateSeparator && (
                 <div className="flex justify-center mb-4 mt-2">
-                  <span className="text-[11px] text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                  <span className={cn("text-[11px] px-3 py-1 rounded-full", appearance.darkMode ? "text-gray-300 bg-[#2b2d31]" : "text-gray-500 bg-gray-100")}>
                     {format(msgDate, 'EEE, MMM d')}
                   </span>
                 </div>
@@ -50,7 +50,7 @@ export function SignalChat({ messages, people, activePerson, chatType, appearanc
                   isOwn ? cn(bubbleOwn, "text-white rounded-[22px] rounded-br-[6px]") : cn(bubbleOther, textColor, "rounded-[22px] rounded-bl-[6px]")
                 )} style={{ wordBreak: 'break-word' }}>
                   {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-                  <p>{message.text}</p>
+                  <p data-chat-message>{message.text}</p>
                   <div className={cn("flex items-center justify-end gap-1 mt-0.5", isOwn ? "text-white/80" : "text-gray-500")}>
                     <span className="text-[10px]">{formatTime(msgDate, appearance.use24HourFormat ?? false)}</span>
                     {isOwn && <CheckCheck className="w-3 h-3" />}

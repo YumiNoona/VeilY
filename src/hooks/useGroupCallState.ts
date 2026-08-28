@@ -18,11 +18,38 @@ const initialCallState: CallState = {
 
 const STORAGE_KEY = 'groupCallState';
 
+const isCallState = (value: unknown): value is CallState => {
+    if (!value || typeof value !== 'object') return false;
+    const candidate = value as Partial<CallState>;
+    const platforms: CallState['platform'][] = ['whatsapp', 'discord', 'facetime', 'zoom'];
+
+    return !!candidate.platform
+        && platforms.includes(candidate.platform)
+        && typeof candidate.duration === 'string'
+        && Array.isArray(candidate.participants)
+        && candidate.participants.length > 0
+        && candidate.participants.every(participant =>
+            participant
+            && typeof participant.id === 'string'
+            && typeof participant.name === 'string'
+            && typeof participant.avatar === 'string'
+            && typeof participant.isMuted === 'boolean'
+            && typeof participant.isCameraOff === 'boolean'
+            && typeof participant.isSpeaking === 'boolean'
+        );
+};
+
 export const useGroupCallState = () => {
     const [callState, setCallState] = useState<CallState>(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
-            return JSON.parse(stored);
+            try {
+                const parsed: unknown = JSON.parse(stored);
+                if (isCallState(parsed)) return parsed;
+                localStorage.removeItem(STORAGE_KEY);
+            } catch {
+                localStorage.removeItem(STORAGE_KEY);
+            }
         }
         return initialCallState;
     });

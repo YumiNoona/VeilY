@@ -22,7 +22,7 @@ export const DoodleBackground = ({ color = "text-white" }: { color?: string }) =
             {doodles.map((d) => (
                 <div
                     key={d.id}
-                    className="absolute transition-transform duration-[10s] ease-in-out animate-pulse"
+                    className="absolute transition-transform duration-10000 ease-in-out animate-pulse"
                     style={{
                         top: d.top,
                         left: d.left,

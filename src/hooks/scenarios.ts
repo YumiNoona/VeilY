@@ -9,6 +9,7 @@ export type AIScenario = {
 
 export type ChatScenario = {
     name: string;
+    contactName?: string;
     messages: ScenarioMessage[];
 };
 
@@ -427,6 +428,76 @@ export const globalScenarios: ChatScenario[] = [
             { text: "yes!! golden hour downtown?", isOwn: false },
             { text: "perfect, i'll bring my camera too", isOwn: true }
         ]
+    },
+    {
+        name: "Design review",
+        contactName: "Maya Chen",
+        messages: [
+            { text: "I left a few notes on the onboarding screens.", isOwn: false },
+            { text: "Perfect, I’m opening the file now.", isOwn: true },
+            { text: "Nothing major, mostly spacing and one confusing label.", isOwn: false },
+            { text: "The plan-selection label? I wasn’t sure about that one either.", isOwn: true },
+            { text: "Exactly. ‘Choose your plan’ reads much better.", isOwn: false },
+            { text: "Agreed. I’ll update it before the review.", isOwn: true }
+        ]
+    },
+    {
+        name: "Airport pickup",
+        contactName: "Daniel Kim",
+        messages: [
+            { text: "Just landed. We got in about twenty minutes early.", isOwn: false },
+            { text: "Nice! I’m ten minutes from the terminal.", isOwn: true },
+            { text: "No rush, baggage claim is moving slowly.", isOwn: false },
+            { text: "I’ll wait by arrivals near door four.", isOwn: true },
+            { text: "Got it. I’ll message when I have my bag.", isOwn: false }
+        ]
+    },
+    {
+        name: "New apartment",
+        contactName: "Liam Carter",
+        messages: [
+            { text: "The bookshelf finally arrived, but the box is enormous.", isOwn: false },
+            { text: "Do you need help carrying it upstairs?", isOwn: true },
+            { text: "Honestly, yes. I underestimated this completely.", isOwn: false },
+            { text: "I can stop by after work around six.", isOwn: true },
+            { text: "You’re saving my back. Pizza is on me.", isOwn: false },
+            { text: "Deal. Don’t assemble it without me.", isOwn: true }
+        ]
+    },
+    {
+        name: "Recipe swap",
+        contactName: "Sofia Martinez",
+        messages: [
+            { text: "That pasta you made last week was so good.", isOwn: false },
+            { text: "The lemon one? It’s ridiculously easy.", isOwn: true },
+            { text: "Please send the recipe before I forget again.", isOwn: false },
+            { text: "Sending it now. Add more parmesan than it says.", isOwn: true },
+            { text: "That is always the correct amount of parmesan.", isOwn: false },
+            { text: "Exactly. Let me know how it turns out 🙂", isOwn: true }
+        ]
+    },
+    {
+        name: "Book recommendation",
+        contactName: "Ava Thompson",
+        messages: [
+            { text: "I finished that mystery you recommended last night.", isOwn: false },
+            { text: "Did you guess the ending?", isOwn: true },
+            { text: "Not even close. The last chapter got me.", isOwn: false },
+            { text: "Same. I immediately wanted to reread the first half.", isOwn: true },
+            { text: "Send me another one when you get a chance.", isOwn: false },
+            { text: "I have the perfect follow-up. One sec.", isOwn: true }
+        ]
+    },
+    {
+        name: "Lost headphones",
+        contactName: "Noah Williams",
+        messages: [
+            { text: "Did I leave my headphones at your place?", isOwn: false },
+            { text: "The black ones? They’re on the kitchen counter.", isOwn: true },
+            { text: "Thank goodness. I’ve checked every pocket twice.", isOwn: false },
+            { text: "I can bring them when we meet tomorrow.", isOwn: true },
+            { text: "Perfect, no special trip needed.", isOwn: false }
+        ]
     }
 ];
 
@@ -444,15 +515,15 @@ export const indianScenarios: ChatScenario[] = [
         ]
     },
     {
-        name: "Family group",
+        name: "Dinner at home",
+        contactName: "Mom",
         messages: [
-            { text: "beta aaj ghar jaldi aana, mummy ne kheer banayi hai", isOwn: false },
-            { text: "haan mummy aa jaunga 7 baje tak", isOwn: true },
-            { text: "aur raste se dhaniya lete aana", isOwn: false },
-            { text: "ok kitna?", isOwn: true },
-            { text: "5 rupaye ka, aur ek packet doodh bhi", isOwn: false },
-            { text: "theek hai. kuch aur chahiye?", isOwn: true },
-            { text: "nahi bas jaldi aana", isOwn: false }
+            { text: "Aaj dinner 8 baje hai, time par aa jana 🙂", isOwn: false },
+            { text: "Bilkul, office se 7:15 tak nikal jaunga.", isOwn: true },
+            { text: "Perfect. Raste mein ho toh message kar dena.", isOwn: false },
+            { text: "Done. Kuch lekar aana hai?", isOwn: true },
+            { text: "Bas ek packet doodh, baaki sab ho gaya.", isOwn: false },
+            { text: "Okay, see you soon!", isOwn: true }
         ]
     },
     {
@@ -680,6 +751,76 @@ export const indianScenarios: ChatScenario[] = [
             { text: "zomato se kuch order karte hai, mess se toh better hi hoga", isOwn: true },
             { text: "sahi bola, dominos ya biryani?", isOwn: false },
             { text: "biryani, double masala wali", isOwn: true }
+        ]
+    },
+    {
+        name: "Metro meetup",
+        contactName: "Priya Sharma",
+        messages: [
+            { text: "Main Rajiv Chowk pahunch gayi. Tu kahan hai?", isOwn: false },
+            { text: "Bas do stations door hoon, five minutes.", isOwn: true },
+            { text: "Okay, gate 3 ke paas wait kar rahi hoon.", isOwn: false },
+            { text: "Perfect. Coffee le loon raste mein?", isOwn: true },
+            { text: "Haan please, cold coffee without sugar.", isOwn: false },
+            { text: "Done. See you in a bit.", isOwn: true }
+        ]
+    },
+    {
+        name: "Parcel pickup",
+        contactName: "Ananya Rao",
+        messages: [
+            { text: "Tera parcel mere flat pe deliver ho gaya.", isOwn: false },
+            { text: "Oh thanks! Main address update karna bhool gaya.", isOwn: true },
+            { text: "Koi issue nahi, security se collect kar liya.", isOwn: false },
+            { text: "Shaam ko aake le jaunga, around seven?", isOwn: true },
+            { text: "Seven works. Bas aane se pehle ping kar dena.", isOwn: false }
+        ]
+    },
+    {
+        name: "Movie plan",
+        contactName: "Kavya Nair",
+        messages: [
+            { text: "Saturday ka 6:30 show book karein?", isOwn: false },
+            { text: "Haan, but aisle seats mil rahe hain kya?", isOwn: true },
+            { text: "Last row mein do aisle seats available hain.", isOwn: false },
+            { text: "Perfect. Book kar de, I’ll send my half.", isOwn: true },
+            { text: "Booked! Dinner movie ke pehle ya baad?", isOwn: false },
+            { text: "Pehle. Warna popcorn hi dinner ban jayega.", isOwn: true }
+        ]
+    },
+    {
+        name: "Train booking",
+        contactName: "Aarav Patel",
+        messages: [
+            { text: "Friday wali train mein seats open ho gayi.", isOwn: false },
+            { text: "Great, morning wali ya evening?", isOwn: true },
+            { text: "Evening 7:10. Saturday morning pahucha degi.", isOwn: false },
+            { text: "That’s better. Same coach mein book karte hain.", isOwn: true },
+            { text: "Send your ID details, main dono kar deta hoon.", isOwn: false },
+            { text: "Sending now, thanks!", isOwn: true }
+        ]
+    },
+    {
+        name: "Monsoon coffee",
+        contactName: "Meera Iyer",
+        messages: [
+            { text: "Baarish dekh ke office se nikalne ka mann nahi ho raha.", isOwn: false },
+            { text: "Same. Neeche wali café mein wait karein?", isOwn: true },
+            { text: "Good idea. Traffic thoda settle bhi ho jayega.", isOwn: false },
+            { text: "Main window table grab karta hoon.", isOwn: true },
+            { text: "Perfect, mere liye masala chai order kar dena.", isOwn: false }
+        ]
+    },
+    {
+        name: "Client presentation",
+        contactName: "Rohan Mehta",
+        messages: [
+            { text: "Deck ka final version mil gaya?", isOwn: false },
+            { text: "Haan, slides 8 and 9 update kar di hain.", isOwn: true },
+            { text: "Great. Main numbers ek baar cross-check kar leta hoon.", isOwn: false },
+            { text: "Please do. Call se pehle ten minutes sync karte hain?", isOwn: true },
+            { text: "Works for me. 3:20 pe ping karta hoon.", isOwn: false },
+            { text: "Perfect, talk then.", isOwn: true }
         ]
     }
 ];

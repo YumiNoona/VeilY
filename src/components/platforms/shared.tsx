@@ -1,4 +1,4 @@
-import { Message, Person, AppearanceSettings, ChatType } from "@/types/chat";
+import { Message, Person, AppearanceSettings, ChatType, DeviceView } from "@/types/chat";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +8,7 @@ export interface PlatformChatProps {
   activePerson: Person | null;
   chatType: ChatType;
   appearance: AppearanceSettings;
+  deviceView?: DeviceView;
   isTyping?: boolean;
   onUpdateMessage?: (id: string, text: string) => void;
   onRemoveMessage?: (id: string) => void;

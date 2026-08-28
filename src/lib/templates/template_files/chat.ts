@@ -10,6 +10,7 @@ const createChatAppearance = (darkMode = false): AppearanceSettings => ({
   statusBarTime: '9:41',
   batteryLevel: 85,
   transparentBackground: false,
+  isTyping: false,
 });
 
 export const CHAT_TEMPLATES = {
@@ -441,10 +442,10 @@ export const CHAT_TEMPLATES = {
       { id: 'p3', name: 'Jess (QA)', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
-      { id: 'm1', text: "daily standup — go ahead and drop your updates here", senderId: 'me', timestamp: new Date(Date.now() - 1800000), isOwn: true },
+      { id: 'm1', text: "daily standup, go ahead and drop your updates here", senderId: 'me', timestamp: new Date(Date.now() - 1800000), isOwn: true },
       { id: 'm2', text: "yesterday: finished the checkout flow. today: integrating Stripe webhooks. blocked: waiting on API keys from ops", senderId: 'p1', timestamp: new Date(Date.now() - 1740000), isOwn: false },
       { id: 'm3', text: "deployed the auth service v2. all tests green. today: optimizing DB queries for the user search endpoint", senderId: 'p2', timestamp: new Date(Date.now() - 1680000), isOwn: false },
-      { id: 'm4', text: "banged out 34 test cases for the checkout flow. found a bug in the promo code logic — created ticket #847", senderId: 'p3', timestamp: new Date(Date.now() - 1620000), isOwn: false },
+      { id: 'm4', text: "banged out 34 test cases for the checkout flow. found a bug in the promo code logic and created ticket #847", senderId: 'p3', timestamp: new Date(Date.now() - 1620000), isOwn: false },
       { id: 'm5', text: "great progress everyone. @Priya ping me when you get those API keys. let's unblock that today", senderId: 'me', timestamp: new Date(Date.now() - 1560000), isOwn: true }
     ],
     appearance: createChatAppearance(false),
@@ -459,10 +460,10 @@ export const CHAT_TEMPLATES = {
       { id: 'p2', name: 'Troy (Brand)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop', isOnline: false }
     ],
     messages: [
-      { id: 'm1', text: "uploaded the new dashboard mockups to Figma — link in thread", senderId: 'p1', timestamp: new Date(Date.now() - 7200000), isOwn: false },
+      { id: 'm1', text: "uploaded the new dashboard mockups to Figma. link in thread", senderId: 'p1', timestamp: new Date(Date.now() - 7200000), isOwn: false },
       { id: 'm2', text: "the data viz cards on page 3 are sick. what chart lib is that?", senderId: 'me', timestamp: new Date(Date.now() - 7140000), isOwn: true },
       { id: 'm3', text: "it's a custom D3 wrapper. i can drop the snippet in #eng", senderId: 'p1', timestamp: new Date(Date.now() - 7100000), isOwn: false },
-      { id: 'm4', text: "the color contrast on the CTA buttons needs a bump though — failing AA", senderId: 'p2', timestamp: new Date(Date.now() - 7000000), isOwn: false },
+      { id: 'm4', text: "the color contrast on the CTA buttons needs a bump though. it is failing AA", senderId: 'p2', timestamp: new Date(Date.now() - 7000000), isOwn: false },
       { id: 'm5', text: "good catch. @Nina can u tweak to #1A56DB? that passes AAA", senderId: 'me', timestamp: new Date(Date.now() - 6900000), isOwn: true }
     ],
     appearance: createChatAppearance(false),

@@ -202,7 +202,7 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                 >
                     <TabsList ref={pillRefs.containerRef} className="relative grid w-full grid-cols-3 h-10">
                         <div
-                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-0"
+                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-springy z-0"
                             style={{
                                 left: `${pillRefs.pillStyle.left}px`,
                                 width: `${pillRefs.pillStyle.width}px`,

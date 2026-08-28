@@ -10,6 +10,7 @@ const createChatAppearance = (darkMode = false): AppearanceSettings => ({
   statusBarTime: '9:41',
   batteryLevel: 85,
   transparentBackground: false,
+  isTyping: false,
 });
 
 export const AI_CHAT_TEMPLATES = {
@@ -82,7 +83,7 @@ export const AI_CHAT_TEMPLATES = {
     ],
     messages: [
       { id: 'm1', text: "best 5 ramen spots in tokyo that locals actually go to not tourist traps", senderId: 'me', timestamp: new Date(Date.now() - 600000), isOwn: true },
-      { id: 'm2', text: "1. Kagari (Ginza) — Tori Paitan. 2. Afuri (Harajuku) — Yuzu Shio. 3. Fuunji (Shinjuku) — Tsukemen. 4. Rokurinsha (Tokyo Station). 5. Menya Itto (Ishiwara). All local favorites, minimal tourist crowds.", senderId: 'ai', timestamp: new Date(Date.now() - 500000), isOwn: false }
+      { id: 'm2', text: "1. Kagari (Ginza): Tori Paitan. 2. Afuri (Harajuku): Yuzu Shio. 3. Fuunji (Shinjuku): Tsukemen. 4. Rokurinsha (Tokyo Station). 5. Menya Itto (Ishiwara). All local favorites, minimal tourist crowds.", senderId: 'ai', timestamp: new Date(Date.now() - 500000), isOwn: false }
     ],
     appearance: createChatAppearance(false),
     aiModel: 'gemini-1.5-pro'
@@ -128,8 +129,8 @@ export const AI_CHAT_TEMPLATES = {
     messages: [
       { id: 'm1', text: "my Next.js app is throwing 'Rendered more hooks than during the previous render' and i can't find where the conditional hook is", senderId: 'me', timestamp: new Date(Date.now() - 600000), isOwn: true },
       { id: 'm2', text: "This is classic hooks ordering issue. Check: 1) Any `useEffect` inside an `if` block? 2) Early returns before hooks? 3) Conditional `useState` calls? The fix is to move hooks above all conditionals and use the conditional *inside* the hook body. Can you paste your component code?", senderId: 'ai', timestamp: new Date(Date.now() - 500000), isOwn: false },
-      { id: 'm3', text: "found it — useEffect inside a ternary operator in the JSX 🤦", senderId: 'me', timestamp: new Date(Date.now() - 400000), isOwn: true },
-      { id: 'm4', text: "Classic! Hooks must be called at the top level of your component. Move the conditional logic inside the effect instead. React's ESLint plugin would catch this — add `eslint-plugin-react-hooks` to your config.", senderId: 'ai', timestamp: new Date(Date.now() - 300000), isOwn: false }
+      { id: 'm3', text: "found it. useEffect is inside a ternary operator in the JSX 🤦", senderId: 'me', timestamp: new Date(Date.now() - 400000), isOwn: true },
+      { id: 'm4', text: "Classic! Hooks must be called at the top level of your component. Move the conditional logic inside the effect instead. React's ESLint plugin would catch this. Add `eslint-plugin-react-hooks` to your config.", senderId: 'ai', timestamp: new Date(Date.now() - 300000), isOwn: false }
     ],
     appearance: createChatAppearance(true),
     aiModel: 'gpt-4o'
@@ -143,10 +144,10 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'ai', name: 'Claude', avatar: 'https://images.unsplash.com/photo-1675271591211-126ad94c495d?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
-      { id: 'm1', text: "i need a short story opening — a lighthouse keeper finds a message in a bottle that was written tomorrow", senderId: 'me', timestamp: new Date(Date.now() - 900000), isOwn: true },
-      { id: 'm2', text: "The bottle clinked against the rocks at 4:17 AM, just as Elias was pouring his third cup of coffee. He almost ignored it — the tide brought trash every morning. But the paper inside wasn't weathered. It was crisp, bone-white, and the date at the top read March 14th, 2027. He checked his watch. It was March 13th. The handwriting was his own.", senderId: 'ai', timestamp: new Date(Date.now() - 800000), isOwn: false },
+      { id: 'm1', text: "i need a short story opening where a lighthouse keeper finds a message in a bottle that was written tomorrow", senderId: 'me', timestamp: new Date(Date.now() - 900000), isOwn: true },
+      { id: 'm2', text: "The bottle clinked against the rocks at 4:17 AM, just as Elias was pouring his third cup of coffee. He almost ignored it because the tide brought trash every morning. But the paper inside wasn't weathered. It was crisp, bone-white, and the date at the top read March 14th, 2027. He checked his watch. It was March 13th. The handwriting was his own.", senderId: 'ai', timestamp: new Date(Date.now() - 800000), isOwn: false },
       { id: 'm3', text: "that gave me chills. can you continue?", senderId: 'me', timestamp: new Date(Date.now() - 700000), isOwn: true },
-      { id: 'm4', text: "The note was terse — just three sentences in his cramped script: 'The light must stay on. No matter what you hear. Do not open the door.' Elias laughed at first. A prank. Had to be. But then he noticed the ink. It was the same fountain pen he kept in his desk drawer — the one his father left him. The one with the scratchy nib that left tiny ink blots after every fifth word. There were blots.", senderId: 'ai', timestamp: new Date(Date.now() - 600000), isOwn: false }
+      { id: 'm4', text: "The note was terse, just three sentences in his cramped script: 'The light must stay on. No matter what you hear. Do not open the door.' Elias laughed at first. A prank. Had to be. But then he noticed the ink. It was the same fountain pen he kept in his desk drawer, the one his father left him. The one with the scratchy nib that left tiny ink blots after every fifth word. There were blots.", senderId: 'ai', timestamp: new Date(Date.now() - 600000), isOwn: false }
     ],
     appearance: createChatAppearance(false),
     aiModel: 'claude-3.5-sonnet'
@@ -161,7 +162,7 @@ export const AI_CHAT_TEMPLATES = {
     ],
     messages: [
       { id: 'm1', text: "compare transformer architectures vs state space models for long-context NLP tasks. focus on computational complexity and memory usage", senderId: 'me', timestamp: new Date(Date.now() - 1200000), isOwn: true },
-      { id: 'm2', text: "Excellent research question. Here's a comparative analysis:\n\n**Transformers (e.g., GPT-4, Llama)**\n- Complexity: O(n²) for self-attention, making long contexts (100K+ tokens) expensive\n- Memory: Quadratic scaling — a 128K context can consume 64GB+ VRAM\n- Strength: Unmatched in-context learning and retrieval precision\n\n**State Space Models (e.g., Mamba, S4)**\n- Complexity: O(n) via recurrent scan operations\n- Memory: Linear scaling — 1M token contexts are practical on consumer GPUs\n- Strength: Throughput is 5x faster than transformers on long sequences\n\n**Key tradeoff**: SSMs lose some precision on needle-in-haystack retrieval compared to full attention. Recent hybrids like Jamba and Griffin aim to combine both. Want the paper references?", senderId: 'ai', timestamp: new Date(Date.now() - 1100000), isOwn: false },
+      { id: 'm2', text: "Excellent research question. Here's a comparative analysis:\n\n**Transformers (e.g., GPT-4, Llama)**\n- Complexity: O(n²) for self-attention, making long contexts (100K+ tokens) expensive\n- Memory: Quadratic scaling. A 128K context can consume 64GB+ VRAM\n- Strength: Unmatched in-context learning and retrieval precision\n\n**State Space Models (e.g., Mamba, S4)**\n- Complexity: O(n) via recurrent scan operations\n- Memory: Linear scaling. 1M token contexts are practical on consumer GPUs\n- Strength: Throughput is 5x faster than transformers on long sequences\n\n**Key tradeoff**: SSMs lose some precision on needle-in-haystack retrieval compared to full attention. Recent hybrids like Jamba and Griffin aim to combine both. Want the paper references?", senderId: 'ai', timestamp: new Date(Date.now() - 1100000), isOwn: false },
       { id: 'm3', text: "yes please, and can you compare the Mamba-2 paper vs the Griffin paper in terms of gating mechanisms?", senderId: 'me', timestamp: new Date(Date.now() - 1000000), isOwn: true }
     ],
     appearance: createChatAppearance(false),

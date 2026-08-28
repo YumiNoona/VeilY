@@ -3,7 +3,7 @@
  * Checks for the presence of the window.electronAPI object exposed in preload.js.
  */
 export const isElectron = (): boolean => {
-    return typeof window !== 'undefined' && (!!(window as any).electronAPI || !!(window as any).__TAURI_INTERNALS__);
+    return typeof window !== 'undefined' && (!!window.electronAPI || !!window.__TAURI_INTERNALS__);
 };
 
 /**
@@ -21,11 +21,11 @@ export const getRedirectUrl = (): string => {
 
     // Local Development (Vite default or custom port)
     if (window.location.origin.includes("localhost")) {
-        return "http://localhost:3000"; // Or 5173 if you prefer, but 3000 matches your dashboard setup
+        return window.location.origin;
     }
 
     // Production or Desktop shell
-    if ((window as any).__TAURI_INTERNALS__) return "tauri://localhost";
+    if (window.__TAURI_INTERNALS__) return "tauri://localhost";
     return "https://veily.venusapp.in";
 };
 
@@ -34,7 +34,7 @@ export const getRedirectUrl = (): string => {
  */
 export const getApiUrl = (path: string): string => {
     // If inside Tauri desktop shell, always route to the live server
-    if (typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__) {
+    if (typeof window !== 'undefined' && window.__TAURI_INTERNALS__) {
         return `https://veily.venusapp.in${path}`;
     }
 

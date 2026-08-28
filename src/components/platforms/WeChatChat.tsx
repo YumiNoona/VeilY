@@ -47,7 +47,7 @@ export function WeChatChat({ messages, people, activePerson, chatType, appearanc
                       message.isOwn ? "right-[-6px] border-l-[6px] border-l-[#95ec69]" : "left-[-6px] border-r-[6px] border-r-white"
                     )} />
                     {message.image && <img src={message.image} alt="" className="max-w-full rounded-sm mb-1" />}
-                    <p className="text-[15px] leading-[1.4]">{message.text}</p>
+                    <p data-chat-message className="text-[15px] leading-[1.4]">{message.text}</p>
                   </div>
                 </div>
               </div>

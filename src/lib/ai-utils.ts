@@ -2,11 +2,11 @@ import { ParsedChat } from "./parsers";
 import { Message, Person } from "@/types/chat";
 
 function getGroqKey(): string | null {
-  return import.meta.env.GROQ_API_KEY || null;
+  return import.meta.env.VITE_GROQ_API_KEY || null;
 }
 
 function getGeminiKey(): string | null {
-  return import.meta.env.GEMINI_API_KEY || null;
+  return import.meta.env.VITE_GEMINI_API_KEY || null;
 }
 
 function buildPrompt(prompt: string, platform: string): string {
@@ -65,7 +65,7 @@ function parseResponse(rawText: string): ParsedChat {
 
 async function callGroq(prompt: string, platform: string): Promise<ParsedChat> {
   const apiKey = getGroqKey();
-  if (!apiKey) throw new Error("GROQ_API_KEY not set");
+  if (!apiKey) throw new Error("VITE_GROQ_API_KEY not set");
 
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
@@ -93,7 +93,7 @@ async function callGroq(prompt: string, platform: string): Promise<ParsedChat> {
 
 async function callGemini(prompt: string, platform: string): Promise<ParsedChat> {
   const apiKey = getGeminiKey();
-  if (!apiKey) throw new Error("GEMINI_API_KEY not set");
+  if (!apiKey) throw new Error("VITE_GEMINI_API_KEY not set");
 
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
@@ -122,7 +122,7 @@ function generateFallbackMock(platform: string): ParsedChat {
   const msgs = [
     { text: "Hey! Are you free to chat?", isOwn: false },
     { text: "Yeah, what's up?", isOwn: true },
-    { text: "Just wanted to test this mockup tool — looks amazing so far!", isOwn: false },
+    { text: "Just wanted to test this mockup tool. Looks amazing so far!", isOwn: false },
     { text: "Right? It's pretty cool. Want to try the AI fill?", isOwn: true },
     { text: "Let's do it! What platform should we mock?", isOwn: false },
     { text: "How about WhatsApp? Classic choice.", isOwn: true },

@@ -30,7 +30,8 @@ export function GroupCallPreview({ state, deviceView, appearance }: GroupCallPre
             <div 
                 key={p.id} 
                 className={cn(
-                    "relative aspect-[9/16] bg-zinc-900 overflow-hidden transition-all duration-300",
+                    "relative min-h-0 bg-zinc-900 overflow-hidden transition-all duration-300",
+                    deviceView === 'mobile' && "aspect-[9/16]",
                     isSpeaking && "ring-2 ring-emerald-500 ring-inset",
                     platform === 'facetime' && "rounded-2xl m-1"
                 )}
@@ -82,7 +83,7 @@ export function GroupCallPreview({ state, deviceView, appearance }: GroupCallPre
 
             {/* Participants Grid */}
             <div className={cn(
-                "flex-1 grid gap-0.5 p-0.5",
+                "flex-1 min-h-0 grid gap-0.5 p-0.5",
                 getGridStyles()
             )}>
                 {participants.map((p, i) => renderParticipant(p, i))}

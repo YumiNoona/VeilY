@@ -80,8 +80,9 @@ npm run dev
 # 3. Build for production
 npm run build
 
-# 4. Optional: Set AI key for Smart Fill
-echo "VITE_GEMINI_API_KEY=your_key_here" > .env
+# 4. Optional: Set AI keys for Smart Fill (Groq is tried first, then Gemini)
+echo "VITE_GROQ_API_KEY=your_groq_key" > .env
+echo "VITE_GEMINI_API_KEY=your_gemini_key" >> .env
 ```
 
 ### Tauri Desktop

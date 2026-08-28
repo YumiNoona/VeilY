@@ -49,7 +49,7 @@ export function TeamsChat({ messages, people, activePerson, chatType, appearance
                   </span>
                 </div>
                 {message.image && <img src={message.image} alt="" className="max-w-full rounded mb-2" />}
-                <p className="text-[13px] leading-[1.4]">{message.text}</p>
+                <p data-chat-message className="text-[13px] leading-[1.4]">{message.text}</p>
               </div>
               <span className={cn("text-[10px] mt-0.5 text-[#616161] px-1")}>
                 {formatTime(message.timestamp, true)}

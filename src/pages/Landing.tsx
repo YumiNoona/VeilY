@@ -37,6 +37,11 @@ const platforms = [
   "messenger", "tiktok", "tinder", "facebook", "linkedin"
 ];
 
+const getPlatformPath = (platform: string) =>
+  platform === 'facebook' || platform === 'linkedin'
+    ? `/app/social?platform=${platform}`
+    : `/app?platform=${platform}`;
+
 const features = [
   { icon: Download, title: "HD EXPORT", desc: "4K resolution with zero compression artifacts." },
   { icon: Palette, title: "DARK MODE", desc: "Toggle between light & dark for every platform." },
@@ -155,7 +160,7 @@ export default function Landing() {
             <p className="text-[#39ff8a]/50 text-xs mb-6 animate-pulse">█ SYSTEM READY █ V2.0 █ NO CARTRIDGE REQUIRED █</p>
 
             <div className="inline-block border-2 border-[#ffe566]/30 px-4 py-1.5 mb-8 bg-[#ffe566]/5">
-              <span className="text-[#ffe566] text-[10px] font-bold tracking-[0.3em]">PLAYER 1 — READY</span>
+              <span className="text-[#ffe566] text-[10px] font-bold tracking-[0.3em]">PLAYER 1: READY</span>
             </div>
 
             <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter mb-6 break-words" style={{ fontFamily: '"Press Start 2P", monospace', color: '#39ff8a', textShadow: '3px 3px 0 #0a3d1f, -2px -1px 0 #080c10' }}>
@@ -191,7 +196,7 @@ export default function Landing() {
                   <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
                   <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
                 </div>
-                <span className="text-[9px] text-gray-500 mx-auto font-medium">Inbox — Veily Team</span>
+                <span className="text-[9px] text-gray-500 mx-auto font-medium">Inbox: Veily Team</span>
               </div>
               {/* Toolbar */}
                 <div className="bg-[#fafafa] border-b border-[#e5e5e5] px-3 py-1.5 flex items-center gap-3">
@@ -246,7 +251,7 @@ export default function Landing() {
         </div>
         <div className="flex flex-wrap justify-center gap-1.5">
           {platforms.map((p, i) => (
-            <Link to={`/app?platform=${p}`} key={p} className="w-[calc(33.33%-6px)] sm:w-[calc(25%-6px)] md:w-[calc(20%-6px)] border-2 border-[#39ff8a]/20 p-3 text-center hover:border-[#39ff8a] hover:bg-[#39ff8a]/5 transition-all cursor-pointer pixel-corners group" onClick={handleCombo}>
+            <Link to={getPlatformPath(p)} key={p} className="w-[calc(33.33%-6px)] sm:w-[calc(25%-6px)] md:w-[calc(20%-6px)] border-2 border-[#39ff8a]/20 p-3 text-center hover:border-[#39ff8a] hover:bg-[#39ff8a]/5 transition-all cursor-pointer pixel-corners group" onClick={handleCombo}>
               <div className="w-8 h-8 mx-auto mb-1.5 flex items-center justify-center group-hover:scale-125 transition-transform">
                 <PlatformIcon platform={p} className="w-6 h-6" />
               </div>
@@ -278,7 +283,7 @@ export default function Landing() {
         <div className="game-card scan-line relative overflow-hidden border-2 border-[#ff6b35]/20 p-8 sm:p-12 bg-[#ff6b35]/[0.02] pixel-corners glow-border">
           <p className="text-[#ff6b35] text-xs tracking-[0.3em] mb-3 animate-pulse">⚠  WARNING  ⚠</p>
           <h2 className="text-3xl sm:text-4xl text-[#ff6b35] font-black mb-4">BOSS LEVEL</h2>
-          <p className="text-[#ff6b35]/80 text-sm font-bold tracking-wide max-w-md mx-auto mb-8 whitespace-nowrap">⚠ BORING MOCKUPS END HERE — NO CONTINUES ⚠</p>
+          <p className="text-[#ff6b35]/80 text-sm font-bold tracking-wide max-w-md mx-auto mb-8 whitespace-nowrap">⚠ BORING MOCKUPS END HERE. NO CONTINUES ⚠</p>
           <Link to="/app" onClick={handleCombo} className="inline-flex items-center gap-2 px-10 py-4 border-2 border-[#ff6b35] bg-[#ff6b35] text-[#080c10] text-lg font-black hover:bg-[#ff8c5a] hover:border-[#ff8c5a] transition-colors pixel-corners">
             <span className="text-xl">⚔️</span> FIGHT
             <ArrowRight className="w-5 h-5" />

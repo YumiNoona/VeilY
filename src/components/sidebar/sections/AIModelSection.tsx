@@ -28,7 +28,7 @@ export function AIModelSection({ platform, onPlatformChange, model, onModelChang
     useEffect(() => {
         const defaultModel = DEFAULT_MODELS[platform];
         if (defaultModel) onModelChange(defaultModel);
-    }, [platform]);
+    }, [onModelChange, platform]);
 
     const handlePlatformChange = (p: Platform) => {
         onPlatformChange(p);

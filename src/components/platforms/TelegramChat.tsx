@@ -1,4 +1,4 @@
-import { ArrowLeft, Search, MoreVertical, Smile, Plus, Mic, Users, Edit2, Trash2 } from "lucide-react";
+import { ArrowLeft, Search, MoreVertical, Smile, Plus, Mic, Users, Edit2, Trash2, Menu, SquarePen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { EditableText } from "@/components/ui/EditableText";
@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { EditMessageModal } from "@/components/modals/EditMessageModal";
 import { useState } from "react";
+import { getAvatarUrl } from "@/lib/avatar-utils";
 
-export function TelegramChat({ messages, people, activePerson, chatType, appearance, onUpdateMessage, onRemoveMessage, onUpdatePerson }: PlatformChatProps) {
+export function TelegramChat({ messages, people, activePerson, chatType, deviceView, appearance, onUpdateMessage, onRemoveMessage, onUpdatePerson }: PlatformChatProps) {
   const displayPerson = activePerson || people.find(p => p.id !== 'user');
   const today = new Date();
 
@@ -30,6 +31,14 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
   const msgTextColor = appearance.darkMode ? 'text-white' : 'text-black';
   const timeColor = appearance.darkMode ? 'text-[#6ab2f2]' : 'text-[#aaaaaa]';
   const dateBadgeBg = appearance.darkMode ? 'bg-[#182533] text-[#6ab2f2]' : 'bg-[rgba(0,0,0,0.15)] text-white';
+  const desktopContacts = [
+    { name: displayPerson?.name || 'Contact', snippet: messages.at(-1)?.text || 'No messages yet', time: '4:22 PM', active: true, avatar: displayPerson?.avatar },
+    { name: 'Priya Sharma', snippet: 'Cold coffee without sugar, remember?', time: '3:48 PM' },
+    { name: 'Daniel Kim', snippet: 'The files are in the shared folder.', time: '2:31 PM' },
+    { name: 'Design Crew', snippet: 'Maya: Review moved to 3:30.', time: '1:05 PM' },
+    { name: 'Sofia Martinez', snippet: 'Dinner after the client call?', time: 'Tue' },
+    { name: 'Aarav Patel', snippet: 'Train tickets are confirmed 👍', time: 'Mon' },
+  ];
 
   // Read receipt parity for own messages: even = single check, odd = double check
   let ownMsgIndex = 0;
@@ -41,10 +50,10 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
     }
   });
 
-  return (
+  const conversation = (
     <div className={cn("flex flex-col h-full font-telegram", appearance.transparentBackground ? 'bg-transparent' : bgClass)}>
       <div className={cn("px-3 py-2 flex items-center border-b", headerBg, appearance.darkMode ? "border-transparent" : "border-[#c8c8cc]")}>
-        <button className="p-2"><ArrowLeft className={cn("w-5 h-5", iconColor)} /></button>
+        {deviceView !== 'desktop' && <button aria-label="Back" className="p-2"><ArrowLeft className={cn("w-5 h-5", iconColor)} /></button>}
         {displayPerson?.avatar ? (
           <img src={displayPerson.avatar} alt="" className="w-10 h-10 rounded-full ml-1 object-cover" />
         ) : (
@@ -70,7 +79,7 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
           <MoreVertical className={cn("w-5 h-5", iconColor)} />
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-3 space-y-1" style={{
+      <div data-chat-scroll className="flex-1 overflow-y-auto p-3 space-y-1" style={{
         ...getWallpaperStyle(appearance),
         background: appearance.wallpaperUrl ? undefined : (appearance.darkMode ? 'linear-gradient(180deg, #0f1a24 0%, #0e1621 100%)' : '#efeff4')
       }}>
@@ -98,7 +107,7 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
                     />
                   ) : (
                     <div className="flex items-end gap-2">
-                      <p className={cn("text-[15px] leading-[20px]", msgTextColor)}>
+                      <p data-chat-message className={cn("text-[15px] leading-[20px]", msgTextColor)}>
                         {message.text}
                       </p>
                       <span className={cn("text-[11px] whitespace-nowrap flex items-center gap-0.5", timeColor)}>
@@ -165,6 +174,56 @@ export function TelegramChat({ messages, people, activePerson, chatType, appeara
           if (editingMessage) onUpdateMessage?.(editingMessage.id, newText);
         }}
       />
+    </div>
+  );
+
+  if (deviceView !== 'desktop') return conversation;
+
+  return (
+    <div className={cn("flex h-full w-full overflow-hidden font-telegram", appearance.darkMode ? "bg-[#17212b]" : "bg-white")}>
+      <aside className={cn(
+        "w-[35%] min-w-[280px] max-w-[360px] h-full flex flex-col border-r",
+        appearance.darkMode ? "bg-[#17212b] border-[#253340]" : "bg-white border-[#dfe5e8]"
+      )}>
+        <div className={cn("h-[60px] px-3 flex items-center gap-3 border-b", appearance.darkMode ? "border-[#253340]" : "border-[#e6ebee]")}>
+          <button aria-label="Menu" className={cn("p-2 rounded-full", appearance.darkMode ? "text-[#8b9ba7]" : "text-[#707f89]")}>
+            <Menu className="w-5 h-5" />
+          </button>
+          <div className={cn("flex-1 h-9 rounded-full px-3 flex items-center gap-2", appearance.darkMode ? "bg-[#242f3d]" : "bg-[#f1f3f4]")}>
+            <Search className={cn("w-4 h-4", appearance.darkMode ? "text-[#8b9ba7]" : "text-[#7d8b94]")} />
+            <span className={cn("text-[13px]", appearance.darkMode ? "text-[#8b9ba7]" : "text-[#7d8b94]")}>Search</span>
+          </div>
+          <button aria-label="New message" className={cn("p-2 rounded-full", iconColor)}>
+            <SquarePen className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          {desktopContacts.map((contact) => (
+            <div
+              key={contact.name}
+              className={cn(
+                "h-[68px] px-3 flex items-center gap-3 border-b",
+                appearance.darkMode ? "border-[#202d38]" : "border-[#edf0f2]",
+                contact.active && (appearance.darkMode ? "bg-[#2b5278]" : "bg-[#419fd9]")
+              )}
+            >
+              <img
+                src={contact.avatar || getAvatarUrl(contact.name)}
+                alt={`${contact.name} profile`}
+                className="w-11 h-11 rounded-full object-cover shrink-0"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className={cn("font-medium text-[14px] truncate", contact.active ? "text-white" : headerTextColor)}>{contact.name}</span>
+                  <span className={cn("ml-auto text-[11px] shrink-0", contact.active ? "text-white/80" : "text-[#8b9ba7]")}>{contact.time}</span>
+                </div>
+                <p className={cn("text-[12px] truncate mt-0.5", contact.active ? "text-white/85" : "text-[#8b9ba7]")}>{contact.snippet}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </aside>
+      <section className="flex-1 min-w-0 h-full">{conversation}</section>
     </div>
   );
 }

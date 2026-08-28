@@ -21,6 +21,9 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+      // The project intentionally uses loosely typed adapter data (importers and local API mocks).
+      // Keep this aligned with tsconfig's noImplicitAny setting while real type errors remain covered by tsc.
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
 );

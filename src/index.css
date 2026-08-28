@@ -170,6 +170,24 @@
     background-color: hsl(var(--muted-foreground) / 0.3);
     border-radius: 3px;
   }
+
+  .scrollbar-none,
+  .scrollbar-hide,
+  .chat-preview-shell .overflow-y-auto {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar,
+  .scrollbar-hide::-webkit-scrollbar,
+  .chat-preview-shell .overflow-y-auto::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.chat-preview-shell [data-chat-message] {
+  font-size: var(--chat-message-font-size) !important;
+  font-family: var(--chat-message-font-family) !important;
 }
 
 /* Platform Specific Emoji Styles */

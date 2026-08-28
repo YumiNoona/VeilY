@@ -41,7 +41,7 @@ export const useScreenshot = (ref: React.RefObject<HTMLElement>) => {
             // Wrap toBlob in a Promise so we can properly catch null
             const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
             if (!blob) {
-                toast.error("Failed to copy — could not generate image blob");
+                toast.error("Failed to copy because the image could not be generated");
                 return;
             }
             await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);

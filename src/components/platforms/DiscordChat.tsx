@@ -56,7 +56,12 @@ export function DiscordChat({ messages, people, activePerson, chatType, appearan
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
-                  <span className={cn("font-medium", message.isOwn ? "text-[#57f287]" : "text-[#f47b67]")}>{message.isOwn ? 'You' : sender?.name}</span>
+                  <span className={cn(
+                    "font-medium",
+                    message.isOwn
+                      ? (appearance.darkMode ? "text-[#57f287]" : "text-[#248046]")
+                      : (appearance.darkMode ? "text-[#f47b67]" : "text-[#b23b2a]")
+                  )}>{message.isOwn ? 'You' : sender?.name}</span>
                   {appearance.showTimestamps && <span className={cn("text-[11px]", appearance.darkMode ? "text-[#949ba4]" : "text-[#5c5e66]")}>{format(message.timestamp instanceof Date ? message.timestamp : new Date(message.timestamp), appearance.use24HourFormat ? 'MM/dd/yyyy HH:mm' : 'MM/dd/yyyy h:mm a')}</span>}
                 </div>
                 {message.image && <img src={message.image} alt="" className="max-w-[200px] rounded-lg mt-1" />}
@@ -70,7 +75,7 @@ export function DiscordChat({ messages, people, activePerson, chatType, appearan
                     />
                   </div>
                 ) : (
-                  <p className={cn("text-[15px] leading-[1.375rem] break-words", subtextColor)}>
+                  <p data-chat-message className={cn("text-[15px] leading-[1.375rem] break-words", subtextColor)}>
                     <EditableText
                       value={message.text}
                       onSave={(newText) => onUpdateMessage?.(message.id, newText)}

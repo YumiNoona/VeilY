@@ -55,7 +55,7 @@ export function LineChat({ messages, people, activePerson, chatType, appearance,
                     message.isOwn ? "bg-[#6CD268] text-black rounded-tr-sm" : "bg-white text-black rounded-tl-sm"
                   )} style={{ wordBreak: 'break-word' }}>
                     {message.image && <img src={message.image} alt="" className="max-w-full rounded-lg mb-1" />}
-                    <p className="leading-snug">
+                    <p data-chat-message className="leading-snug">
                       <EditableText value={message.text} onSave={(newText) => onUpdateMessage?.(message.id, newText)} multiline />
                     </p>
                   </div>

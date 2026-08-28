@@ -23,6 +23,16 @@ export function ClaudeChat({ messages, people, appearance, aiModel, onUpdateMess
     const inputBg = appearance.darkMode ? 'bg-[#2a2420] border-[#3a322e]' : 'bg-white border-[#E5E5E5]';
     const iconColor = appearance.darkMode ? 'text-[#a09890]' : 'text-stone-900';
 
+    const formatMessageText = (text: string) => text.split('\n').map((line, lineIndex) => (
+        <span key={lineIndex} className="block min-h-[1.5em]">
+            {line.split(/(\*\*.*?\*\*)/g).map((part, partIndex) => (
+                part.startsWith('**') && part.endsWith('**')
+                    ? <strong key={partIndex}>{part.slice(2, -2)}</strong>
+                    : part
+            ))}
+        </span>
+    ));
+
     // Format model name for display
     const getModelDisplayName = () => {
         if (!aiModel) return 'Sonnet 3.5';
@@ -67,9 +77,10 @@ export function ClaudeChat({ messages, people, appearance, aiModel, onUpdateMess
                             {/* Assistant Layout */}
                             {!isUser && (
                                 <div className="space-y-1.5 max-w-[95%]">
-                                    <div className="text-[17px] leading-relaxed font-serif tracking-[0.01em]">
+                                    <div data-chat-message className="text-[17px] leading-relaxed font-serif tracking-[0.01em]">
                                         <EditableText
                                             value={message.text}
+                                            displayValue={formatMessageText(message.text)}
                                             onSave={(newText) => onUpdateMessage?.(message.id, newText)}
                                             multiline
                                             className="block w-full"
@@ -80,9 +91,10 @@ export function ClaudeChat({ messages, people, appearance, aiModel, onUpdateMess
 
                             {/* User Layout */}
                             {isUser && (
-                                <div className={cn("max-w-[85%] px-5 py-3 rounded-[24px] text-[16px] leading-[1.6]", userBubble, userText)}>
+                                <div data-chat-message className={cn("max-w-[85%] px-5 py-3 rounded-[24px] text-[16px] leading-[1.6]", userBubble, userText)}>
                                     <EditableText
                                         value={message.text}
+                                        displayValue={formatMessageText(message.text)}
                                         onSave={(newText) => onUpdateMessage?.(message.id, newText)}
                                         multiline
                                         className="block w-full"

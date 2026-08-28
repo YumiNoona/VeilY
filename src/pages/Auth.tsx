@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getRedirectUrl } from '@/lib/electron-utils';
+import { cn } from '@/lib/utils';
 
 type AuthStep = "form" | "otp";
 
@@ -106,13 +107,6 @@ const Auth = () => {
         verifyCode(otp);
     };
 
-    // Auto-submit when 6-digit code is complete (Supabase sends 6-digit OTPs)
-    useEffect(() => {
-        if (otp.length === 6 && !loading && !isLocked) {
-            verifyCode(otp);
-        }
-    }, [otp]);
-
     const handleResend = async () => {
         if (cooldown > 0 || !email) return;
         await handleSendOtp();
@@ -172,7 +166,13 @@ const Auth = () => {
                                     maxLength={6}
                                     placeholder="000000"
                                     value={otp}
-                                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                                    onChange={(e) => {
+                                        const nextOtp = e.target.value.replace(/\D/g, '');
+                                        setOtp(nextOtp);
+                                        if (nextOtp.length === 6 && !loading && !isLocked) {
+                                            void verifyCode(nextOtp);
+                                        }
+                                    }}
                                     required
                                     disabled={isLocked}
                                     className="pl-10 h-12 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none font-mono text-lg tracking-[0.5rem] text-center disabled:opacity-50"

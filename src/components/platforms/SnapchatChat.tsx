@@ -39,7 +39,7 @@ export function SnapchatChat({ messages, people, activePerson, chatType, appeara
               </span>
               <div className={cn("pl-3 border-l-[2px] py-0.5", isOwn ? "border-l-[#E91E63]" : "border-l-[#2196F3]")}>
                 {message.image && <img src={message.image} alt="" className="max-w-[200px] rounded-lg mb-2" />}
-                <p className={cn("text-[15px] font-medium leading-snug", indicatorColor)}>
+                <p data-chat-message className={cn("text-[15px] font-medium leading-snug", indicatorColor)}>
                   <EditableText value={message.text} onSave={(newText) => onUpdateMessage?.(message.id, newText)} multiline />
                 </p>
                 {appearance.showTimestamps && (

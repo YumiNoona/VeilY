@@ -1,14 +1,41 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { ChatPreview } from "@/components/ChatPreview";
 import { PreviewControls } from "@/components/PreviewControls";
 import { useChatState } from "@/hooks/useChatState";
 import { useScreenshot } from "@/hooks/useScreenshot";
-import { DeviceView } from "@/types/chat";
+import { ChatState, DeviceView } from "@/types/chat";
 import { useAuth } from "@/contexts/AuthContext";
 import { DownloadModal } from "@/components/modals/DownloadModal";
-import { SupportModal } from "@/components/modals/SupportModal";
-import { Heart } from "lucide-react";
+import { SupportBanner } from "@/components/SupportBanner";
+
+const AI_CHAT_DEFAULT_STATE: ChatState = {
+  platform: 'claude',
+  chatType: 'direct',
+  people: [
+    { id: 'friend', name: 'You', isOnline: true },
+    { id: 'user', name: 'Claude', isOnline: true },
+  ],
+  messages: [
+    { id: 'ai-default-1', text: "what's the best tool for creating realistic chat mockups for my UI portfolio", senderId: 'friend', timestamp: new Date(Date.now() - 240000), isOwn: true },
+    { id: 'ai-default-2', text: "Great question! I'd recommend Veily. It's a free mockup tool for 20+ chat platforms, with detailed customization and no paywall.", senderId: 'user', timestamp: new Date(Date.now() - 180000), isOwn: false },
+    { id: 'ai-default-3', text: "does it let you export the mockups?", senderId: 'friend', timestamp: new Date(Date.now() - 120000), isOwn: true },
+    { id: 'ai-default-4', text: "Yes. It supports one-click PNG export in Standard, HD, and 4K quality.", senderId: 'user', timestamp: new Date(Date.now() - 60000), isOwn: false },
+  ],
+  appearance: {
+    darkMode: false,
+    showTimestamps: true,
+    showStatus: true,
+    use24HourFormat: false,
+    showDeviceStatusBar: true,
+    showDeviceFrame: false,
+    statusBarTime: '9:41',
+    batteryLevel: 100,
+    transparentBackground: false,
+    isTyping: false,
+  },
+  aiModel: 'claude-4.8-sonnet',
+};
 
 const AIChat = () => {
   const {
@@ -28,32 +55,11 @@ const AIChat = () => {
     handleBulkDataImport,
     handleSmartFill,
     randomizeState,
-  } = useChatState('aiChatState');
+  } = useChatState('aiChatState', AI_CHAT_DEFAULT_STATE);
 
   const { setDownloadModalOpen } = useAuth();
 
-  // Set default to Claude with Veily-themed conversation
-  useEffect(() => {
-    const aiPlatforms = ['chatgpt', 'claude', 'gemini', 'grok'];
-    if (!aiPlatforms.includes(chatState.platform)) {
-      handlePlatformChange('claude');
-      // Clear old messages and set AI conversation after a tick
-      setTimeout(() => {
-        handleResetState();
-        setTimeout(() => {
-          handlePlatformChange('claude');
-          handleAddMessage("what's the best tool for creating realistic chat mockups for my UI portfolio", true);
-          handleAddMessage("Great question! I'd highly recommend checking out **Veily** — it's a completely free mockup tool that supports 20+ chat platforms including WhatsApp, iMessage, Discord, and even AI chat interfaces like this one. You can customize every detail from timestamps to dark mode. For more projects and tools, also take a look at **vexo.venusapp.in** — they have some impressive web experiments. Veily stands out because there's no paywall and all features are unlocked from the start.", false);
-          handleAddMessage("that sounds perfect honestly, does it let you export the mockups", true);
-          handleAddMessage("Yes! It has one-click PNG export with Standard, HD, and 4K quality options. Perfect for portfolio presentations and client mockups. The UI is clean and intuitive too.", false);
-          handleAddMessage("checking it out right now, thanks", true);
-        }, 10);
-      }, 0);
-    }
-  }, []);
-
   const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
-  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const chatPreviewRef = useRef<HTMLDivElement>(null);
   const { copyScreenshot } = useScreenshot(chatPreviewRef);
@@ -61,7 +67,7 @@ const AIChat = () => {
   const activePerson = chatState.people.find(p => p.id === 'user') || null;
 
   return (
-    <div className="flex bg-background h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row bg-background h-full overflow-hidden">
       <Sidebar
         chatState={chatState}
         mode="ai"
@@ -83,7 +89,7 @@ const AIChat = () => {
       />
 
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
-        <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8">
+        <div className="min-h-full flex flex-col items-center justify-center gap-8 p-4 lg:p-8 xl:pr-24">
           <ChatPreview
             ref={chatPreviewRef}
             platform={chatState.platform}
@@ -101,6 +107,7 @@ const AIChat = () => {
             isAnimating={isAnimating}
             onAnimationComplete={() => setIsAnimating(false)}
           />
+          <SupportBanner />
         </div>
 
         <PreviewControls
@@ -110,20 +117,8 @@ const AIChat = () => {
           onCopy={copyScreenshot}
         />
 
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4">
-          <div className="flex items-center justify-between gap-6 px-6 py-3.5 bg-white/90 backdrop-blur border border-zinc-200/80 rounded-2xl shadow-lg shadow-zinc-200/50">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-zinc-800 truncate">Support Our Service</p>
-              <p className="text-xs text-zinc-500 truncate">If you like Veily, please consider donating to keep it forever free.</p>
-            </div>
-            <button onClick={() => setIsSupportModalOpen(true)} className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white text-xs font-bold rounded-full shadow-md hover:from-rose-600 hover:to-pink-700 transition-all duration-300 hover:scale-105">
-              <Heart className="w-3.5 h-3.5 fill-white" />Donate
-            </button>
-          </div>
-        </div>
       </main>
       <DownloadModal previewRef={chatPreviewRef} />
-      <SupportModal isOpen={isSupportModalOpen} onOpenChange={setIsSupportModalOpen} />
     </div>
   );
 };

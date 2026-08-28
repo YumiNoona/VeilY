@@ -45,7 +45,11 @@ export const PlatformIcon = ({ platform, className, style }: PlatformIconProps) 
     case 'teams':
       return (
         <svg className={iconClass} style={style} viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20.625 5.625h-3v-.75c0-1.036-.839-1.875-1.875-1.875H8.25c-1.036 0-1.875.839-1.875 1.875v.75h-3C2.339 5.625 1.5 6.464 1.5 7.5v10.125c0 1.036.839 1.875 1.875 1.875h17.25c1.036 0 1.875-.839 1.875-1.875V7.5c0-1.036-.839-1.875-1.875-1.875zM8.25 4.875h7.5v.75h-7.5v-.75zM12 16.5c-2.071 0-3.75-1.679-3.75-3.75S9.929 9 12 9s3.75 1.679 3.75 3.75-1.679 3.75-3.75 3.75z" />
+          <circle cx="15.5" cy="5" r="2.5" />
+          <circle cx="20.5" cy="7" r="1.75" />
+          <path d="M13 8h5.25A2.75 2.75 0 0 1 21 10.75v5.5A2.75 2.75 0 0 1 18.25 19H13V8z" opacity=".82" />
+          <path d="M18.5 9.5h2.25A2.25 2.25 0 0 1 23 11.75v3.5a2.25 2.25 0 0 1-2.25 2.25H18.5v-8z" opacity=".55" />
+          <path fillRule="evenodd" d="M2 6h12v12H2V6zm3 3v2h2v5h2v-5h2V9H5z" />
         </svg>
       );
     case 'reddit':
@@ -56,8 +60,9 @@ export const PlatformIcon = ({ platform, className, style }: PlatformIconProps) 
       );
     case 'signal':
       return (
-        <svg className={iconClass} style={style} viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 3.6c4.635 0 8.4 3.765 8.4 8.4 0 4.635-3.765 8.4-8.4 8.4-4.635 0-8.4-3.765-8.4-8.4 0-4.635 3.765-8.4 8.4-8.4zm0 2.4a6 6 0 1 0 0 12 6 6 0 0 0 0-12z" />
+        <svg className={iconClass} style={style} viewBox="0 0 24 24" fill="none">
+          <path d="M6.4 17.9 3.2 20.8l.9-4.5A8.3 8.3 0 0 1 3 12.2C3 7.7 7 4 12 4s9 3.7 9 8.2-4 8.2-9 8.2a9.7 9.7 0 0 1-5.6-1.7z" fill="currentColor" />
+          <path d="M4.5 5.5A11.3 11.3 0 0 1 12 2.8M2.2 9.2c.2-.7.5-1.4.8-2M19.4 4.9c.7.7 1.2 1.5 1.6 2.3M22 9.4c.2.8.2 1.7.1 2.6M20.9 16.7c-.4.8-1 1.5-1.6 2.1M17.2 20.5c-.8.4-1.6.7-2.5.9M8 21.5c-.8-.2-1.6-.4-2.4-.8M2.4 15.1c-.2-.7-.4-1.5-.4-2.2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
         </svg>
       );
     case 'slack':
@@ -87,7 +92,7 @@ export const PlatformIcon = ({ platform, className, style }: PlatformIconProps) 
     case 'tinder':
       return (
         <svg className={iconClass} style={style} viewBox="0 0 24 24" fill="currentColor">
-          <path d="M16.5 11.5c-.82 0-1.5-.68-1.5-1.5 0-.93.68-1.5 1.5-1.5s1.5.57 1.5 1.5c0 .82-.68 1.5-1.5 1.5zm-9 0c-.82 0-1.5-.68-1.5-1.5 0-.93.68-1.5 1.5-1.5s1.5.57 1.5 1.5c0 .82-.68 1.5-1.5 1.5zM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm5.5 13.5c-1.5 2-4 3-5.5 3s-4-1-5.5-3c-.28-.37-.05-.91.4-1 1.5-.3 3.1-.5 5.1-.5s3.6.2 5.1.5c.45.09.68.63.4 1z" />
+          <path d="M13.9 1.5c.45 3.1-.55 5.35-2.25 6.95-.2-1.55-.95-2.95-2.2-4.15C5.55 6.55 3.5 10 3.5 13.7 3.5 18.55 7.15 22.5 12 22.5s8.5-3.95 8.5-8.8c0-4.8-2.7-8.95-6.6-12.2zm-1.75 17.1c-2.35 0-4.25-1.75-4.25-4.15 0-1.8 1-3.45 2.75-4.6-.15 1.8.65 2.75 1.5 3.35 1.25-.85 2.05-2.1 2.2-3.65 1.3 1.1 2.05 2.65 2.05 4.45 0 2.55-1.9 4.6-4.25 4.6z" />
         </svg>
       );
     case 'wechat':

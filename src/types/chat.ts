@@ -70,7 +70,9 @@ export interface ChatState {
   appearance: AppearanceSettings;
   aiModel?: string;
 }
-export type CallPlatform = 'whatsapp' | 'discord' | 'facetime' | 'zoom';
+export type CallPlatform = 'whatsapp' | 'discord' | 'facetime' | 'zoom' | 'meet';
+export type CallLayout = 'grid' | 'speaker' | 'sidebar';
+export type CallQuality = 'auto' | 'hd' | 'low';
 
 export interface CallParticipant {
   id: string;
@@ -84,7 +86,19 @@ export interface CallParticipant {
 export interface CallState {
   platform: CallPlatform;
   participants: CallParticipant[];
+  title: string;
+  meetingCode: string;
   duration: string;
+  layout: CallLayout;
+  quality: CallQuality;
+  showNames: boolean;
+  showTimer: boolean;
+  backgroundBlur: boolean;
+  isScreenSharing: boolean;
+  sharedMedia?: string;
+  showCaptions: boolean;
+  showChatPanel: boolean;
+  showParticipantPanel: boolean;
   isSignalLow?: boolean;
   isRecording?: boolean;
 }
@@ -95,6 +109,7 @@ export interface GroupCallStore {
   updateDuration: (duration: string) => void;
   addParticipant: (participant: CallParticipant) => void;
   updateParticipant: (id: string, updates: Partial<CallParticipant>) => void;
+  updateSettings: (updates: Partial<CallState>) => void;
   removeParticipant: (id: string) => void;
   resetCall: () => void;
 }

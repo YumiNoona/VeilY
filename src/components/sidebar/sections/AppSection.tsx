@@ -16,7 +16,7 @@ export function AppSection({ platform, onPlatformChange }: AppSectionProps) {
                     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <AppWindow className="w-3.5 h-3.5 text-primary" />
                     </div>
-                    <span className="font-semibold text-sm">App</span>
+                    <span className="text-base font-semibold">App</span>
                 </div>
             </AccordionTrigger>
             <AccordionContent className="px-3 pb-3 pt-1">

@@ -1,41 +1,33 @@
-import { Message, Person, AppearanceSettings } from "@/types/chat";
+import { Message, Person, AppearanceSettings, DeviceView } from "@/types/chat";
 import { cn } from "@/lib/utils";
-import { AlignJustify, Pencil, Plus, Copy, Volume2, ThumbsUp, ThumbsDown, RotateCw, Mic, AudioLines, SlidersHorizontal } from "lucide-react";
+import { AlignJustify, Pencil, Plus, Copy, Volume2, ThumbsUp, ThumbsDown, RotateCw, Mic, AudioLines, SlidersHorizontal, Search, Library, Boxes, SquarePen } from "lucide-react";
 import { EditableText } from "@/components/ui/EditableText";
+import { getAIModelDisplayName } from "@/lib/ai-models";
 
 interface ChatProps {
     messages: Message[];
     people: Person[];
     activePerson: Person | null;
     appearance: AppearanceSettings;
+    deviceView?: DeviceView;
     aiModel?: string;
     onUpdateMessage?: (id: string, text: string) => void;
     onUpdatePerson?: (person: Person) => void;
 }
 
-export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMessage, onUpdatePerson }: ChatProps) {
-    const bgColor = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-white';
-    const headerBg = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-white';
-    const textColor = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-[#0D0D0D]';
-    const userBubble = appearance.darkMode ? 'bg-[#3a3a5c]' : 'bg-[#2F2F2F]';
-    const userText = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-white';
-    const inputBg = appearance.darkMode ? 'bg-[#2a2a4a]' : 'bg-[#F4F4F4]';
+export function ChatGPTChat({ messages, appearance, aiModel, deviceView = 'mobile', onUpdateMessage }: ChatProps) {
+    const bgColor = appearance.darkMode ? 'bg-[#212121]' : 'bg-white';
+    const headerBg = appearance.darkMode ? 'bg-[#212121]' : 'bg-white';
+    const textColor = appearance.darkMode ? 'text-[#ececec]' : 'text-[#0D0D0D]';
+    const userBubble = appearance.darkMode ? 'bg-[#303030]' : 'bg-[#f4f4f4]';
+    const userText = appearance.darkMode ? 'text-[#ececec]' : 'text-[#0D0D0D]';
+    const inputBg = appearance.darkMode ? 'bg-[#303030]' : 'bg-white';
     const iconColor = appearance.darkMode ? 'text-[#b0b0b0]' : 'text-[#0D0D0D]';
-    const codeBg = 'bg-[#0d0d0d]';
-    const getPerson = (id: string) => people.find(p => p.id === id);
+    const isDesktop = deviceView === 'desktop';
 
     // Format model name for display
     const getModelDisplayName = () => {
-        if (!aiModel) return 'ChatGPT';
-        const modelMap: Record<string, string> = {
-            'gpt-4.1': 'GPT-4.1',
-            'gpt-4.1-plus': 'GPT-4.1 Plus',
-            'gpt-4o': 'GPT-4o',
-            'gpt-4o-plus': 'GPT-4o Plus',
-            'gpt-4-turbo': 'GPT-4 Turbo',
-            'gpt-3.5-turbo': 'GPT-3.5 Turbo',
-        };
-        return modelMap[aiModel] || 'ChatGPT';
+        return getAIModelDisplayName('chatgpt', aiModel);
     };
 
     // Helper to format text with bold, bullets, and code blocks
@@ -102,13 +94,25 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
     };
 
     return (
-        <div className={cn("flex flex-col h-full font-sans", appearance.transparentBackground ? 'bg-transparent' : bgColor, textColor)}>
+        <div className={cn("flex h-full font-sans", appearance.transparentBackground ? 'bg-transparent' : bgColor, textColor)}>
+            {isDesktop && (
+                <aside className={cn("flex w-[224px] shrink-0 flex-col border-r p-3", appearance.darkMode ? "border-white/10 bg-[#171717]" : "border-black/5 bg-[#f9f9f9]")}>
+                    <div className="mb-3 flex items-center gap-2 px-2 py-1.5 text-sm font-semibold"><div className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-xs font-bold text-white dark:bg-white dark:text-black">◎</div> ChatGPT</div>
+                    <button className={cn("mb-1 flex h-9 items-center gap-2 rounded-lg px-2 text-xs", appearance.darkMode ? "hover:bg-white/10" : "hover:bg-black/5")}><SquarePen className="h-4 w-4" /> New chat</button>
+                    <button className={cn("mb-1 flex h-9 items-center gap-2 rounded-lg px-2 text-xs", appearance.darkMode ? "hover:bg-white/10" : "hover:bg-black/5")}><Search className="h-4 w-4" /> Search chats</button>
+                    <button className={cn("mb-4 flex h-9 items-center gap-2 rounded-lg px-2 text-xs", appearance.darkMode ? "hover:bg-white/10" : "hover:bg-black/5")}><Library className="h-4 w-4" /> Library</button>
+                    <p className="px-2 text-[10px] font-semibold text-muted-foreground">Projects</p>
+                    <button className={cn("mt-1 flex h-9 items-center gap-2 rounded-lg px-2 text-xs", appearance.darkMode ? "hover:bg-white/10" : "hover:bg-black/5")}><Boxes className="h-4 w-4" /> Product research</button>
+                    <div className="mt-auto flex items-center gap-2 rounded-lg px-2 py-2 text-xs"><div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 font-semibold text-white">Y</div><div><div className="font-medium">You</div><div className="text-[9px] text-muted-foreground">Personal</div></div></div>
+                </aside>
+            )}
+            <section className="flex min-w-0 flex-1 flex-col">
             {/* Header */}
-            <header className={cn("px-4 py-2 flex items-center justify-between sticky top-0 z-10", headerBg)}>
+            <header className={cn("px-4 py-2 flex h-12 items-center justify-between sticky top-0 z-10", headerBg)}>
                 <div className="w-8 flex items-center justify-center">
-                    <AlignJustify className={cn("w-6 h-6 stroke-[1.5]", iconColor)} />
+                    {!isDesktop && <AlignJustify className={cn("w-6 h-6 stroke-[1.5]", iconColor)} />}
                 </div>
-                <div className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors">
+                <div className={cn("flex items-center gap-1 cursor-pointer px-2 py-1 rounded-lg transition-colors", appearance.darkMode ? "hover:bg-white/10" : "hover:bg-gray-100")}>
                     <span className="font-semibold text-[16px]">{getModelDisplayName()}</span>
                     <span className="text-gray-400 text-[10px] transform translate-y-[1px]">▼</span>
                 </div>
@@ -118,7 +122,8 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
             </header>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8 scrollbar-none">
+            <div data-chat-scroll className="flex-1 overflow-y-auto scrollbar-none">
+              <div className="mx-auto max-w-[760px] space-y-8 px-5 py-6">
                 {messages.map((message) => {
                     const isUser = message.isOwn;
 
@@ -175,11 +180,12 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
                         </div>
                     );
                 })}
+              </div>
             </div>
 
             {/* Input Area */}
-            <div className="px-4 pb-6 pt-2">
-                <div className={cn("rounded-[28px] flex items-center px-3 py-3 gap-3", inputBg)}>
+            <div className="mx-auto w-full max-w-[800px] px-4 pb-5 pt-2">
+                <div className={cn("rounded-[28px] flex items-center px-3 py-3 gap-3 border shadow-sm", inputBg, appearance.darkMode ? "border-white/10" : "border-black/10")}>
                     <div className={cn("flex gap-3 shrink-0 items-center pl-1", iconColor)}>
                         <Plus className="w-7 h-7 stroke-[1.5] cursor-pointer" />
                         <SlidersHorizontal className="w-6 h-6 stroke-[1.5] cursor-pointer" />
@@ -198,7 +204,9 @@ export function ChatGPTChat({ messages, people, appearance, aiModel, onUpdateMes
                         </div>
                     </div>
                 </div>
+                <p className="mt-2 text-center text-[9px] text-muted-foreground">ChatGPT can make mistakes. Check important information.</p>
             </div>
+            </section>
         </div>
     );
 }

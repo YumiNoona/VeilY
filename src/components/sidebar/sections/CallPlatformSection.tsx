@@ -19,6 +19,7 @@ const callPlatforms: Array<{
   { id: 'discord', name: 'Discord', color: 'text-[#5865f2] border-[#5865f2]/30 bg-[#5865f2]/10', activeColor: 'bg-[#5865f2] border-[#5865f2] text-white' },
   { id: 'facetime', name: 'FaceTime', color: 'text-[#34c759] border-[#34c759]/30 bg-[#34c759]/10', activeColor: 'bg-[#34c759] border-[#34c759] text-white' },
   { id: 'zoom', name: 'Zoom', color: 'text-[#2d8cff] border-[#2d8cff]/30 bg-[#2d8cff]/10', activeColor: 'bg-[#2d8cff] border-[#2d8cff] text-white' },
+  { id: 'meet', name: 'Google Meet', color: 'text-[#1a73e8] border-[#1a73e8]/30 bg-[#1a73e8]/10', activeColor: 'bg-[#1a73e8] border-[#1a73e8] text-white' },
 ];
 
 export function CallPlatformSection({ platform, onPlatformChange }: CallPlatformSectionProps) {
@@ -29,7 +30,7 @@ export function CallPlatformSection({ platform, onPlatformChange }: CallPlatform
           <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
             <Video className="w-3.5 h-3.5 text-primary" />
           </div>
-          <span className="font-semibold text-sm">Call app</span>
+          <span className="text-base font-semibold">Call app</span>
         </div>
       </AccordionTrigger>
       <AccordionContent className="px-3 pb-3 pt-1">
@@ -42,12 +43,15 @@ export function CallPlatformSection({ platform, onPlatformChange }: CallPlatform
                 onClick={() => onPlatformChange(item.id)}
                 className={cn(
                   'h-9 rounded-lg border text-xs font-semibold flex items-center justify-center gap-2 transition-colors',
+                  item.id === 'meet' && 'col-span-2',
                   active ? item.activeColor : item.color
                 )}
               >
                 {item.id === 'whatsapp' || item.id === 'discord'
                   ? <PlatformIcon platform={item.id} className="w-4 h-4" />
-                  : <Video className="w-4 h-4" />}
+                  : item.id === 'meet'
+                    ? <span className="grid h-4 w-4 grid-cols-2 overflow-hidden rounded-sm"><span className="bg-[#4285f4]" /><span className="bg-[#34a853]" /><span className="bg-[#fbbc04]" /><span className="bg-[#ea4335]" /></span>
+                    : <Video className="w-4 h-4" />}
                 {item.name}
               </button>
             );

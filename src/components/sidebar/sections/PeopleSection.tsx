@@ -44,7 +44,7 @@ export function PeopleSection({
                     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Users className="w-3.5 h-3.5 text-primary" />
                     </div>
-                    <span className="font-semibold text-sm">People</span>
+                    <span className="text-base font-semibold">People</span>
                     <span className="ml-1 w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                         {people.length}
                     </span>

@@ -190,7 +190,7 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <User className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">Profile</span>
+                                <span className="text-base font-semibold">Profile</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
@@ -217,7 +217,7 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <FileText className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">Story Content ({state.slides.length})</span>
+                                <span className="text-base font-semibold">Story Content ({state.slides.length})</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-6 pt-2 px-3 pb-3">

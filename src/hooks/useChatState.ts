@@ -8,6 +8,7 @@ import { globalScenarios, indianScenarios } from './scenarios-natural';
 
 const MINUTE = 60_000;
 const DAY = 24 * 60 * MINUTE;
+const sanitizeMessageText = (text: string) => text.replace(/[—–]/g, ',');
 
 const getConversationTimestamp = (index: number, total: number, now = Date.now()): Date => {
     const olderExchangeEnd = Math.min(4, Math.max(2, total - 7));
@@ -59,7 +60,7 @@ const initialChatState: ChatState = {
     people: initialPeople,
     messages: initialMessages,
     appearance: initialAppearance,
-    aiModel: 'claude-4.8-opus',
+    aiModel: 'claude-opus-5',
 };
 
 const loadStateFromLocalStorage = (storageKey: string, fallbackState: ChatState): ChatState => {
@@ -96,6 +97,7 @@ const loadStateFromLocalStorage = (storageKey: string, fallbackState: ChatState)
         // Ensure timestamps are Date objects
         const messagesWithDates = storedState.messages.map(msg => ({
             ...msg,
+            text: sanitizeMessageText(msg.text),
             timestamp: new Date(msg.timestamp),
         }));
 
@@ -133,7 +135,7 @@ export const useChatState = (storageKey: string = 'chatState', fallbackState: Ch
     const handleAddMessage = useCallback((text: string, isOwn: boolean, image?: string, isVoiceNote?: boolean, voiceDuration?: string) => {
         const newMessage: Message = {
             id: crypto.randomUUID(),
-            text,
+            text: sanitizeMessageText(text),
             senderId: isOwn ? 'friend' : 'user',
             timestamp: new Date(),
             isOwn,
@@ -194,7 +196,7 @@ export const useChatState = (storageKey: string = 'chatState', fallbackState: Ch
             ...prev,
             messages: prev.messages.map(m => m.id === id ? {
                 ...m,
-                text: newText,
+                text: sanitizeMessageText(newText),
                 ...(newTimestamp && { timestamp: newTimestamp }),
                 ...(newImage !== undefined && { image: newImage }),
                 ...(isOwn !== undefined && { isOwn }),

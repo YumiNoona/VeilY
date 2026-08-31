@@ -9,6 +9,19 @@ import { DownloadModal } from "@/components/modals/DownloadModal";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
+const defaultCallAppearance: AppearanceSettings = {
+    darkMode: true,
+    showDeviceStatusBar: true,
+    showDeviceFrame: true,
+    statusBarTime: '9:41',
+    showTimestamps: true,
+    showStatus: true,
+    use24HourFormat: false,
+    batteryLevel: 100,
+    transparentBackground: false,
+    isTyping: false,
+};
+
 export default function GroupCall() {
     const { 
         callState, 
@@ -16,28 +29,19 @@ export default function GroupCall() {
         updateDuration, 
         addParticipant, 
         updateParticipant, 
+        updateSettings,
         removeParticipant,
+        resetCall,
         toggleSignal,
         toggleRecording
     } = useGroupCallState();
 
-    const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
+    const [deviceView, setDeviceView] = useState<DeviceView>(() => window.innerWidth < 768 ? 'mobile' : 'desktop');
     const { setDownloadModalOpen } = useAuth();
     const previewRef = useRef<HTMLDivElement>(null);
     const { copyScreenshot } = useScreenshot(previewRef);
 
-    const [appearance, setAppearance] = useState<AppearanceSettings>({
-        darkMode: true,
-        showDeviceStatusBar: true,
-        showDeviceFrame: true,
-        statusBarTime: '9:41',
-        showTimestamps: true,
-        showStatus: true,
-        use24HourFormat: false,
-        batteryLevel: 100,
-        transparentBackground: false,
-        isTyping: false,
-    });
+    const [appearance, setAppearance] = useState<AppearanceSettings>(defaultCallAppearance);
 
     const mockChatState: ChatState = {
         platform: callState.platform as Platform,
@@ -58,6 +62,7 @@ export default function GroupCall() {
                 onCallUpdateDuration={updateDuration}
                 onCallAddParticipant={addParticipant}
                 onCallUpdateParticipant={updateParticipant}
+                onCallUpdateSettings={updateSettings}
                 onCallRemoveParticipant={removeParticipant}
                 onCallToggleSignal={toggleSignal}
                 onCallToggleRecording={toggleRecording}
@@ -69,11 +74,15 @@ export default function GroupCall() {
                 onUpdateMessage={() => {}}
                 onAddPerson={() => {}}
                 onRemovePerson={() => {}}
-                onReset={() => {}}
+                onReset={() => {
+                    resetCall();
+                    setAppearance(defaultCallAppearance);
+                    setDeviceView(window.innerWidth < 768 ? 'mobile' : 'desktop');
+                }}
             />
 
-            <main className="flex-1 flex flex-col items-center justify-center p-4 relative bg-[#0a0a0a]">
-                <div className="flex-1 flex items-center justify-center w-full max-w-5xl">
+            <main className="flex-1 flex flex-col items-center justify-start md:justify-center p-3 md:p-8 xl:pr-24 relative bg-muted/30 overflow-y-auto overflow-x-hidden">
+                <div className="min-h-full flex items-start justify-start md:items-center md:justify-center w-full max-w-6xl py-16 md:py-6">
                     <div className="relative group transition-all duration-500 ease-out">
                         <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-[48px] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
                         <div 
@@ -81,7 +90,9 @@ export default function GroupCall() {
                             className={cn(
                                 "overflow-hidden shadow-2xl transition-all duration-300",
                                 deviceView === 'mobile' && appearance.showDeviceFrame ? "rounded-[40px] border-[8px] border-black bg-black" : "rounded-xl",
-                                deviceView === 'desktop' ? 'w-[667px] h-[375px]' : 'w-[375px] h-[812px]'
+                                deviceView === 'desktop'
+                                    ? 'w-[min(880px,calc(100vw-1.5rem))] md:w-[min(880px,calc(100vw-420px))] max-w-full h-[min(560px,calc(100vh-10rem))] min-h-[380px]'
+                                    : 'w-[375px] max-w-[calc(100vw-1.5rem)] h-[min(760px,calc(100vh-7rem))] min-h-[620px]'
                             )}
                         >
                             <GroupCallPreview 

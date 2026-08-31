@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" role="img" aria-labelledby="title desc">
+  <title id="title">Evening city story</title>
+  <desc id="desc">A warm illustrated city skyline at sunset.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#18244a"/>
+      <stop offset="0.48" stop-color="#744b8d"/>
+      <stop offset="0.78" stop-color="#e98672"/>
+      <stop offset="1" stop-color="#f7bd75"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff7cf"/>
+      <stop offset="0.62" stop-color="#ffd38c"/>
+      <stop offset="1" stop-color="#ffb66c" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#sky)"/>
+  <circle cx="815" cy="565" r="310" fill="url(#sun)"/>
+  <g fill="#fff" opacity="0.58">
+    <circle cx="146" cy="272" r="4"/>
+    <circle cx="261" cy="184" r="3"/>
+    <circle cx="397" cy="330" r="5"/>
+    <circle cx="686" cy="235" r="3"/>
+    <circle cx="927" cy="312" r="4"/>
+  </g>
+  <path d="M0 1130 C180 1040 315 1090 480 1018 C650 945 821 1018 1080 885 V1920 H0 Z" fill="#1b2339" opacity="0.72"/>
+  <g fill="#101827">
+    <path d="M0 1300h150v620H0z"/>
+    <path d="M128 1190h174v730H128z"/>
+    <path d="M279 1390h146v530H279z"/>
+    <path d="M401 1090h208v830H401z"/>
+    <path d="M585 1260h171v660H585z"/>
+    <path d="M730 1140h218v780H730z"/>
+    <path d="M920 1340h160v580H920z"/>
+  </g>
+  <g fill="#ffd48c" opacity="0.78">
+    <path d="M172 1260h42v64h-42zm62 0h42v64h-42zm-62 104h42v64h-42zm62 0h42v64h-42z"/>
+    <path d="M450 1170h48v72h-48zm72 0h48v72h-48zm-72 115h48v72h-48zm72 0h48v72h-48zm-72 115h48v72h-48z"/>
+    <path d="M779 1215h50v76h-50zm76 0h50v76h-50zm-76 116h50v76h-50zm76 0h50v76h-50z"/>
+  </g>
+  <rect x="90" y="1480" width="900" height="250" rx="46" fill="url(#glass)" stroke="#fff" stroke-opacity="0.2" stroke-width="2"/>
+  <text x="540" y="1585" fill="#fff" font-family="Arial, sans-serif" font-size="42" font-weight="600" text-anchor="middle" letter-spacing="8">SATURDAY EVENING</text>
+  <text x="540" y="1665" fill="#fff" font-family="Arial, sans-serif" font-size="76" font-weight="700" text-anchor="middle">no plans, best plans</text>
+</svg>

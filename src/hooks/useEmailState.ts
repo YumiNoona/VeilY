@@ -32,15 +32,15 @@ export interface EmailState {
 const INITIAL_PARTICIPANTS: EmailParticipant[] = [
     {
         id: 'p1',
-        name: 'Effrey Jepstein',
-        email: 'jeeholiday@gmail.com',
+        name: 'Aditi Rao',
+        email: 'aditi.rao@northstar.design',
         redactName: false,
         redactEmail: false,
     },
     {
         id: 'p2',
-        name: 'Gill Bates',
-        email: 'gillbates@microhard.com',
+        name: 'Karan Mehta',
+        email: 'karan.mehta@northstar.design',
         redactName: false,
         redactEmail: false,
     },
@@ -50,14 +50,14 @@ const INITIAL_EMAILS: EmailEntry[] = [
     {
         id: uuidv4(),
         fromParticipantId: 'p1',
-        dateTime: '2024-08-15T20:02',
-        body: 'I wanted to follow up on our previous **discussion** regarding the **upcoming event**.\n\nPlease let me know your availability for next week. We should also discuss the **guest list** and **arrangements**.\n\nUse **double asterisks** around text to redact it.',
+        dateTime: '2026-08-31T10:15',
+        body: 'Hi Karan,\n\nI added the changes from yesterday’s review to the attached PDF. The revised hero copy is on page 3, and the mobile navigation notes are on page 7.\n\nCould you confirm the launch date before our 3 PM sync? The **client pricing** section still needs final approval.\n\nThanks,\nAditi',
     },
 ];
 
 const INITIAL_STATE: EmailState = {
-    subject: 'Re: Follow-up on Recent Discussion',
-    attachment: 'file.pdf',
+    subject: 'Re: Homepage review notes',
+    attachment: 'homepage-review-v3.pdf',
     participants: INITIAL_PARTICIPANTS,
     emails: INITIAL_EMAILS,
     provider: 'generic',

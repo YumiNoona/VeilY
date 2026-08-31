@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Monitor, Smartphone, Download, Copy, Play, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DeviceView } from "@/types/chat";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface PreviewControlsProps {
   activeView: DeviceView;
@@ -39,19 +40,23 @@ export function PreviewControls({
             {views.map((view) => {
               const Icon = view.icon;
               return (
-                <button
-                  key={view.id}
-                  onClick={() => onViewChange(view.id)}
-                  className={cn(
-                    "p-2 rounded-full transition-all duration-200",
-                    activeView === view.id
-                      ? "bg-card shadow-sm text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                  title={view.label}
-                >
-                  <Icon className="w-4 h-4" />
-                </button>
+                <Tooltip key={view.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => onViewChange(view.id)}
+                      className={cn(
+                        "rounded-full p-2 transition-all duration-200",
+                        activeView === view.id
+                          ? "bg-card text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                      aria-label={`${view.label} preview`}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">{view.label} preview</TooltipContent>
+                </Tooltip>
               );
             })}
           </div>
@@ -61,24 +66,39 @@ export function PreviewControls({
 
       <div className="flex flex-row md:flex-col gap-2">
         {onCopy && (
-          <Button onClick={onCopy} variant="outline" size="icon" className="rounded-full w-10 h-10" title="Copy Image">
-            <Copy className="w-4 h-4" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={onCopy} variant="outline" size="icon" className="h-10 w-10 rounded-full" aria-label="Copy image">
+                <Copy className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">Copy image</TooltipContent>
+          </Tooltip>
         )}
-        <Button onClick={onDownload} size="icon" className="rounded-full w-10 h-10" title="Download Image">
-          <Download className="w-4 h-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={onDownload} size="icon" className="h-10 w-10 rounded-full" aria-label="Download image">
+              <Download className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">Download image</TooltipContent>
+        </Tooltip>
 
         {onToggleAnimation && (
-          <Button 
-            onClick={onToggleAnimation} 
-            variant={isAnimating ? "default" : "outline"}
-            size="icon" 
-            className={cn("rounded-full w-10 h-10", isAnimating && "bg-amber-500 hover:bg-amber-600")} 
-            title={isAnimating ? "Stop Animation" : "Play Typing Animation"}
-          >
-            {isAnimating ? <Square className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={onToggleAnimation}
+                variant={isAnimating ? "default" : "outline"}
+                size="icon"
+                className={cn("h-10 w-10 rounded-full", isAnimating && "bg-amber-500 hover:bg-amber-600")}
+                aria-label={isAnimating ? "Stop animation" : "Play typing animation"}
+              >
+                {isAnimating ? <Square className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">{isAnimating ? "Stop animation" : "Play typing animation"}</TooltipContent>
+          </Tooltip>
         )}
       </div>
     </div>

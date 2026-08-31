@@ -16,7 +16,7 @@ export function TypeSection({ chatType, onChatTypeChange }: TypeSectionProps) {
                     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <MessageSquare className="w-3.5 h-3.5 text-primary" />
                     </div>
-                    <span className="font-semibold text-sm">Type</span>
+                    <span className="text-base font-semibold">Type</span>
                     <span className="ml-1 px-2 py-0.5 rounded-full bg-secondary text-xs font-medium text-muted-foreground">
                         {chatType === 'direct' ? 'Direct' : 'Group'}
                     </span>

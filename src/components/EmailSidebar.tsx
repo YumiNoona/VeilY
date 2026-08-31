@@ -232,7 +232,7 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <FileText className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">Subject & Attachment</span>
+                                <span className="text-base font-semibold">Subject & Attachment</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
@@ -264,7 +264,7 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <Users className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">Participants ({state.participants.length})</span>
+                                <span className="text-base font-semibold">Participants ({state.participants.length})</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
@@ -334,7 +334,7 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <MessageCircle className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">Email Thread</span>
+                                <span className="text-base font-semibold">Email Thread</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">

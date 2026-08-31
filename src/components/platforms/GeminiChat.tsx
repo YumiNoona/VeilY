@@ -1,35 +1,32 @@
-import { Message, Person, AppearanceSettings } from "@/types/chat";
+import { Message, Person, AppearanceSettings, DeviceView } from "@/types/chat";
 import { cn } from "@/lib/utils";
-import { AlignJustify, Sparkles, ThumbsUp, ThumbsDown, Share2, Copy, MoreVertical, Mic, Camera, ArrowUp } from "lucide-react";
+import { AlignJustify, Sparkles, ThumbsUp, ThumbsDown, Share2, Copy, MoreVertical, Mic, Camera, ArrowUp, Plus, Gem, History, Settings } from "lucide-react";
+import { getAIModelDisplayName } from "@/lib/ai-models";
+import { EditableText } from "@/components/ui/EditableText";
 
 interface ChatProps {
     messages: Message[];
     people: Person[];
     activePerson: Person | null;
     appearance: AppearanceSettings;
+    deviceView?: DeviceView;
     aiModel?: string;
+    onUpdateMessage?: (id: string, text: string) => void;
 }
 
-export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps) {
-    const bgColor = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-white';
-    const headerBg = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-white';
+export function GeminiChat({ messages, appearance, aiModel, deviceView = 'mobile', onUpdateMessage }: ChatProps) {
+    const bgColor = appearance.darkMode ? 'bg-[#131314]' : 'bg-white';
+    const headerBg = appearance.darkMode ? 'bg-[#131314]' : 'bg-white';
     const textColor = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-[#2D2D2D]';
     const userBubble = appearance.darkMode ? 'bg-[#3a3a5c]' : 'bg-[#F1F3F4]';
     const userText = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-[#2D2D2D]';
     const inputBg = appearance.darkMode ? 'bg-[#2a2a4a] border-[#3a3a5c]' : 'bg-white border-gray-200';
     const iconColor = appearance.darkMode ? 'text-[#b0b0b0]' : 'text-[#2D2D2D]';
-    const getPerson = (id: string) => people.find(p => p.id === id);
+    const isDesktop = deviceView === 'desktop';
 
     // Format model name for display
     const getModelDisplayName = () => {
-        if (!aiModel) return 'Gemini 3 Flash';
-        const modelMap: Record<string, string> = {
-            'gemini-2.5-pro': 'Gemini 2.5 Pro',
-            'gemini-2.5-flash': 'Gemini 2.5 Flash',
-            'gemini-2-flash': 'Gemini 2.0 Flash',
-            'gemini-1.5-pro': 'Gemini 1.5 Pro',
-        };
-        return modelMap[aiModel] || 'Gemini';
+        return getAIModelDisplayName('gemini', aiModel);
     };
 
     // Helper to format text with bold and bullets (reuse from ChatGPT)
@@ -92,14 +89,26 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
     };
 
     return (
-        <div className={cn("flex flex-col h-full font-sans", appearance.transparentBackground ? 'bg-transparent' : bgColor, textColor)}>
+        <div className={cn("flex h-full font-sans", appearance.transparentBackground ? 'bg-transparent' : bgColor, textColor)}>
+            {isDesktop && (
+                <aside className={cn("flex w-[220px] shrink-0 flex-col p-3", appearance.darkMode ? "bg-[#1e1f20]" : "bg-[#f0f4f9]")}>
+                    <div className="mb-4 flex items-center gap-2 px-2 py-1 text-base font-semibold"><Sparkles className="h-5 w-5 text-[#7c5cff]" /> Gemini</div>
+                    <button className={cn("mb-3 flex h-10 items-center gap-2 rounded-2xl px-3 text-xs font-medium", appearance.darkMode ? "bg-[#282a2c]" : "bg-[#dde3ea]")}><Plus className="h-4 w-4" /> New chat</button>
+                    <button className="flex h-9 items-center gap-2 rounded-lg px-2 text-xs"><Gem className="h-4 w-4" /> Explore Gems</button>
+                    <button className="flex h-9 items-center gap-2 rounded-lg px-2 text-xs"><History className="h-4 w-4" /> Activity</button>
+                    <p className="mb-1 mt-4 px-2 text-[10px] font-semibold uppercase text-muted-foreground">Recent</p>
+                    {['UI portfolio mockups', 'Trip ideas', 'Research outline'].map((item, index) => <div key={item} className={cn("truncate rounded-lg px-2 py-2 text-xs", index === 0 && (appearance.darkMode ? "bg-white/5" : "bg-white/70"))}>{item}</div>)}
+                    <div className="mt-auto flex items-center gap-2 px-2 py-2 text-xs"><Settings className="h-4 w-4" /> Settings and help</div>
+                </aside>
+            )}
+            <section className="flex min-w-0 flex-1 flex-col">
             {/* Header */}
             <header className={cn("px-4 py-2 flex items-center justify-between sticky top-0 z-10 border-b", headerBg, appearance.darkMode ? "border-[#3a3a5c]" : "border-gray-100")}>
                 <div className="w-8 flex items-center justify-center">
                     <AlignJustify className={cn("w-6 h-6 stroke-[1.5]", iconColor)} />
                 </div>
                 <div className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors">
-                    <span className="font-semibold text-[16px]">{getModelDisplayName()}</span>
+                    <span className="bg-gradient-to-r from-[#4285f4] via-[#9b72cb] to-[#d96570] bg-clip-text font-semibold text-[16px] text-transparent">{getModelDisplayName()}</span>
                     <span className="text-gray-400 text-[10px] transform translate-y-[1px]">▼</span>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-[#8E5CF7] flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
@@ -108,7 +117,8 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
             </header>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8 scrollbar-none">
+            <div data-chat-scroll className="flex-1 overflow-y-auto scrollbar-none">
+              <div className="mx-auto max-w-[780px] space-y-8 px-5 py-6">
                 {messages.map((message) => {
                     const isUser = message.isOwn;
 
@@ -123,7 +133,7 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
                                         </div>
                                         <div className="flex-1">
                                             <div data-chat-message className="text-[16px] leading-[1.6]">
-                                                {formatMessageText(message.text)}
+                                                <EditableText value={message.text} displayValue={formatMessageText(message.text)} onSave={(text) => onUpdateMessage?.(message.id, text)} multiline className="block w-full" />
                                             </div>
 
                                             {/* Action Buttons Row */}
@@ -157,16 +167,17 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
                             {/* User Layout */}
                             {isUser && (
                                 <div data-chat-message className={cn("max-w-[85%] px-4 py-3 rounded-[20px] text-[16px] leading-[1.5]", userBubble, userText)}>
-                                    {message.text}
+                                    <EditableText value={message.text} onSave={(text) => onUpdateMessage?.(message.id, text)} multiline className="block" />
                                 </div>
                             )}
                         </div>
                     );
                 })}
+              </div>
             </div>
 
             {/* Input Area */}
-            <div className="px-4 pb-6 pt-2">
+            <div className="mx-auto w-full max-w-[820px] px-4 pb-5 pt-2">
                 <div className={cn("rounded-[28px] flex items-center px-4 py-3 gap-3 shadow-sm border", inputBg)}>
                     <div className="flex-1">
                         <span className="text-[#5F6368] text-[16px]">Ask Gemini</span>
@@ -185,6 +196,7 @@ export function GeminiChat({ messages, people, appearance, aiModel }: ChatProps)
                     </div>
                 </div>
             </div>
+            </section>
         </div>
     );
 }

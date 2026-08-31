@@ -34,7 +34,7 @@ const AI_CHAT_DEFAULT_STATE: ChatState = {
     transparentBackground: false,
     isTyping: false,
   },
-  aiModel: 'claude-4.8-sonnet',
+  aiModel: 'claude-opus-5',
 };
 
 const AIChat = () => {
@@ -59,7 +59,7 @@ const AIChat = () => {
 
   const { setDownloadModalOpen } = useAuth();
 
-  const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
+  const [deviceView, setDeviceView] = useState<DeviceView>(() => window.innerWidth < 768 ? 'mobile' : 'desktop');
   const [isAnimating, setIsAnimating] = useState(false);
   const chatPreviewRef = useRef<HTMLDivElement>(null);
   const { copyScreenshot } = useScreenshot(chatPreviewRef);

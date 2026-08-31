@@ -13,7 +13,8 @@ import {
     LogOut,
     CirclePlay,
     Mail,
-    Video
+    Video,
+    ChevronDown
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -80,6 +81,7 @@ export const Navbar = () => {
     };
 
     const userInitial = (fullName || user?.email || 'U').charAt(0).toUpperCase();
+    const ActiveIcon = activeTab.icon;
 
     const isTauriApp = typeof window !== 'undefined' && !!window.__TAURI_INTERNALS__;
 
@@ -140,6 +142,43 @@ export const Navbar = () => {
                         );
                     })}
                 </div>
+            </div>
+
+            <div className="lg:hidden shrink-0">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-9 gap-2 rounded-full border-border/70 bg-white px-3 text-[13px] font-semibold shadow-sm"
+                            aria-label={`Switch editor, current editor is ${activeTab.label}`}
+                        >
+                            <ActiveIcon className="h-4 w-4" />
+                            <span className="hidden sm:inline">{activeTab.label}</span>
+                            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="w-48 rounded-xl p-1">
+                        {tabs.map((tab) => {
+                            const Icon = tab.icon;
+                            const isActive = location.pathname === tab.path;
+                            return (
+                                <DropdownMenuItem key={tab.id} asChild className="rounded-lg p-0">
+                                    <Link
+                                        to={tab.path}
+                                        className={cn(
+                                            "flex w-full items-center gap-3 px-3 py-2.5 text-sm",
+                                            isActive && "bg-muted font-semibold"
+                                        )}
+                                    >
+                                        <Icon className="h-4 w-4" />
+                                        <span>{tab.label}</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                            );
+                        })}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             {/* DRAG SPACER */}

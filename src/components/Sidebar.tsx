@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChatState, ChatType, Person, AppearanceSettings } from "@/types/chat";
+import { ChatState, ChatType, Person, AppearanceSettings, CallState } from "@/types/chat";
 import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Wand2, RotateCcw, Sparkles } from "lucide-react";
@@ -24,6 +24,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const CALL_PRESETS = {
+  family: {
+    label: 'Family call',
+    platform: 'whatsapp' as const,
+    settings: { title: 'Family Catch-up', layout: 'grid' as const, quality: 'hd' as const, isScreenSharing: false, showCaptions: false, showChatPanel: false, showParticipantPanel: false },
+  },
+  gaming: {
+    label: 'Gaming lobby',
+    platform: 'discord' as const,
+    settings: { title: 'Gaming Night', layout: 'speaker' as const, quality: 'auto' as const, isScreenSharing: false, showCaptions: false, showChatPanel: false, showParticipantPanel: false },
+  },
+  facetime: {
+    label: 'FaceTime group',
+    platform: 'facetime' as const,
+    settings: { title: 'Sunday Catch-up', layout: 'grid' as const, quality: 'hd' as const, isScreenSharing: false, showCaptions: false, showChatPanel: false, showParticipantPanel: false },
+  },
+  review: {
+    label: 'Project review',
+    platform: 'zoom' as const,
+    settings: { title: 'Project Review', layout: 'sidebar' as const, quality: 'hd' as const, isScreenSharing: true, showCaptions: false, showChatPanel: false, showParticipantPanel: false },
+  },
+  standup: {
+    label: 'Meet stand-up',
+    platform: 'meet' as const,
+    settings: { title: 'Daily Stand-up', layout: 'grid' as const, quality: 'hd' as const, isScreenSharing: false, showCaptions: true, showChatPanel: false, showParticipantPanel: false },
+  },
+};
+
 interface SidebarProps {
   chatState: ChatState;
   mode?: 'default' | 'ai' | 'call'; 
@@ -31,6 +59,7 @@ interface SidebarProps {
   onCallUpdateDuration?: (d: string) => void;
   onCallAddParticipant?: (p: any) => void;
   onCallUpdateParticipant?: (id: string, updates: any) => void;
+  onCallUpdateSettings?: (updates: Partial<CallState>) => void;
   onCallRemoveParticipant?: (id: string) => void;
   onCallToggleSignal?: () => void;
   onCallToggleRecording?: () => void;
@@ -75,6 +104,7 @@ export function Sidebar({
   onCallUpdateDuration,
   onCallAddParticipant,
   onCallUpdateParticipant,
+  onCallUpdateSettings,
   onCallRemoveParticipant,
   onCallToggleSignal,
   onCallToggleRecording,
@@ -88,6 +118,15 @@ export function Sidebar({
         <div className="flex items-center justify-between px-3 pt-5 pb-2 border-b border-sidebar-border shrink-0 min-h-[64px]">
           <div className="flex items-center gap-1.5 flex-1">
             <Select onValueChange={(val) => {
+              if (mode === 'call') {
+                const preset = CALL_PRESETS[val as keyof typeof CALL_PRESETS];
+                if (preset) {
+                  onPlatformChange(preset.platform as ChatState['platform']);
+                  onCallUpdateSettings?.(preset.settings);
+                }
+                return;
+              }
+
               const templatesPool = mode === 'ai' ? AI_CHAT_TEMPLATES : CHAT_TEMPLATES;
               const template = templatesPool[val as keyof typeof templatesPool];
               if (onTemplateLoad && template) {
@@ -95,10 +134,17 @@ export function Sidebar({
               }
             }}>
               <SelectTrigger className="w-[110px] h-8 text-xs font-medium">
-                <SelectValue placeholder="Templates" />
+                <SelectValue placeholder={mode === 'call' ? "Presets" : "Templates"} />
               </SelectTrigger>
               <SelectContent>
-                {mode === 'ai' ? (
+                {mode === 'call' ? (
+                  <SelectGroup>
+                    <SelectLabel>Call presets</SelectLabel>
+                    {Object.entries(CALL_PRESETS).map(([value, preset]) => (
+                      <SelectItem key={value} value={value}>{preset.label}</SelectItem>
+                    ))}
+                  </SelectGroup>
+                ) : mode === 'ai' ? (
                   <>
                     <SelectGroup>
                       <SelectLabel>OpenAI</SelectLabel>
@@ -183,7 +229,7 @@ export function Sidebar({
                 value={chatState.appearance.chatStyle ?? 'mixed'}
                 onValueChange={(val) => onAppearanceChange?.({ ...chatState.appearance, chatStyle: val as any })}
               >
-                <SelectTrigger className="h-8 w-auto text-[11px] font-medium gap-1 px-2 border-dashed border-zinc-300">
+                <SelectTrigger className="h-9 w-auto gap-1 border-dashed border-zinc-300 px-2 text-sm font-medium">
                   <SelectValue placeholder="Style" />
                 </SelectTrigger>
                 <SelectContent>
@@ -240,6 +286,7 @@ export function Sidebar({
                 onUpdateDuration={onCallUpdateDuration || (() => {})}
                 onAddParticipant={onCallAddParticipant || (() => {})}
                 onUpdateParticipant={onCallUpdateParticipant || (() => {})}
+                onUpdateSettings={onCallUpdateSettings || (() => {})}
                 onRemoveParticipant={onCallRemoveParticipant || (() => {})}
                 onToggleSignal={onCallToggleSignal || (() => {})}
                 onToggleRecording={onCallToggleRecording || (() => {})}
@@ -281,7 +328,7 @@ export function Sidebar({
               <AIModelSection
                 platform={chatState.platform}
                 onPlatformChange={onPlatformChange}
-                model={chatState.aiModel || 'gpt-4o'}
+                model={chatState.aiModel || 'gpt-5.6-sol'}
                 onModelChange={onAiModelChange || (() => { })}
               />
             )}

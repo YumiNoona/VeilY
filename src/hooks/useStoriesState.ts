@@ -23,13 +23,13 @@ export interface StoriesState {
     appearance: AppearanceSettings;
 }
 
-const defaultSlide = (): StorySlide => ({ id: uuidv4(), imageUrl: null });
+const defaultSlide = (): StorySlide => ({ id: uuidv4(), imageUrl: '/stories/weekend-city.svg' });
 
 const INITIAL_STATE: StoriesState = {
     platform: 'instagram',
-    username: 'username',
-    verified: false,
-    timeAgo: '3 months',
+    username: 'kavya.frames',
+    verified: true,
+    timeAgo: '12m',
     slides: [defaultSlide()],
     activeSlideIndex: 0,
     postedAt: new Date().toISOString().slice(0, 16),

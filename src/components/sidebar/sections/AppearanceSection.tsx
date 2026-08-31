@@ -16,6 +16,7 @@ interface AppearanceSectionProps {
 
 export function AppearanceSection({ appearance, onAppearanceChange, mode = 'default' }: AppearanceSectionProps) {
     const isChat = mode === 'default';
+    const isCall = mode === 'call';
 
     const handleWallpaperUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -40,20 +41,22 @@ export function AppearanceSection({ appearance, onAppearanceChange, mode = 'defa
                     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Palette className="w-3.5 h-3.5 text-primary" />
                     </div>
-                    <span className="font-semibold text-sm">Appearance</span>
+                    <span className="text-base font-semibold">Appearance</span>
                 </div>
             </AccordionTrigger>
             <AccordionContent className="px-3 pb-3 pt-1 space-y-3">
                 {/* Toggle Options */}
                 <div className="space-y-2">
-                    <div className="flex items-center justify-between py-1">
-                        <Label htmlFor="dark-mode" className="text-sm">Dark mode</Label>
-                        <Switch
-                            id="dark-mode"
-                            checked={appearance.darkMode}
-                            onCheckedChange={(checked) => onAppearanceChange({ ...appearance, darkMode: checked })}
-                        />
-                    </div>
+                    {!isCall && (
+                        <div className="flex items-center justify-between py-1">
+                            <Label htmlFor="dark-mode" className="text-sm">Dark mode</Label>
+                            <Switch
+                                id="dark-mode"
+                                checked={appearance.darkMode}
+                                onCheckedChange={(checked) => onAppearanceChange({ ...appearance, darkMode: checked })}
+                            />
+                        </div>
+                    )}
 
                     {isChat && (
                         <>
@@ -105,25 +108,37 @@ export function AppearanceSection({ appearance, onAppearanceChange, mode = 'defa
                             onCheckedChange={(checked) => onAppearanceChange({ ...appearance, transparentBackground: checked })}
                         />
                     </div>
-                    <div className="flex items-center justify-between py-1">
-                        <Label htmlFor="time-format" className="text-sm">Time format</Label>
-                        <Select
-                            value={appearance.use24HourFormat ? "24h" : "12h"}
-                            onValueChange={(value) => onAppearanceChange({ ...appearance, use24HourFormat: value === "24h" })}
-                        >
-                            <SelectTrigger className="w-24 h-7 text-xs">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="12h">12-hour</SelectItem>
-                                <SelectItem value="24h">24-hour</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    {!isCall && (
+                        <div className="flex items-center justify-between py-1">
+                            <Label htmlFor="time-format" className="text-sm">Time format</Label>
+                            <Select
+                                value={appearance.use24HourFormat ? "24h" : "12h"}
+                                onValueChange={(value) => onAppearanceChange({ ...appearance, use24HourFormat: value === "24h" })}
+                            >
+                                <SelectTrigger className="w-24 h-7 text-xs">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="12h">12-hour</SelectItem>
+                                    <SelectItem value="24h">24-hour</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    {isCall && (
+                        <div className="flex items-center justify-between py-1">
+                            <Label htmlFor="call-device-frame" className="text-sm">Phone frame</Label>
+                            <Switch
+                                id="call-device-frame"
+                                checked={appearance.showDeviceFrame ?? true}
+                                onCheckedChange={(checked) => onAppearanceChange({ ...appearance, showDeviceFrame: checked })}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Font / Typography */}
-                <div className="pt-2 border-t border-border">
+                {!isCall && <div className="pt-2 border-t border-border">
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
                         <Type className="w-3.5 h-3.5" /> Typography
                     </p>
@@ -180,7 +195,7 @@ export function AppearanceSection({ appearance, onAppearanceChange, mode = 'defa
                             </div>
                         )}
                     </div>
-                </div>
+                </div>}
 
                 {/* Wallpaper - chat only */}
                 {isChat && (

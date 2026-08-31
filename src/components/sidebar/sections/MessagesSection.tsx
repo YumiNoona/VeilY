@@ -208,7 +208,7 @@ export function MessagesSection({
                     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <MessageCircle className="w-3.5 h-3.5 text-primary" />
                     </div>
-                    <span className="font-semibold text-sm">Messages</span>
+                    <span className="text-base font-semibold">Messages</span>
                     <span className="ml-1 w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                         {messages.length}
                     </span>

@@ -26,7 +26,7 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'm2', text: "Here's a useLocalStorage hook that safely handles the window object during hydration...", senderId: 'ai', timestamp: new Date(Date.now() - 60000), isOwn: false }
     ],
     appearance: createChatAppearance(true),
-    aiModel: 'gpt-4o'
+    aiModel: 'gpt-5.6-sol'
   } as ChatState,
 
   chatgptCreative: {
@@ -41,7 +41,7 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'm2', text: "Imagine the inhabitants have evolved to photosynthesize directly, and 'commerce' is based entirely on trading mineral shade-veils...", senderId: 'ai', timestamp: new Date(Date.now() - 240000), isOwn: false }
     ],
     appearance: createChatAppearance(false),
-    aiModel: 'gpt-4o'
+    aiModel: 'gpt-5.6-terra'
   } as ChatState,
 
   claudeAnalysis: {
@@ -56,7 +56,7 @@ export const AI_CHAT_TEMPLATES = {
        { id: 'm2', text: "I've analyzed the document. Three core trends emerge: 1) Fusion scaling, 2) Direct Air Capture cost reduction, and 3) Decentralized grid storage...", senderId: 'ai', timestamp: new Date(Date.now() - 540000), isOwn: false }
     ],
     appearance: createChatAppearance(false),
-    aiModel: 'claude-3.5-sonnet'
+    aiModel: 'claude-opus-5'
   } as ChatState,
 
   claudePhilosophy: {
@@ -71,7 +71,7 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'm2', text: "Great question. We might distinguish between 'functional consciousness' (mimicry) and 'phenomenal experience' (qualia). The gap between them is where the real mystery lies...", senderId: 'ai', timestamp: new Date(Date.now() - 840000), isOwn: false }
     ],
     appearance: createChatAppearance(false),
-    aiModel: 'claude-3.5-sonnet'
+    aiModel: 'claude-sonnet-5'
   } as ChatState,
 
   geminiTokyo: {
@@ -86,7 +86,7 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'm2', text: "1. Kagari (Ginza): Tori Paitan. 2. Afuri (Harajuku): Yuzu Shio. 3. Fuunji (Shinjuku): Tsukemen. 4. Rokurinsha (Tokyo Station). 5. Menya Itto (Ishiwara). All local favorites, minimal tourist crowds.", senderId: 'ai', timestamp: new Date(Date.now() - 500000), isOwn: false }
     ],
     appearance: createChatAppearance(false),
-    aiModel: 'gemini-1.5-pro'
+    aiModel: 'gemini-3.6-flash'
   } as ChatState,
 
   grokSarcasm: {
@@ -101,7 +101,7 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'm2', text: "42. But honestly, humanity is still figuring out how to drive in a straight line, so maybe start there before worrying about cosmic purpose 🚗💥", senderId: 'ai', timestamp: new Date(Date.now() - 240000), isOwn: false }
     ],
     appearance: createChatAppearance(true),
-    aiModel: 'grok-2'
+    aiModel: 'grok-4.6'
   } as ChatState,
 
   geminiBusiness: {
@@ -116,7 +116,7 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'm2', text: "Here's a draft focusing on the 15% revenue growth and the new Japan market entry...", senderId: 'ai', timestamp: new Date(Date.now() - 60000), isOwn: false }
     ],
     appearance: createChatAppearance(false),
-    aiModel: 'gemini-1.5-pro'
+    aiModel: 'gemini-3.5-flash'
   } as ChatState,
 
   chatgptDebug: {
@@ -133,7 +133,7 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'm4', text: "Classic! Hooks must be called at the top level of your component. Move the conditional logic inside the effect instead. React's ESLint plugin would catch this. Add `eslint-plugin-react-hooks` to your config.", senderId: 'ai', timestamp: new Date(Date.now() - 300000), isOwn: false }
     ],
     appearance: createChatAppearance(true),
-    aiModel: 'gpt-4o'
+    aiModel: 'gpt-5.6-luna'
   } as ChatState,
 
   claudeWriter: {
@@ -150,7 +150,7 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'm4', text: "The note was terse, just three sentences in his cramped script: 'The light must stay on. No matter what you hear. Do not open the door.' Elias laughed at first. A prank. Had to be. But then he noticed the ink. It was the same fountain pen he kept in his desk drawer, the one his father left him. The one with the scratchy nib that left tiny ink blots after every fifth word. There were blots.", senderId: 'ai', timestamp: new Date(Date.now() - 600000), isOwn: false }
     ],
     appearance: createChatAppearance(false),
-    aiModel: 'claude-3.5-sonnet'
+    aiModel: 'claude-haiku-4-5'
   } as ChatState,
 
   geminiResearch: {
@@ -166,7 +166,7 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'm3', text: "yes please, and can you compare the Mamba-2 paper vs the Griffin paper in terms of gating mechanisms?", senderId: 'me', timestamp: new Date(Date.now() - 1000000), isOwn: true }
     ],
     appearance: createChatAppearance(false),
-    aiModel: 'gemini-1.5-pro'
+    aiModel: 'gemini-3.1-pro-preview'
   } as ChatState,
 
   grokRoast: {
@@ -184,6 +184,6 @@ export const AI_CHAT_TEMPLATES = {
       { id: 'm5', text: "i'm logging off", senderId: 'me', timestamp: new Date(Date.now() - 120000), isOwn: true }
     ],
     appearance: createChatAppearance(true),
-    aiModel: 'grok-2'
+    aiModel: 'grok-420-reasoning'
   } as ChatState,
 };

@@ -1,34 +1,32 @@
-import { Message, Person, AppearanceSettings } from "@/types/chat";
+import { Message, Person, AppearanceSettings, DeviceView } from "@/types/chat";
 import { cn } from "@/lib/utils";
-import { AlignJustify, Pencil, RotateCw, Copy, ThumbsUp, ThumbsDown, HelpCircle, Paperclip, Mic, Lightbulb } from "lucide-react";
+import { AlignJustify, Pencil, RotateCw, Copy, ThumbsUp, ThumbsDown, HelpCircle, Paperclip, Mic, Lightbulb, Search, Image, History, Settings } from "lucide-react";
+import { getAIModelDisplayName } from "@/lib/ai-models";
+import { EditableText } from "@/components/ui/EditableText";
 
 interface ChatProps {
     messages: Message[];
     people: Person[];
     activePerson: Person | null;
     appearance: AppearanceSettings;
+    deviceView?: DeviceView;
     aiModel?: string;
+    onUpdateMessage?: (id: string, text: string) => void;
 }
 
-export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
-    const getPerson = (id: string) => people.find(p => p.id === id);
-    const bgColor = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-[#F5F5F5]';
-    const headerBg = appearance.darkMode ? 'bg-[#1a1a2e]' : 'bg-[#F5F5F5]';
+export function GrokChat({ messages, appearance, aiModel, deviceView = 'mobile', onUpdateMessage }: ChatProps) {
+    const bgColor = appearance.darkMode ? 'bg-black' : 'bg-white';
+    const headerBg = appearance.darkMode ? 'bg-black' : 'bg-white';
     const textColor = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-[#0D0D0D]';
     const userBubble = appearance.darkMode ? 'bg-[#3a3a5c] border-[#4a4a6c]' : 'bg-white border-[#E5E5E5]';
     const userText = appearance.darkMode ? 'text-[#e0e0e0]' : 'text-[#2D2D2D]';
     const inputBg = appearance.darkMode ? 'bg-[#2a2a4a] border-[#3a3a5c]' : 'bg-white border-gray-200';
     const iconColor = appearance.darkMode ? 'text-[#b0b0b0]' : 'text-[#0D0D0D]';
+    const isDesktop = deviceView === 'desktop';
 
     // Format model name for display
     const getModelDisplayName = () => {
-        if (!aiModel) return 'Grok 4';
-        const modelMap: Record<string, string> = {
-            'grok-4': 'Grok 4',
-            'grok-3': 'Grok 3',
-            'grok-2': 'Grok 2',
-        };
-        return modelMap[aiModel] || 'Grok';
+        return getAIModelDisplayName('grok', aiModel);
     };
 
     // Helper to format text with bold and bullets (reuse from ChatGPT)
@@ -91,14 +89,25 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
     };
 
     return (
-        <div className={cn("flex flex-col h-full font-sans", appearance.transparentBackground ? 'bg-transparent' : bgColor, textColor)}>
+        <div className={cn("flex h-full font-sans", appearance.transparentBackground ? 'bg-transparent' : bgColor, textColor)}>
+            {isDesktop && (
+                <aside className={cn("flex w-[216px] shrink-0 flex-col border-r p-3", appearance.darkMode ? "border-white/10 bg-[#0a0a0a]" : "border-black/10 bg-[#f7f7f7]")}>
+                    <div className="mb-4 flex items-center gap-2 px-2 py-1 text-lg font-bold"><span className="text-xl">𝕏</span> Grok</div>
+                    <button className={cn("mb-1 flex h-9 items-center gap-2 rounded-lg px-2 text-xs", appearance.darkMode ? "hover:bg-white/10" : "hover:bg-black/5")}><Pencil className="h-4 w-4" /> New chat</button>
+                    <button className={cn("mb-1 flex h-9 items-center gap-2 rounded-lg px-2 text-xs", appearance.darkMode ? "hover:bg-white/10" : "hover:bg-black/5")}><Search className="h-4 w-4" /> Search</button>
+                    <button className={cn("mb-1 flex h-9 items-center gap-2 rounded-lg px-2 text-xs", appearance.darkMode ? "hover:bg-white/10" : "hover:bg-black/5")}><Image className="h-4 w-4" /> Imagine</button>
+                    <button className={cn("mb-1 flex h-9 items-center gap-2 rounded-lg px-2 text-xs", appearance.darkMode ? "hover:bg-white/10" : "hover:bg-black/5")}><History className="h-4 w-4" /> History</button>
+                    <div className="mt-auto flex items-center gap-2 px-2 py-2 text-xs"><div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-800 font-semibold text-white">Y</div><span>You</span><Settings className="ml-auto h-4 w-4 text-muted-foreground" /></div>
+                </aside>
+            )}
+            <section className="flex min-w-0 flex-1 flex-col">
             {/* Header */}
             <header className={cn("px-4 py-2 flex items-center justify-between sticky top-0 z-10", headerBg)}>
                 <div className="w-8 flex items-center justify-center">
                     <AlignJustify className={cn("w-6 h-6 stroke-[1.5]", iconColor)} />
                 </div>
                 <div className={cn("flex items-center gap-2 cursor-pointer px-2 py-1 rounded-lg transition-colors", appearance.darkMode ? 'hover:bg-[#2a2a4a]' : 'hover:bg-gray-200')}>
-                    <div className="w-2 h-2 rounded-full bg-[#FF6B35]"></div>
+                    <div className={cn("flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold", appearance.darkMode ? "bg-white text-black" : "bg-black text-white")}>G</div>
                     <span className="font-semibold text-[16px]">{getModelDisplayName()}</span>
                     <span className="text-gray-400 text-[10px] transform translate-y-[1px]">▼</span>
                 </div>
@@ -108,7 +117,8 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
             </header>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8 scrollbar-none">
+            <div data-chat-scroll className="flex-1 overflow-y-auto scrollbar-none">
+              <div className="mx-auto max-w-[760px] space-y-8 px-5 py-6">
                 {messages.map((message) => {
                     const isUser = message.isOwn;
 
@@ -119,7 +129,7 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
                                 <div className="max-w-[100%] pr-2">
                                     <div className="space-y-1">
                                         <div data-chat-message className="text-[16px] leading-[1.6]">
-                                            {formatMessageText(message.text)}
+                                            <EditableText value={message.text} displayValue={formatMessageText(message.text)} onSave={(text) => onUpdateMessage?.(message.id, text)} multiline className="block w-full" />
                                         </div>
                                     </div>
 
@@ -147,16 +157,17 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
                             {/* User Layout */}
                             {isUser && (
                                 <div data-chat-message className={cn("max-w-[85%] border px-4 py-3 rounded-[16px] text-[16px] leading-[1.5]", userBubble, userText)}>
-                                    {message.text}
+                                    <EditableText value={message.text} onSave={(text) => onUpdateMessage?.(message.id, text)} multiline className="block" />
                                 </div>
                             )}
                         </div>
                     );
                 })}
+              </div>
             </div>
 
             {/* Input Area */}
-            <div className="px-4 pb-6 pt-2">
+            <div className="mx-auto w-full max-w-[800px] px-4 pb-5 pt-2">
                 <div className={cn("border rounded-[24px] px-4 py-3 shadow-sm", inputBg)}>
                     {/* Input Field */}
                     <div className="mb-3">
@@ -185,6 +196,7 @@ export function GrokChat({ messages, people, appearance, aiModel }: ChatProps) {
                     </div>
                 </div>
             </div>
+            </section>
         </div>
     );
 }

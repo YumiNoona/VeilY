@@ -302,7 +302,7 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <User className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">Main Author</span>
+                                <span className="text-base font-semibold">Main Author</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
@@ -363,7 +363,7 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <FileText className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">Post Content</span>
+                                <span className="text-base font-semibold">Post Content</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
@@ -415,7 +415,7 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <MessageCircle className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">Thread & Comments</span>
+                                <span className="text-base font-semibold">Thread & Comments</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
@@ -534,7 +534,7 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <BarChart2 className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">Post Metrics</span>
+                                <span className="text-base font-semibold">Post Metrics</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">
@@ -590,7 +590,7 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <Palette className="w-3.5 h-3.5 text-primary" />
                                 </div>
-                                <span className="font-semibold text-sm">Appearance</span>
+                                <span className="text-base font-semibold">Appearance</span>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2 px-3 pb-3">

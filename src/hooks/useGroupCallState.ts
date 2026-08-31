@@ -3,15 +3,29 @@ import { CallState, CallParticipant, CallPlatform } from "@/types/chat";
 import { toast } from "sonner";
 
 const initialParticipants: CallParticipant[] = [
-    { id: '1', name: 'John Doe', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop', isMuted: false, isCameraOff: false, isSpeaking: true },
-    { id: '2', name: 'Mary Smith', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop', isMuted: true, isCameraOff: false, isSpeaking: false },
-    { id: '3', name: 'Robert Brown', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop', isMuted: false, isCameraOff: true, isSpeaking: false },
+    { id: '1', name: 'Aarav Patel', avatar: '/avatars/indian/indian-03.png', isMuted: false, isCameraOff: false, isSpeaking: true },
+    { id: '2', name: 'Priya Sharma', avatar: '/avatars/indian/indian-02.png', isMuted: true, isCameraOff: false, isSpeaking: false },
+    { id: '3', name: 'Kabir Singh', avatar: '/avatars/indian/indian-06.png', isMuted: false, isCameraOff: true, isSpeaking: false },
 ];
+
+const legacyParticipantNames = new Set(['John Doe', 'Mary Smith', 'Robert Brown']);
 
 const initialCallState: CallState = {
     platform: 'whatsapp',
     participants: initialParticipants,
+    title: 'Weekend Plans',
+    meetingCode: 'abc-defg-hij',
     duration: '04:20',
+    layout: 'grid',
+    quality: 'hd',
+    showNames: true,
+    showTimer: true,
+    backgroundBlur: false,
+    isScreenSharing: false,
+    sharedMedia: undefined,
+    showCaptions: false,
+    showChatPanel: false,
+    showParticipantPanel: false,
     isSignalLow: false,
     isRecording: false,
 };
@@ -21,7 +35,7 @@ const STORAGE_KEY = 'groupCallState';
 const isCallState = (value: unknown): value is CallState => {
     if (!value || typeof value !== 'object') return false;
     const candidate = value as Partial<CallState>;
-    const platforms: CallState['platform'][] = ['whatsapp', 'discord', 'facetime', 'zoom'];
+    const platforms: CallState['platform'][] = ['whatsapp', 'discord', 'facetime', 'zoom', 'meet'];
 
     return !!candidate.platform
         && platforms.includes(candidate.platform)
@@ -45,7 +59,15 @@ export const useGroupCallState = () => {
         if (stored) {
             try {
                 const parsed: unknown = JSON.parse(stored);
-                if (isCallState(parsed)) return parsed;
+                if (isCallState(parsed)) {
+                    const isLegacySample = parsed.participants.length === 3
+                        && parsed.participants.every(participant => legacyParticipantNames.has(participant.name));
+                    return {
+                        ...initialCallState,
+                        ...parsed,
+                        participants: isLegacySample ? initialParticipants : parsed.participants,
+                    };
+                }
                 localStorage.removeItem(STORAGE_KEY);
             } catch {
                 localStorage.removeItem(STORAGE_KEY);
@@ -55,7 +77,19 @@ export const useGroupCallState = () => {
     });
 
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(callState));
+        // Preview uploads can be several megabytes. Keep those in memory so a
+        // large image can never take down the editor by exhausting localStorage.
+        const persistableState: CallState = {
+            ...callState,
+            sharedMedia: undefined,
+        };
+
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(persistableState));
+        } catch (error) {
+            // A full browser store should not crash the call editor.
+            console.warn('Unable to persist call settings:', error);
+        }
     }, [callState]);
 
     const updatePlatform = useCallback((platform: CallPlatform) => {
@@ -76,6 +110,10 @@ export const useGroupCallState = () => {
             ...prev,
             participants: prev.participants.map(p => p.id === id ? { ...p, ...updates } : p)
         }));
+    }, []);
+
+    const updateSettings = useCallback((updates: Partial<CallState>) => {
+        setCallState(prev => ({ ...prev, ...updates }));
     }, []);
 
     const removeParticipant = useCallback((id: string) => {
@@ -107,6 +145,7 @@ export const useGroupCallState = () => {
         updateDuration,
         addParticipant,
         updateParticipant,
+        updateSettings,
         removeParticipant,
         resetCall,
         toggleSignal,

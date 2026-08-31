@@ -1,9 +1,10 @@
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bot, Sparkles, Lightbulb } from "lucide-react";
+import { Bot, Sparkles, Lightbulb, PencilLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Platform } from "@/types/chat";
-import { useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { AI_PROVIDER_CONFIG, isAIPlatform } from "@/lib/ai-models";
 
 interface AIModelSectionProps {
     platform: Platform;
@@ -12,26 +13,20 @@ interface AIModelSectionProps {
     onModelChange: (model: string) => void;
 }
 
-const DEFAULT_MODELS: Record<string, string> = {
-    chatgpt: 'gpt-4o',
-    claude: 'claude-4.8-sonnet',
-    gemini: 'gemini-2.5-pro',
-    grok: 'grok-4',
-};
-
 export function AIModelSection({ platform, onPlatformChange, model, onModelChange }: AIModelSectionProps) {
     const isChatGPT = platform === 'chatgpt';
     const isClaude = platform === 'claude';
     const isGemini = platform === 'gemini';
     const isGrok = platform === 'grok';
 
-    useEffect(() => {
-        const defaultModel = DEFAULT_MODELS[platform];
-        if (defaultModel) onModelChange(defaultModel);
-    }, [onModelChange, platform]);
+    const provider = isAIPlatform(platform) ? AI_PROVIDER_CONFIG[platform] : AI_PROVIDER_CONFIG.chatgpt;
+    const isKnownModel = provider.models.some(option => option.id === model);
+    const selectValue = isKnownModel ? model : '__custom__';
+    const customValue = isKnownModel || model === 'Custom model' ? '' : model;
 
     const handlePlatformChange = (p: Platform) => {
         onPlatformChange(p);
+        if (isAIPlatform(p)) onModelChange(AI_PROVIDER_CONFIG[p].defaultModel);
     };
 
     return (
@@ -41,7 +36,7 @@ export function AIModelSection({ platform, onPlatformChange, model, onModelChang
                     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Bot className="w-3.5 h-3.5 text-primary" />
                     </div>
-                    <span className="font-semibold text-sm">App & Model</span>
+                    <span className="text-base font-semibold">App & Model</span>
                 </div>
             </AccordionTrigger>
             <AccordionContent className="px-3 pb-3 pt-1 space-y-4">
@@ -98,55 +93,44 @@ export function AIModelSection({ platform, onPlatformChange, model, onModelChang
                     </button>
                 </div>
 
-                {/* Model Selector */}
-                <div className="space-y-1.5">
+                <div className="space-y-2 rounded-xl border border-border/70 bg-muted/20 p-3">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Model</span>
-                        <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded font-mono">{model || 'Select'}</span>
+                        <div>
+                            <p className="text-xs font-semibold">Model</p>
+                            <p className="mt-0.5 text-xs leading-4 text-muted-foreground">Choose a current model or enter any future model name.</p>
+                        </div>
+                        <span title={model} className="max-w-36 truncate rounded bg-primary/10 px-2 py-1 font-mono text-xs text-primary">{model || 'Select'}</span>
                     </div>
 
-                    <Select value={model} onValueChange={onModelChange}>
-                        <SelectTrigger className="w-full text-sm">
+                    <Select value={selectValue} onValueChange={(value) => onModelChange(value === '__custom__' ? 'Custom model' : value)}>
+                        <SelectTrigger className="h-9 w-full text-sm">
                             <SelectValue placeholder="Select model" />
                         </SelectTrigger>
                         <SelectContent>
-                            {isChatGPT && (
-                                <>
-                                    <SelectItem value="gpt-4.1">GPT-4.1</SelectItem>
-                                    <SelectItem value="gpt-4.1-plus">GPT-4.1 Plus</SelectItem>
-                                    <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-                                    <SelectItem value="gpt-4o-plus">GPT-4o Plus</SelectItem>
-                                    <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
-                                    <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
-                                </>
-                            )}
-                            {isClaude && (
-                                <>
-                                    <SelectItem value="claude-4.8-opus">Claude 4.8 Opus</SelectItem>
-                                    <SelectItem value="claude-4.8-sonnet">Claude 4.8 Sonnet</SelectItem>
-                                    <SelectItem value="claude-4.6-sonnet">Claude 4.6 Sonnet</SelectItem>
-                                    <SelectItem value="claude-4-opus">Claude 4 Opus</SelectItem>
-                                    <SelectItem value="claude-4-haiku">Claude 4 Haiku</SelectItem>
-                                    <SelectItem value="claude-3.5-sonnet">Claude 3.5 Sonnet</SelectItem>
-                                </>
-                            )}
-                            {isGemini && (
-                                <>
-                                    <SelectItem value="gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
-                                    <SelectItem value="gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
-                                    <SelectItem value="gemini-2-flash">Gemini 2.0 Flash</SelectItem>
-                                    <SelectItem value="gemini-1.5-pro">Gemini 1.5 Pro</SelectItem>
-                                </>
-                            )}
-                            {isGrok && (
-                                <>
-                                    <SelectItem value="grok-4">Grok 4</SelectItem>
-                                    <SelectItem value="grok-3">Grok 3</SelectItem>
-                                    <SelectItem value="grok-2">Grok 2</SelectItem>
-                                </>
-                            )}
+                            {provider.models.map(option => (
+                                <SelectItem key={option.id} value={option.id}>
+                                    <span className="flex items-center gap-2">
+                                        <span>{option.label}</span>
+                                        <span className="text-xs leading-4 text-muted-foreground">{option.description}</span>
+                                    </span>
+                                </SelectItem>
+                            ))}
+                            <SelectItem value="__custom__">Custom model name</SelectItem>
                         </SelectContent>
                     </Select>
+
+                    {!isKnownModel && (
+                        <div className="relative">
+                            <PencilLine className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                            <Input
+                                value={customValue}
+                                onChange={(event) => onModelChange(event.target.value)}
+                                className="h-9 pl-8 text-sm"
+                                placeholder="Enter model display name or ID"
+                                autoFocus
+                            />
+                        </div>
+                    )}
                 </div>
 
             </AccordionContent>

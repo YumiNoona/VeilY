@@ -178,7 +178,7 @@ export const AI_CHAT_TEMPLATES = {
     ],
     messages: [
       { id: 'm1', text: "roast me based on my posting history. be brutal", senderId: 'me', timestamp: new Date(Date.now() - 300000), isOwn: true },
-      { id: 'm2', text: "Your timeline is 40% hot takes you stole from Reddit, 30% screenshots of code you didn't write, and 30% asking why your startup has 0 users. The closest you've been to 'disrupting' anything is disrupting your own sleep schedule. Your engagement ratio is so bad that even your mom left you on read 💀", senderId: 'ai', timestamp: new Date(Date.now() - 240000), isOwn: false },
+      { id: 'm2', text: "Your timeline is mostly borrowed opinions, screenshots of code with no context, and questions about why your side project has no users. You have spent more time naming the startup than building it. Even your mum stopped replying to the launch updates.", senderId: 'ai', timestamp: new Date(Date.now() - 240000), isOwn: false },
       { id: 'm3', text: "OK OK I REGRET ASKING 😭", senderId: 'me', timestamp: new Date(Date.now() - 200000), isOwn: true },
       { id: 'm4', text: "You asked for brutal. I deliver. Want me to analyze your GitHub commit messages next? 'fixed stuff lol' isn't a commit message, it's a cry for help.", senderId: 'ai', timestamp: new Date(Date.now() - 180000), isOwn: false },
       { id: 'm5', text: "i'm logging off", senderId: 'me', timestamp: new Date(Date.now() - 120000), isOwn: true }

@@ -2,7 +2,7 @@ import React from 'react';
 import { CommentsState, Comment } from '@/hooks/useCommentState';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { VerifiedBadge } from '@/components/ui/VerifiedBadge';
-import { ThumbsUp, ThumbsDown, MessageSquare, MoreVertical } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface YouTubeCommentsProps {
@@ -28,7 +28,7 @@ export const YouTubeComments: React.FC<YouTubeCommentsProps> = ({ state }) => {
                         <span className={cn("font-semibold cursor-pointer", isDark ? "text-white" : "text-black", profile.isCreator && "bg-gray-500/20 px-2 rounded-full")}>
                             @{profile.handle}
                         </span>
-                        {profile.verified && <VerifiedBadge platform="instagram" className="w-3 h-3 text-gray-500" />} {/* YT Verified is check in circle usually gray */}
+                        {profile.verified && <VerifiedBadge platform="youtube" className="h-3 w-3" />}
                         <span className="text-gray-500 text-[12px] ml-1">{comment.timeAgo}</span>
                     </div>
 
@@ -36,7 +36,7 @@ export const YouTubeComments: React.FC<YouTubeCommentsProps> = ({ state }) => {
                         {comment.text}
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
+                    <div className={cn("flex items-center gap-4 text-xs", isDark ? "text-gray-400" : "text-gray-600")}>
                         <div className="flex items-center gap-1.5 cursor-pointer">
                             <ThumbsUp className="w-4 h-4" />
                             <span className="mt-0.5">{comment.likes}</span>
@@ -50,17 +50,17 @@ export const YouTubeComments: React.FC<YouTubeCommentsProps> = ({ state }) => {
                                     <AvatarImage src={state.profiles.find(p => p.isCreator)?.avatar} className="object-cover" />
                                     <AvatarFallback>C</AvatarFallback>
                                 </Avatar>
-                                <div className="absolute -bottom-1 -right-1 bg-red-500 rounded-full p-[1px] border border-background">
+                                <div className={cn("absolute -bottom-1 -right-1 rounded-full border bg-red-500 p-px", isDark ? "border-[#0f0f0f]" : "border-white")}>
                                     <HeartIconFilled className="w-2 h-2 text-white fill-current" />
                                 </div>
                             </div>
                         )}
-                        <span className="font-semibold cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800 px-3 py-2 rounded-full">Reply</span>
+                        <span className={cn("cursor-pointer rounded-full px-3 py-2 font-semibold", isDark ? "hover:bg-zinc-800" : "hover:bg-gray-100")}>Reply</span>
                     </div>
 
                     {comment.replies.length > 0 && (
                         <div className="mt-2">
-                            <div className="flex items-center gap-2 mb-2 cursor-pointer text-blue-600 dark:text-blue-400 font-semibold text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-2 rounded-full w-fit">
+                            <div className={cn("mb-2 flex w-fit cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold", isDark ? "text-blue-400 hover:bg-blue-900/20" : "text-blue-600 hover:bg-blue-50")}>
                                 <span className="rotate-180">▼</span>
                                 {comment.replies.length} replies
                             </div>
@@ -84,7 +84,7 @@ export const YouTubeComments: React.FC<YouTubeCommentsProps> = ({ state }) => {
             isDark ? "bg-[#0f0f0f] text-white" : "bg-white text-[#0f0f0f]"
         )}>
             <div className="flex items-center gap-8 mb-6">
-                <span className="text-xl font-bold">{state.comments.length} Comments</span>
+                <span className="text-xl font-bold">{state.comments.length} {state.comments.length === 1 ? 'Comment' : 'Comments'}</span>
                 <div className="flex items-center gap-2 cursor-pointer">
                     <span className="font-semibold text-sm">Sort by</span>
                 </div>
@@ -95,7 +95,7 @@ export const YouTubeComments: React.FC<YouTubeCommentsProps> = ({ state }) => {
                     <AvatarImage src={state.profiles[0].avatar} className="object-cover" />
                     <AvatarFallback>{state.profiles[0].name[0]}</AvatarFallback>
                 </Avatar>
-                <div className="flex-1 border-b border-gray-200 dark:border-zinc-700 pb-2 text-sm text-gray-500">
+                <div className={cn("flex-1 border-b pb-2 text-sm text-gray-500", isDark ? "border-zinc-700" : "border-gray-200")}>
                     Add a comment...
                 </div>
             </div>

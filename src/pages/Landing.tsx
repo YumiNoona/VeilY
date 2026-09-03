@@ -80,7 +80,7 @@ export default function Landing() {
       <CRT />
       <Grid />
 
-      {/* Top bar — Arcade stats */}
+      {/* Top bar: arcade stats */}
       <div className="relative z-20 flex items-center justify-between px-6 py-3 border-b-2 border-[#39ff8a]/15 text-xs">
         <div className="flex items-center gap-4">
           <span className="text-[#ff6b35] font-bold">1UP</span>
@@ -243,7 +243,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Platform Grid — Arcade character select */}
+      {/* Platform grid: arcade character select */}
       <section className="relative z-20 max-w-6xl mx-auto px-6 py-12">
         <div className="text-center mb-8">
           <p className="text-[#ffe566] text-xs tracking-[0.3em] mb-2">▼ SELECT YOUR FIGHTER ▼</p>
@@ -261,7 +261,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Features — Equipment screen */}
+      {/* Features: equipment screen */}
       <section className="relative z-20 max-w-6xl mx-auto px-6 py-12">
         <div className="text-center mb-8">
           <p className="text-[#ff4dff] text-xs tracking-[0.3em] mb-2">▲ EQUIPMENT ▲</p>

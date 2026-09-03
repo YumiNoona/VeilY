@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- the provider and its hook belong to the same context module */
 import React, { createContext, useContext, useState } from 'react';
 
 interface AuthContextType {

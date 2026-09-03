@@ -51,8 +51,8 @@ const SocialPost = () => {
                 handleResetState={handleResetState}
             />
             <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
-                <div className="min-h-full flex flex-col items-center justify-center px-4 py-8 lg:px-8">
-                    <div className="shrink-0" style={{ zoom: zoom / 100 }}>
+                <div className="flex min-h-full max-w-full flex-col items-center justify-center px-4 py-8 lg:px-8 lg:pr-24">
+                    <div className="max-w-full shrink-0" style={{ zoom: zoom / 100 }}>
                         <SocialPostPreview ref={previewRef} state={state} />
                     </div>
                 </div>

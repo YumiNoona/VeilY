@@ -11,6 +11,8 @@ interface RedditPostProps {
 
 export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
     const isDark = state.config.theme === 'dark';
+    const subreddit = state.author.handle.replace(/^r\//, '').replace(/^u\//, '').replace(/^@/, '');
+    const username = state.author.name.replace(/^u\//, '').replace(/^@/, '').replace(/\s+/g, '');
 
     // Helper to build the comment tree from the flat threadItems array using parentId
     const buildCommentTree = (items: ThreadItem[], parentId: string | null = null): ThreadItem[] => {
@@ -36,11 +38,11 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
                     "w-10 pt-2 flex flex-col items-center bg-transparent shrink-0",
                     isDark ? "bg-[#1A1A1B]" : "bg-gray-50/50 hidden sm:flex"
                 )}>
-                    <button className={cn("p-1 rounded hover:bg-gray-200 dark:hover:bg-zinc-800", isDark ? "text-zinc-400" : "text-gray-400")}>
+                    <button className={cn("rounded p-1", isDark ? "text-zinc-400 hover:bg-zinc-800" : "text-gray-400 hover:bg-gray-200")}>
                         <ArrowBigUp className="w-6 h-6" />
                     </button>
                     <span className="text-xs font-medium my-1">{state.metrics.likes}</span>
-                    <button className={cn("p-1 rounded hover:bg-gray-200 dark:hover:bg-zinc-800", isDark ? "text-zinc-400" : "text-gray-400")}>
+                    <button className={cn("rounded p-1", isDark ? "text-zinc-400 hover:bg-zinc-800" : "text-gray-400 hover:bg-gray-200")}>
                         <ArrowBigDown className="w-6 h-6" />
                     </button>
                 </div>
@@ -53,11 +55,11 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
                             <AvatarFallback>{state.author.name[0]}</AvatarFallback>
                         </Avatar>
                         <span className={cn("font-bold hover:underline cursor-pointer", isDark ? "text-zinc-100" : "text-black")}>
-                            {state.author.handle}
+                            r/{subreddit}
                         </span>
                         <span className={cn(isDark ? "text-zinc-500" : "text-gray-500")}>•</span>
                         <span className={cn(isDark ? "text-zinc-500" : "text-gray-500")}>
-                            Posted by u/{state.author.name} {formatDistanceToNow(state.content.date)} ago
+                            Posted by u/{username} {formatDistanceToNow(state.content.date)} ago
                         </span>
                     </div>
 
@@ -71,7 +73,7 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
 
                     {/* Image */}
                     {state.content.image && (
-                        <div className="mt-2 mb-2 rounded border border-gray-100 dark:border-zinc-800 overflow-hidden bg-black/5 flex justify-center max-h-[500px]">
+                        <div className={cn("mt-2 mb-2 flex max-h-[500px] justify-center overflow-hidden rounded border bg-black/5", isDark ? "border-zinc-800" : "border-gray-100")}>
                             <img src={state.content.image} alt="Content" className="object-contain max-h-[500px]" />
                         </div>
                     )}
@@ -81,7 +83,7 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
                         <ActionButton icon={MessageSquare} label={`${state.metrics.comments} Comments`} isDark={isDark} />
                         <ActionButton icon={Share} label="Share" isDark={isDark} />
                         <ActionButton icon={Bookmark} label="Save" isDark={isDark} />
-                        <button className={cn("p-1.5 rounded hover:bg-gray-100 dark:hover:bg-zinc-800", isDark ? "text-zinc-400" : "text-gray-500")}>
+                        <button className={cn("rounded p-1.5", isDark ? "text-zinc-400 hover:bg-zinc-800" : "text-gray-500 hover:bg-gray-100")}>
                             <MoreHorizontal className="w-4 h-4" />
                         </button>
                     </div>
@@ -104,7 +106,7 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
     );
 };
 
-const ActionButton = ({ icon: Icon, label, isDark }: { icon: any, label: string, isDark: boolean }) => (
+const ActionButton = ({ icon: Icon, label, isDark }: { icon: React.ElementType, label: string, isDark: boolean }) => (
     <button className={cn(
         "flex items-center gap-1.5 px-2 py-1.5 rounded transition-colors",
         isDark ? "hover:bg-zinc-800 text-zinc-400" : "hover:bg-gray-100 text-gray-500"
@@ -132,7 +134,7 @@ const RedditComment = React.memo(({ item, isDark, depth, items }: { item: Thread
                     <AvatarFallback>{item.author.name[0]}</AvatarFallback>
                 </Avatar>
                 <span className={cn("font-bold hover:underline cursor-pointer", isDark ? "text-zinc-100" : "text-black")}>
-                    {item.author.handle}
+                    u/{item.author.handle.replace(/^u\//, '').replace(/^@/, '')}
                 </span>
                 <span className={cn(isDark ? "text-zinc-500" : "text-gray-500")}>•</span>
                 <span className={cn(isDark ? "text-zinc-500" : "text-gray-500")}>
@@ -145,10 +147,10 @@ const RedditComment = React.memo(({ item, isDark, depth, items }: { item: Thread
             </div>
             
             <div className="pl-8 flex items-center gap-1 text-xs font-bold mt-1 mb-2">
-                <button className={cn("p-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800", isDark ? "text-zinc-400" : "text-gray-400")}><ArrowBigUp className="w-4 h-4" /></button>
+                <button className={cn("rounded p-1", isDark ? "text-zinc-400 hover:bg-zinc-800" : "text-gray-400 hover:bg-gray-100")}><ArrowBigUp className="w-4 h-4" /></button>
                 <span className={cn(isDark ? "text-zinc-400" : "text-gray-800")}>{item.metrics.likes}</span>
-                <button className={cn("p-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800", isDark ? "text-zinc-400" : "text-gray-400")}><ArrowBigDown className="w-4 h-4" /></button>
-                <button className={cn("flex items-center gap-1 ml-2 p-1.5 rounded hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors", isDark ? "text-zinc-400" : "text-gray-500")}>
+                <button className={cn("rounded p-1", isDark ? "text-zinc-400 hover:bg-zinc-800" : "text-gray-400 hover:bg-gray-100")}><ArrowBigDown className="w-4 h-4" /></button>
+                <button className={cn("ml-2 flex items-center gap-1 rounded p-1.5 transition-colors", isDark ? "text-zinc-400 hover:bg-zinc-800" : "text-gray-500 hover:bg-gray-100")}>
                     <MessageSquare className="w-3.5 h-3.5" />
                     Reply
                 </button>

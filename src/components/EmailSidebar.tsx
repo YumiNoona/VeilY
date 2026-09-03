@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { Plus, Trash2, ChevronDown, ChevronRight, RotateCcw, Wand2, FileText, Users, MessageCircle, Mail, Sparkles } from 'lucide-react';
 import { useEmailState } from '@/hooks/useEmailState';
 import { SmartFillModal } from './modals/SmartFillModal';
@@ -57,26 +57,6 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
 }) => {
     const [collapsedEmails, setCollapsedEmails] = React.useState<Record<string, boolean>>({});
     const [isSmartFillOpen, setIsSmartFillOpen] = React.useState(false);
-
-    // Pill toggle animation
-    const pillContainerRef = useRef<HTMLDivElement>(null);
-    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
-    const [pillMounted, setPillMounted] = useState(false);
-
-    useEffect(() => {
-      if (!pillContainerRef.current) return;
-      const raf = requestAnimationFrame(() => {
-        const active = pillContainerRef.current?.querySelector<HTMLElement>('[data-state="active"]');
-        if (!active || !pillContainerRef.current) return;
-        const containerRect = pillContainerRef.current.getBoundingClientRect();
-        const rect = active.getBoundingClientRect();
-        setPillStyle({ left: rect.left - containerRect.left, width: rect.width });
-        if (!pillMounted) setPillMounted(true);
-      });
-      return () => cancelAnimationFrame(raf);
-    }, [state.provider, pillMounted]);
-
-    const pillRefs = { containerRef: pillContainerRef, pillStyle, mounted: pillMounted };
 
     const handleSmartFillSuccess = (data: ParsedChat) => {
         // Map AI generated participants
@@ -137,13 +117,22 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                                 <SelectLabel>Business</SelectLabel>
                                 <SelectItem value="businessMeeting">Meeting Strategy</SelectItem>
                                 <SelectItem value="projectKickoff">Project Kickoff</SelectItem>
+                                <SelectItem value="jobOffer">Job Offer</SelectItem>
+                                <SelectItem value="weeklyReview">Weekly Review</SelectItem>
                                 <SelectItem value="invoiceReminder">Invoice Reminder</SelectItem>
                                 <SelectItem value="formalGreeting">Formal Intro</SelectItem>
+                                <SelectItem value="partnershipInquiry">Integration Inquiry</SelectItem>
+                                <SelectItem value="networkingInvite">Coffee Invitation</SelectItem>
+                                <SelectItem value="holidayReply">Out of Office</SelectItem>
+                                <SelectItem value="eventInvite">Event Invitation</SelectItem>
+                                <SelectItem value="teamAnnouncement">Team Update</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
                                 <SelectLabel>Newsletters</SelectLabel>
                                 <SelectItem value="newsletterBoost">Product Update</SelectItem>
                                 <SelectItem value="supportWelcome">Support Welcome</SelectItem>
+                                <SelectItem value="securityAlert">Sign-in Alert</SelectItem>
+                                <SelectItem value="customerSupport">Refund Confirmation</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -199,22 +188,14 @@ export const EmailSidebar: React.FC<EmailSidebarProps> = ({
                     onValueChange={(val) => handleProviderChange(val as any)}
                     className="w-full"
                 >
-                    <TabsList ref={pillRefs.containerRef} className="relative grid w-full grid-cols-3 h-10">
-                        <div
-                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-springy z-0"
-                            style={{
-                                left: `${pillRefs.pillStyle.left}px`,
-                                width: `${pillRefs.pillStyle.width}px`,
-                                opacity: pillRefs.mounted ? 1 : 0,
-                            }}
-                        />
-                        <TabsTrigger value="generic" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                    <TabsList className="grid h-10 w-full grid-cols-3">
+                        <TabsTrigger value="generic" aria-label="Generic email" title="Generic email">
                             <Mail className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="gmail" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                        <TabsTrigger value="gmail" aria-label="Gmail" title="Gmail">
                             <svg viewBox="0 0 24 24" className="w-4 h-4"><path fill="#EA4335" d="M24 4.5v15c0 .85-.65 1.5-1.5 1.5H21V7.39l-9 6.58-9-6.58V21H1.5C.65 21 0 20.35 0 19.5v-15c0-1.21 1.36-1.93 2.36-1.24L12 10.32l9.64-7.06c1-.69 2.36.03 2.36 1.24z"/></svg>
                         </TabsTrigger>
-                        <TabsTrigger value="outlook" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                        <TabsTrigger value="outlook" aria-label="Outlook" title="Outlook">
                             <svg viewBox="0 0 24 24" className="w-4 h-4"><path fill="#0078D4" d="M22 4H2C.9 4 0 4.9 0 6v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM2 6h20v.5L12 13 2 6.5V6zm0 12V8.5L12 15l10-6.5V18H2z"/></svg>
                         </TabsTrigger>
                     </TabsList>

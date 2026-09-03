@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- the Sonner adapter intentionally re-exports its toast helper */
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, toast } from "sonner";
 

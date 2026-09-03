@@ -19,36 +19,36 @@ export interface EmailScenario {
 
 export const emailScenarios: EmailScenario[] = [
   {
-    name: "Jeffrey Epstein Files",
-    subject: "URGENT: Regarding the travel logs and island guest list",
-    attachment: "travel_logs_2008.pdf",
+    name: "Updated Train Itinerary",
+    subject: "Your departure time has changed for Friday",
+    attachment: "updated_itinerary.pdf",
     participants: [
-      { id: 'p1', name: "Jeffrey Epstein", email: "je@island.com", redactName: false, redactEmail: false },
-      { id: 'p2', name: "Ghislaine Maxwell", email: "gm@london.net", redactName: false, redactEmail: false }
+      { id: 'p1', name: "Western Rail Bookings", email: "updates@westernrail.example", redactName: false, redactEmail: false },
+      { id: 'p2', name: "Kavya Nair", email: "kavya.nair@example.com", redactName: false, redactEmail: false }
     ],
     emails: [
       {
         id: 'e1',
         fromParticipantId: 'p1',
-        dateTime: 'May 14, 2008 at 11:42 PM',
-        body: "Make sure those files are **encrypted** before the flight tomorrow. We can't afford any leaks regarding the **V.I.P. list**. Check the **Black Book** again for any missing entries."
+        dateTime: 'Today at 9:16 AM',
+        body: "Hi Kavya,\n\nYour Friday train from Mumbai Central will now depart at **7:10 PM**, twenty minutes later than scheduled. Your coach and seat remain unchanged. The revised itinerary is attached.\n\nRegards,\nWestern Rail Bookings"
       }
     ]
   },
   {
-    name: "FBI Security Alert",
-    subject: "CRITICAL: Potential unauthorized access to federal systems",
-    attachment: "incident_report_FBI.docx",
+    name: "Account Sign-in Alert",
+    subject: "New sign-in to your account",
+    attachment: "",
     participants: [
-      { id: 'p1', name: "FBI Cyber Division", email: "security@fbi.gov", redactName: false, redactEmail: false },
-      { id: 'p2', name: "Agent Mulder", email: "f.mulder@fbi.gov", redactName: false, redactEmail: false }
+      { id: 'p1', name: "Acorn Security", email: "security@acorn.example", redactName: false, redactEmail: false },
+      { id: 'p2', name: "Marcus Chen", email: "marcus.chen@example.com", redactName: false, redactEmail: false }
     ],
     emails: [
       {
         id: 'e1',
         fromParticipantId: 'p1',
-        dateTime: 'Just now',
-        body: "Agent, we've detected a breach in the **classified server**. Immediate action is required to secure the **evidence files**. Do not discuss this over unsecured lines."
+        dateTime: 'Today at 8:42 AM',
+        body: "Hi Marcus,\n\nWe noticed a new sign-in from **Firefox on Windows** in Toronto. If this was you, no action is needed. If you do not recognize it, reset your password from your account settings.\n\nAcorn Security"
       }
     ]
   },
@@ -99,7 +99,7 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'Jun 1, 2026 at 2:15 PM',
-        body: "Hi Partnerships Team,\n\nI'm reaching out on behalf of TechCorp to discuss a potential **strategic partnership**. We've been following Veily's growth and believe our **AI infrastructure** could complement your platform beautifully. Would love to schedule a 30-minute call this week to explore synergies.\n\nBest,\nDavid"
+        body: "Hi Partnerships Team,\n\nI lead platform integrations at TechCorp. Several of our customers use Veily alongside our media tools, and I would like to discuss a direct export integration. Are you available for a 30-minute call on Wednesday or Thursday?\n\nBest,\nDavid"
       }
     ]
   },
@@ -292,7 +292,7 @@ export const emailScenarios: EmailScenario[] = [
         id: 'e1',
         fromParticipantId: 'p1',
         dateTime: 'May 25, 2026 at 10:30 AM',
-        body: "Dear Alex,\n\nWe're thrilled to let you know that your talk, **\"Building Resilient UI: Lessons from 10 Million Renders\"**, has been accepted for **ReactConf 2026**! 🎉\n\nYour session is scheduled for **Day 2 (November 5th) at 2:30 PM** in the main auditorium.\n\n**Next steps:**\n- Review the attached speaker guide\n- Confirm your availability by **June 10th**\n- Submit your final slides by **October 15th**\n\nWe received over 800 submissions this year, and yours stood out for its depth and practical insights. Congratulations again!\n\nReactConf Program Committee"
+        body: "Dear Alex,\n\nYour talk, **\"Building Resilient UI: Lessons from 10 Million Renders\"**, has been accepted for **ReactConf 2026**.\n\nYour session is scheduled for **Day 2 (November 5th) at 2:30 PM** in the main auditorium.\n\n**Next steps:**\n- Review the attached speaker guide\n- Confirm your availability by **June 10th**\n- Submit your final slides by **October 15th**\n\nWe received more than 800 submissions this year. Congratulations, and welcome to the program.\n\nReactConf Program Committee"
       }
     ]
   },

@@ -24,13 +24,12 @@ export const TikTokComments: React.FC<TikTokCommentsProps> = ({ state }) => {
                 </Avatar>
 
                 <div className="flex-1 min-w-0">
-                    <span className="font-semibold text-[13px] text-gray-500 dark:text-gray-400 block mb-0.5">
+                    <span className={cn("mb-0.5 block text-[13px] font-semibold", isDark ? "text-gray-400" : "text-gray-500")}>
                         {profile.name}
-                        {profile.verified && <VerifiedBadge platform="instagram" className="w-3 h-3 inline ml-1 align-text-top text-[#20D5EC]" />}
-                        {/* TikTok verified often cyan/blue check */}
+                        {profile.verified && <VerifiedBadge platform="tiktok" className="ml-1 inline h-3 w-3 align-text-top" />}
                     </span>
 
-                    <div className="text-[15px] leading-tight mb-1 text-foreground">
+                    <div className={cn("mb-1 text-[15px] leading-snug", isDark ? "text-white" : "text-[#161823]")}>
                         {comment.text}
                     </div>
 
@@ -41,19 +40,19 @@ export const TikTokComments: React.FC<TikTokCommentsProps> = ({ state }) => {
 
                     {/* Creator Liked Badge */}
                     {comment.isLikedByAuthor && (
-                        <div className="flex items-center gap-1 mt-2 bg-gray-100 dark:bg-zinc-800/50 rounded-lg py-1 px-2 w-fit">
+                        <div className={cn("mt-2 flex w-fit items-center gap-1 rounded-lg px-2 py-1", isDark ? "bg-white/10" : "bg-gray-100")}>
                             <Avatar className="w-4 h-4">
                                 <AvatarImage src={state.profiles.find(p => p.isCreator)?.avatar || ""} className="object-cover" />
                                 <AvatarFallback>C</AvatarFallback>
                             </Avatar>
-                            <span className="text-[11px] text-gray-500">Liked by creator</span>
+                            <span className={cn("text-xs", isDark ? "text-zinc-300" : "text-gray-500")}>Liked by creator</span>
                         </div>
                     )}
 
                     {comment.replies.length > 0 && (
                         <div className="mt-3 pl-0">
                             <div className="flex items-center gap-2 mb-3 cursor-pointer">
-                                <div className="w-6 h-[1px] bg-gray-300 dark:bg-zinc-700"></div>
+                                <div className={cn("h-px w-6", isDark ? "bg-zinc-700" : "bg-gray-300")}></div>
                                 <span className="text-[13px] text-gray-500 font-semibold">View replies ({comment.replies.length})</span>
                             </div>
                             {comment.replies.map(reply => renderComment(reply, depth + 1))}
@@ -75,7 +74,7 @@ export const TikTokComments: React.FC<TikTokCommentsProps> = ({ state }) => {
             isDark ? "bg-[#121212] border-zinc-800 text-white" : "bg-white border-gray-200 text-black"
         )}>
             {/* Header */}
-            <div className="p-4 text-center border-b border-gray-100 dark:border-zinc-800 font-bold text-[15px]">
+            <div className={cn("border-b p-4 text-center text-[15px] font-bold", isDark ? "border-zinc-800" : "border-gray-100")}>
                 Comments
                 <span className="ml-2 text-sm font-normal text-gray-500">{state.comments.length}</span>
             </div>
@@ -85,12 +84,12 @@ export const TikTokComments: React.FC<TikTokCommentsProps> = ({ state }) => {
             </div>
 
             {/* Input Area */}
-            <div className="absolute bottom-0 w-full p-3 border-t border-gray-100 dark:border-zinc-800 bg-background flex items-center gap-3">
+            <div className={cn("absolute bottom-0 flex w-full items-center gap-3 border-t p-3", isDark ? "border-zinc-800 bg-[#121212]" : "border-gray-100 bg-white")}>
                 <Avatar className="w-8 h-8">
                     <AvatarImage src={state.profiles[0].avatar} className="object-cover" />
                     <AvatarFallback>{state.profiles[0].name[0]}</AvatarFallback>
                 </Avatar>
-                <div className="flex-1 bg-gray-100 dark:bg-zinc-800 rounded-full h-10 px-4 flex items-center text-sm text-gray-500">
+                <div className={cn("flex h-10 flex-1 items-center rounded-full px-4 text-sm text-gray-500", isDark ? "bg-zinc-800" : "bg-gray-100")}>
                     Add comment...
                 </div>
             </div>

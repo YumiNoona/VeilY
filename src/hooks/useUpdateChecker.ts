@@ -58,7 +58,7 @@ export function useUpdateChecker() {
           setUpdateAvailable(true);
         }
       } catch {
-        // Silently fail — don't bother the user on errors
+        // Silently fail so update checks never interrupt the user.
       }
     };
 

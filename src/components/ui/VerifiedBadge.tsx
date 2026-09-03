@@ -3,7 +3,7 @@ import { SocialPlatform } from '@/hooks/useSocialPostState';
 import { cn } from '@/lib/utils';
 
 interface VerifiedBadgeProps {
-    platform: SocialPlatform;
+    platform: SocialPlatform | 'tiktok' | 'youtube';
     className?: string;
 }
 
@@ -18,14 +18,10 @@ export const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({ platform, classNam
         );
     }
 
-    if (platform === 'instagram') {
+    if (platform === 'instagram' || platform === 'tiktok' || platform === 'youtube') {
+        const color = platform === 'youtube' ? 'text-[#606060]' : platform === 'tiktok' ? 'text-[#20d5ec]' : 'text-[#0095F6]';
         return (
-            <svg viewBox="0 0 40 40" className={cn("w-4 h-4 text-[#0095F6]", className)} fill="currentColor">
-                <path d="M19.998 3.094 14.638 0l-5.36 3.094-5.36-3.094L3.91 6.188l-5.36 3.094 2.853 5.39-2.854 5.39 5.36 3.094 0 6.188 5.36-3.094 5.36 3.094 5.36-3.094 0-6.188 5.36 3.094-2.854-5.39 2.854-5.39-5.36-3.094-5.36 3.094Z" transform="translate(3.5 3.5)" />
-                {/* Simplified star shape, adding white check on top via overlay or subtraction would be ideal. 
-            For now, using a path that represents the filled badge. 
-            Real Instagram/FB badge is complex. 
-            Let's use a standard 'verified' icon approximation that looks good. */}
+            <svg viewBox="0 0 40 40" aria-label="Verified account" className={cn("w-4 h-4", color, className)} fill="currentColor">
                 <path d="M19.95 0C8.96 0 0 8.96 0 19.98s8.96 19.98 19.95 19.98c11.01 0 20.05-8.96 20.05-19.98S30.96 0 19.95 0z" />
                 <path fill="#fff" d="M16.7 27.3L8.8 18.9l2.7-2.6 5.2 5.5 12.1-12.2 2.6 2.7z" />
             </svg>

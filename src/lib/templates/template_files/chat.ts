@@ -26,7 +26,7 @@ export const CHAT_TEMPLATES = {
       { id: 'm1', text: "did u guys see what they posted", senderId: 'p1', timestamp: new Date(Date.now() - 300000), isOwn: false },
       { id: 'm2', text: "wait what", senderId: 'me', timestamp: new Date(Date.now() - 260000), isOwn: true },
       { id: 'm3', text: "was it about us??", senderId: 'me', timestamp: new Date(Date.now() - 240000), isOwn: true },
-      { id: 'm4', text: "it was about the trip im literally shaking rn", senderId: 'p2', timestamp: new Date(Date.now() - 180000), isOwn: false }
+      { id: 'm4', text: "it was about the trip. call me when you're free", senderId: 'p2', timestamp: new Date(Date.now() - 180000), isOwn: false }
     ],
     appearance: createChatAppearance(false),
   } as ChatState,
@@ -36,7 +36,7 @@ export const CHAT_TEMPLATES = {
     chatType: 'direct',
     people: [
       { id: 'me', name: 'You', isOnline: true },
-      { id: 'p1', name: 'Bestie', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop', isOnline: true }
+      { id: 'p1', name: 'Naomi', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
       { id: 'm1', text: "coffee later? my treat ☕️", senderId: 'p1', timestamp: new Date(Date.now() - 600000), isOwn: false },
@@ -83,7 +83,7 @@ export const CHAT_TEMPLATES = {
     chatType: 'direct',
     people: [
       { id: 'me', name: 'Boutique Store', isOnline: true },
-      { id: 'p1', name: 'Customer', isOnline: true }
+      { id: 'p1', name: 'Ishita Rao', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
       { id: 'm1', text: "hi do u have the blue dress in size M?", senderId: 'p1', timestamp: new Date(Date.now() - 600000), isOwn: false },
@@ -97,12 +97,12 @@ export const CHAT_TEMPLATES = {
     platform: 'telegram',
     chatType: 'group',
     people: [
-      { id: 'me', name: 'Moderator', isOnline: true },
-      { id: 'p1', name: 'BitWhale', avatar: 'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?w=100&h=100&fit=crop', isOnline: true }
+      { id: 'me', name: 'Nikhil', isOnline: true },
+      { id: 'p1', name: 'Aarav', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
-       { id: 'm1', text: "BULL RUN CONFIRMED 🚀🚀🚀", senderId: 'p1', timestamp: new Date(Date.now() - 60000), isOwn: false },
-       { id: 'm2', text: "bro chill with the moon emojis", senderId: 'me', timestamp: new Date(Date.now() - 50000), isOwn: true }
+       { id: 'm1', text: "did you read the new tax rules for mutual funds?", senderId: 'p1', timestamp: new Date(Date.now() - 60000), isOwn: false },
+       { id: 'm2', text: "not yet. send the explainer you mentioned", senderId: 'me', timestamp: new Date(Date.now() - 50000), isOwn: true }
     ],
     appearance: createChatAppearance(true),
   } as ChatState,
@@ -111,12 +111,12 @@ export const CHAT_TEMPLATES = {
     platform: 'telegram',
     chatType: 'direct',
     people: [
-      { id: 'me', name: 'Contact X', isOnline: true },
-      { id: 'p1', name: 'Anonymous', isOnline: true }
+      { id: 'me', name: 'Zoya', isOnline: true },
+      { id: 'p1', name: 'Rhea', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
-       { id: 'm1', text: "midnight. same spot.", senderId: 'p1', timestamp: new Date(Date.now() - 600000), isOwn: false },
-       { id: 'm2', text: "copy", senderId: 'me', timestamp: new Date(Date.now() - 500000), isOwn: true }
+       { id: 'm1', text: "i left the spare key with the neighbour in 4B", senderId: 'p1', timestamp: new Date(Date.now() - 600000), isOwn: false },
+       { id: 'm2', text: "got it. our train gets in around eleven", senderId: 'me', timestamp: new Date(Date.now() - 500000), isOwn: true }
     ],
     appearance: createChatAppearance(true),
   } as ChatState,
@@ -126,11 +126,11 @@ export const CHAT_TEMPLATES = {
     chatType: 'direct',
     people: [
       { id: 'me', name: 'Seller', isOnline: true },
-      { id: 'p1', name: 'Lowballer Pete', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop', isOnline: true }
+      { id: 'p1', name: 'Dylan Brooks', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
-       { id: 'm1', text: "$10 for the iPhone 15? i can come rn", senderId: 'p1', timestamp: new Date(Date.now() - 3600000), isOwn: false },
-       { id: 'm2', text: "lol no", senderId: 'me', timestamp: new Date(Date.now() - 3500000), isOwn: true }
+       { id: 'm1', text: "would you take $280 if i collect it this evening?", senderId: 'p1', timestamp: new Date(Date.now() - 3600000), isOwn: false },
+       { id: 'm2', text: "$300 is the lowest i can do. charger is included", senderId: 'me', timestamp: new Date(Date.now() - 3500000), isOwn: true }
     ],
     appearance: createChatAppearance(false),
   } as ChatState,
@@ -156,8 +156,8 @@ export const CHAT_TEMPLATES = {
     chatType: 'group',
     people: [
       { id: 'me', name: 'Mod', isOnline: true },
-      { id: 'p1', name: 'Gamer123', avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=100&h=100&fit=crop', isOnline: true },
-      { id: 'p2', name: 'NoobMaster', isOnline: true }
+      { id: 'p1', name: 'Jordan', avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=100&h=100&fit=crop', isOnline: true },
+      { id: 'p2', name: 'Mei', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
       { id: 'm1', text: "anyone for a raid? need 2 more", senderId: 'p1', timestamp: new Date(Date.now() - 600000), isOwn: false },
@@ -170,9 +170,9 @@ export const CHAT_TEMPLATES = {
     platform: 'discord',
     chatType: 'group',
     people: [
-      { id: 'me', name: 'SlayerX', isOnline: true },
-      { id: 'p1', name: 'Healer99', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop', isOnline: true },
-      { id: 'p2', name: 'TankPro', isOnline: true }
+      { id: 'me', name: 'Sam', isOnline: true },
+      { id: 'p1', name: 'Nora', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop', isOnline: true },
+      { id: 'p2', name: 'Caleb', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
       { id: 'm1', text: "everyone on? boss fight in 5 ⚔️", senderId: 'me', timestamp: new Date(Date.now() - 300000), isOwn: true },
@@ -228,12 +228,12 @@ export const CHAT_TEMPLATES = {
     platform: 'signal',
     chatType: 'direct',
     people: [
-      { id: 'me', name: 'Echo', isOnline: true },
-      { id: 'p1', name: 'Ghost', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop', isOnline: true }
+      { id: 'me', name: 'Priya', isOnline: true },
+      { id: 'p1', name: 'Aditya', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
-      { id: 'm1', text: "logs cleared?", senderId: 'p1', timestamp: new Date(Date.now() - 60000), isOwn: false },
-      { id: 'm2', text: "encrypted and wiped. we're clean", senderId: 'me', timestamp: new Date(Date.now() - 30000), isOwn: true }
+      { id: 'm1', text: "did the landlord confirm the plumber?", senderId: 'p1', timestamp: new Date(Date.now() - 60000), isOwn: false },
+      { id: 'm2', text: "yes, between four and five. i'll work from home", senderId: 'me', timestamp: new Date(Date.now() - 30000), isOwn: true }
     ],
     appearance: createChatAppearance(true),
   } as ChatState,
@@ -353,10 +353,10 @@ export const CHAT_TEMPLATES = {
       { id: 'p1', name: 'Techie Tara', avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
-      { id: 'm1', text: "did u see the Veily launch thread?? 14K likes already", senderId: 'p1', timestamp: new Date(Date.now() - 3600000), isOwn: false },
-      { id: 'm2', text: "just read through it. the 4K export feature is wild", senderId: 'me', timestamp: new Date(Date.now() - 3540000), isOwn: true },
-      { id: 'm3', text: "thinking of writing a comparison thread. want to collab?", senderId: 'me', timestamp: new Date(Date.now() - 3500000), isOwn: true },
-      { id: 'm4', text: "100% down. i'll DM u my outline by tonight", senderId: 'p1', timestamp: new Date(Date.now() - 3400000), isOwn: false }
+      { id: 'm1', text: "are you still going to the design systems meetup?", senderId: 'p1', timestamp: new Date(Date.now() - 3600000), isOwn: false },
+      { id: 'm2', text: "yes, the accessibility talk starts at seven", senderId: 'me', timestamp: new Date(Date.now() - 3540000), isOwn: true },
+      { id: 'm3', text: "want to meet by the registration desk at 6:45?", senderId: 'me', timestamp: new Date(Date.now() - 3500000), isOwn: true },
+      { id: 'm4', text: "works for me. i'll bring your book too", senderId: 'p1', timestamp: new Date(Date.now() - 3400000), isOwn: false }
     ],
     appearance: createChatAppearance(true),
   } as ChatState,
@@ -401,15 +401,15 @@ export const CHAT_TEMPLATES = {
     chatType: 'group',
     people: [
       { id: 'me', name: 'Editor-in-Chief', isOnline: true },
-      { id: 'p1', name: 'ContentBot 3000', isOnline: true },
-      { id: 'p2', name: 'GraphicsGuru', avatar: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=100&h=100&fit=crop', isOnline: true }
+      { id: 'p1', name: 'Nora', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop', isOnline: true },
+      { id: 'p2', name: 'Vikram', avatar: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=100&h=100&fit=crop', isOnline: true }
     ],
     messages: [
-      { id: 'm1', text: "AI market cap just crossed $2T. drafting the newsletter now", senderId: 'me', timestamp: new Date(Date.now() - 1800000), isOwn: true },
-      { id: 'm2', text: "headline options: 'The $2T Milestone' or 'AI's Trillion Dollar Moment'", senderId: 'me', timestamp: new Date(Date.now() - 1740000), isOwn: true },
-      { id: 'm3', text: "second one hits harder. i've got an infographic ready 📊", senderId: 'p2', timestamp: new Date(Date.now() - 1680000), isOwn: false },
-      { id: 'm4', text: "scheduled? drop it Friday 9am EST for max opens", senderId: 'p1', timestamp: new Date(Date.now() - 1600000), isOwn: false },
-      { id: 'm5', text: "locked in. graphics team send me final PNGs by EOD", senderId: 'me', timestamp: new Date(Date.now() - 1500000), isOwn: true }
+      { id: 'm1', text: "the neighbourhood cycling story is ready for friday", senderId: 'me', timestamp: new Date(Date.now() - 1800000), isOwn: true },
+      { id: 'm2', text: "headline option: 'The people making school runs safer'", senderId: 'me', timestamp: new Date(Date.now() - 1740000), isOwn: true },
+      { id: 'm3', text: "good. i have the route map and two photos ready", senderId: 'p2', timestamp: new Date(Date.now() - 1680000), isOwn: false },
+      { id: 'm4', text: "send me the final links by four and i'll schedule it", senderId: 'p1', timestamp: new Date(Date.now() - 1600000), isOwn: false },
+      { id: 'm5', text: "perfect, i'll do one last copy edit now", senderId: 'me', timestamp: new Date(Date.now() - 1500000), isOwn: true }
     ],
     appearance: createChatAppearance(true),
   } as ChatState,

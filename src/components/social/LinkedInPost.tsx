@@ -54,8 +54,8 @@ export const LinkedInPost: React.FC<LinkedInPostProps> = ({ state }) => {
                                 <Globe className="w-3 h-3" />
                             </div>
                         </div>
-                        <button className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800">
-                            <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                        <button className={cn("rounded-full p-1", isDark ? "hover:bg-zinc-800" : "hover:bg-gray-100")}>
+                            <MoreHorizontal className={cn("h-5 w-5", isDark ? "text-zinc-400" : "text-gray-600")} />
                         </button>
                     </div>
                 </div>
@@ -68,19 +68,19 @@ export const LinkedInPost: React.FC<LinkedInPostProps> = ({ state }) => {
 
             {/* Image */}
             {state.content.image && (
-                <div className="w-full bg-gray-100 dark:bg-[#1b1f23]">
+                <div className={cn("w-full", isDark ? "bg-[#1b1f23]" : "bg-gray-100")}>
                     <img src={state.content.image} alt="Content" className="w-full h-auto object-contain max-h-[500px]" />
                 </div>
             )}
 
             {/* Stats Line */}
-            <div className="px-4 py-2 flex items-center justify-between text-[12px] text-gray-500 border-b border-gray-100 dark:border-zinc-800">
+            <div className={cn("flex items-center justify-between border-b px-4 py-2 text-xs text-gray-500", isDark ? "border-zinc-800" : "border-gray-100")}>
                 <div className="flex items-center gap-1">
                     <div className="flex -space-x-1">
-                        <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center border border-white dark:border-zinc-800 z-10">
+                        <div className={cn("z-10 flex h-4 w-4 items-center justify-center rounded-full border bg-blue-500", isDark ? "border-zinc-800" : "border-white")}>
                             <ThumbsUp className="w-2.5 h-2.5 text-white fill-current mt-[-1px]" />
                         </div>
-                        <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border border-white dark:border-zinc-800">
+                        <div className={cn("flex h-4 w-4 items-center justify-center rounded-full border bg-red-500", isDark ? "border-zinc-800" : "border-white")}>
                             <Heart className="w-2.5 h-2.5 text-white fill-current mt-[-1px]" />
                         </div>
                     </div>
@@ -111,7 +111,7 @@ export const LinkedInPost: React.FC<LinkedInPostProps> = ({ state }) => {
     );
 };
 
-const ActionButton = ({ icon: Icon, label, isDark }: { icon: any, label: string, isDark: boolean }) => (
+const ActionButton = ({ icon: Icon, label, isDark }: { icon: React.ElementType, label: string, isDark: boolean }) => (
     <button className={cn(
         "flex items-center gap-1.5 px-3 py-3 rounded-md font-semibold text-[15px] transition-colors flex-1 justify-center relative shadow-none border-0",
         isDark ? "hover:bg-zinc-800 text-zinc-300" : "hover:bg-gray-100/80 text-gray-600"
@@ -146,16 +146,16 @@ const LinkedInComment = ({ item, isDark, depth, items }: { item: ThreadItem & { 
                 </div>
 
                 <div className="flex items-center gap-4 mt-1 ml-2 text-[12px] font-semibold text-gray-500">
-                    <span className={cn("hover:bg-gray-100 dark:hover:bg-zinc-800 px-1 py-0.5 rounded cursor-pointer transition-colors", isDark ? "hover:text-zinc-300" : "hover:text-gray-900")}>Like</span>
+                    <span className={cn("cursor-pointer rounded px-1 py-0.5 transition-colors", isDark ? "hover:bg-zinc-800 hover:text-zinc-300" : "hover:bg-gray-100 hover:text-gray-900")}>Like</span>
                     {parseInt(item.metrics.likes) > 0 && (
-                        <span className="flex items-center gap-1 text-gray-400 bg-gray-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded-full">
+                        <span className={cn("flex items-center gap-1 rounded-full px-1.5 py-0.5 text-gray-400", isDark ? "bg-zinc-800" : "bg-gray-100")}>
                             <span className="w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
                                 <ThumbsUp className="w-2 h-2 text-white fill-current" />
                             </span>
                             {item.metrics.likes}
                         </span>
                     )}
-                    {(item.children || []).length === 0 && <span className={cn("hover:bg-gray-100 dark:hover:bg-zinc-800 px-1 py-0.5 rounded cursor-pointer transition-colors", isDark ? "hover:text-zinc-300" : "hover:text-gray-900")}>Reply</span>}
+                    {(item.children || []).length === 0 && <span className={cn("cursor-pointer rounded px-1 py-0.5 transition-colors", isDark ? "hover:bg-zinc-800 hover:text-zinc-300" : "hover:bg-gray-100 hover:text-gray-900")}>Reply</span>}
                 </div>
 
                 {(item.children || []).map(child => (

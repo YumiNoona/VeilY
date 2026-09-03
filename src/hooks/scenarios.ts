@@ -186,7 +186,7 @@ export const globalScenarios: ChatScenario[] = [
         name: "Weekend plans",
         messages: [
             { text: "yo what are you doing this weekend", isOwn: false },
-            { text: "literally nothing and i'm so excited", isOwn: true },
+            { text: "nothing planned and i cannot wait", isOwn: true },
             { text: "same honestly, this week has been brutal", isOwn: false },
             { text: "wanna grab brunch saturday?", isOwn: true },
             { text: "omg yes, that new place on 5th?", isOwn: false },
@@ -246,7 +246,7 @@ export const globalScenarios: ChatScenario[] = [
     {
         name: "Food debate",
         messages: [
-            { text: "hot take: pineapple belongs on pizza", isOwn: false },
+            { text: "pineapple belongs on pizza. i stand by it", isOwn: false },
             { text: "BLOCKED. immediately.", isOwn: true },
             { text: "hear me out, the sweet and salty combo is elite", isOwn: false },
             { text: "fruit does NOT go on pizza", isOwn: true },
@@ -287,7 +287,7 @@ export const globalScenarios: ChatScenario[] = [
             { text: "the expensive one??", isOwn: true },
             { text: "YES. the $30 bottle", isOwn: false },
             { text: "you need to label it or hide it at this point", isOwn: true },
-            { text: "i literally wrote my name on it", isOwn: false },
+            { text: "i wrote my name on the lid", isOwn: false },
             { text: "that is diabolical, start locking your door", isOwn: true },
             { text: "i'm about to buy a mini fridge for my room at this point", isOwn: false }
         ]

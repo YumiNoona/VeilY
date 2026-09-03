@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import { useCommentState, CommentPlatform, Profile, Comment } from '@/hooks/useCommentState';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -65,26 +65,6 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
 }) => {
     const [isSmartFillOpen, setIsSmartFillOpen] = React.useState(false);
 
-    // Pill toggle animation
-    const pillContainerRef = useRef<HTMLDivElement>(null);
-    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
-    const [pillMounted, setPillMounted] = useState(false);
-
-    useEffect(() => {
-      if (!pillContainerRef.current) return;
-      const raf = requestAnimationFrame(() => {
-        const active = pillContainerRef.current?.querySelector<HTMLElement>('[data-state="active"]');
-        if (!active || !pillContainerRef.current) return;
-        const containerRect = pillContainerRef.current.getBoundingClientRect();
-        const rect = active.getBoundingClientRect();
-        setPillStyle({ left: rect.left - containerRect.left, width: rect.width });
-        if (!pillMounted) setPillMounted(true);
-      });
-      return () => cancelAnimationFrame(raf);
-    }, [state.platform, pillMounted]);
-
-    const pillRefs = { containerRef: pillContainerRef, pillStyle, mounted: pillMounted };
-
     const handleSmartFillSuccess = (data: ParsedChat) => {
         if (data.participants && data.participants.length > 0) {
             data.participants.forEach((p, idx) => {
@@ -113,7 +93,7 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
             });
         }
     };
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const handlePlatformChange = (val: CommentPlatform) => {
         setPlatform(val);
@@ -232,20 +212,20 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Instagram</SelectLabel>
-                                <SelectItem value="instagramHype">IG Hype</SelectItem>
+                                <SelectItem value="instagramHype">Travel Photo</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
                                 <SelectLabel>TikTok</SelectLabel>
-                                <SelectItem value="tiktokViral">Viral Video</SelectItem>
-                                <SelectItem value="tiktokRecipe">Cooking Tips</SelectItem>
+                                <SelectItem value="tiktokViral">Metro Sketch</SelectItem>
+                                <SelectItem value="tiktokRecipe">Recipe Questions</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
                                 <SelectLabel>X</SelectLabel>
-                                <SelectItem value="twitterRatio">Ratioed</SelectItem>
+                                <SelectItem value="twitterRatio">Design Feedback</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
                                 <SelectLabel>YouTube</SelectLabel>
-                                <SelectItem value="youtubeKnowledge">Knowledge Sharing</SelectItem>
+                                <SelectItem value="youtubeKnowledge">Coding Tutorial</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -301,25 +281,17 @@ export const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                     onValueChange={(val) => handlePlatformChange(val as CommentPlatform)}
                     className="w-full"
                 >
-                    <TabsList ref={pillRefs.containerRef} className="relative grid w-full grid-cols-4 h-10">
-                        <div
-                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-springy z-0"
-                            style={{
-                                left: `${pillRefs.pillStyle.left}px`,
-                                width: `${pillRefs.pillStyle.width}px`,
-                                opacity: pillRefs.mounted ? 1 : 0,
-                            }}
-                        />
-                        <TabsTrigger value="instagram" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                    <TabsList className="grid h-10 w-full grid-cols-4">
+                        <TabsTrigger value="instagram" aria-label="Instagram comments" title="Instagram" className="transition-colors">
                             <PlatformIcon platform="instagram" className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="tiktok" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                        <TabsTrigger value="tiktok" aria-label="TikTok comments" title="TikTok" className="transition-colors">
                             <PlatformIcon platform="tiktok" className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="twitter" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                        <TabsTrigger value="twitter" aria-label="X replies" title="X" className="transition-colors">
                             <PlatformIcon platform="x" className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="youtube" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                        <TabsTrigger value="youtube" aria-label="YouTube comments" title="YouTube" className="transition-colors">
                             <Youtube className="w-4 h-4" />
                         </TabsTrigger>
                     </TabsList>

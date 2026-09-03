@@ -19,6 +19,18 @@ const Stories = lazy(() => import("./pages/Stories"));
 const Email = lazy(() => import("./pages/Email"));
 const GroupCall = lazy(() => import("./pages/GroupCall"));
 
+const PageFallback = ({ fullScreen = false }: { fullScreen?: boolean }) => (
+  <div className={`flex items-center justify-center w-full bg-background text-muted-foreground ${fullScreen ? 'h-screen' : 'h-full'}`}>
+    Loading...
+  </div>
+);
+
+const suspended = (page: React.ReactNode, fullScreen = false) => (
+  <Suspense fallback={<PageFallback fullScreen={fullScreen} />}>
+    {page}
+  </Suspense>
+);
+
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
 
@@ -31,23 +43,21 @@ const App = () => {
         <TooltipProvider>
           <Sonner />
           <Router>
-            <Suspense fallback={<div className="flex items-center justify-center h-screen w-full bg-background text-muted-foreground">Loading...</div>}>
-              <Routes>
-                <Route path="/" element={isDesktop ? <Navigate to="/app" replace /> : <Landing />} />
-                <Route element={<Layout />}>
-                  <Route path="/app" element={<Index />} />
-                  <Route path="/app/ai-chat" element={<AIChat />} />
-                  <Route path="/app/social" element={<SocialPost />} />
-                  <Route path="/app/comments" element={<Comments />} />
-                  <Route path="/app/stories" element={<Stories />} />
-                  <Route path="/app/email" element={<Email />} />
-                  <Route path="/app/group-call" element={<GroupCall />} />
-                  <Route path="/upgrade/success" element={<UpgradeSuccess />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="*" element={<NotFound />} />
-                </Route>
-              </Routes>
-            </Suspense>
+            <Routes>
+              <Route path="/" element={isDesktop ? <Navigate to="/app" replace /> : suspended(<Landing />, true)} />
+              <Route element={<Layout />}>
+                <Route path="/app" element={suspended(<Index />)} />
+                <Route path="/app/ai-chat" element={suspended(<AIChat />)} />
+                <Route path="/app/social" element={suspended(<SocialPost />)} />
+                <Route path="/app/comments" element={suspended(<Comments />)} />
+                <Route path="/app/stories" element={suspended(<Stories />)} />
+                <Route path="/app/email" element={suspended(<Email />)} />
+                <Route path="/app/group-call" element={suspended(<GroupCall />)} />
+                <Route path="/upgrade/success" element={suspended(<UpgradeSuccess />)} />
+                <Route path="/auth" element={suspended(<Auth />)} />
+                <Route path="*" element={suspended(<NotFound />)} />
+              </Route>
+            </Routes>
           </Router>
         </TooltipProvider>
       </AuthProvider>

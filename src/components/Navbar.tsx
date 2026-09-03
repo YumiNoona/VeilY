@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -56,6 +56,72 @@ export const Navbar = () => {
     const activeIndex = tabs.findIndex(t => t.path === location.pathname);
     const activeTab = tabs[activeIndex] || tabs[0];
 
+    const navRef = useRef<HTMLDivElement>(null);
+    const tabRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
+    const animationFrameRef = useRef<number>();
+    const hasMeasuredRef = useRef(false);
+    const [animatePill, setAnimatePill] = useState(false);
+    const [pill, setPill] = useState({ left: 0, width: 0, visible: false });
+
+    const setTabRef = (id: string, element: HTMLAnchorElement | null) => {
+        if (element) tabRefs.current.set(id, element);
+        else tabRefs.current.delete(id);
+    };
+
+    useLayoutEffect(() => {
+        const measurePill = () => {
+            const container = navRef.current;
+            const tab = tabRefs.current.get(activeTab.id);
+            if (!container || !tab) return;
+
+            const containerRect = container.getBoundingClientRect();
+            const tabRect = tab.getBoundingClientRect();
+            const nextPill = {
+                left: tabRect.left - containerRect.left,
+                width: tabRect.width,
+                visible: true,
+            };
+
+            setPill(current => (
+                current.left === nextPill.left &&
+                current.width === nextPill.width &&
+                current.visible
+                    ? current
+                    : nextPill
+            ));
+
+            if (!hasMeasuredRef.current) {
+                hasMeasuredRef.current = true;
+                animationFrameRef.current = window.requestAnimationFrame(() => setAnimatePill(true));
+            }
+        };
+
+        measurePill();
+
+        const resizeObserver = new ResizeObserver(measurePill);
+        if (navRef.current) resizeObserver.observe(navRef.current);
+        tabRefs.current.forEach(tab => resizeObserver.observe(tab));
+
+        window.addEventListener('resize', measurePill);
+
+        let cancelled = false;
+        document.fonts?.ready.then(() => {
+            if (!cancelled) measurePill();
+        });
+
+        return () => {
+            cancelled = true;
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', measurePill);
+        };
+    }, [activeTab.id]);
+
+    useLayoutEffect(() => () => {
+        if (animationFrameRef.current !== undefined) {
+            window.cancelAnimationFrame(animationFrameRef.current);
+        }
+    }, []);
+
     const userInitial = (fullName || user?.email || 'U').charAt(0).toUpperCase();
     const ActiveIcon = activeTab.icon;
 
@@ -83,18 +149,33 @@ export const Navbar = () => {
             
             {/* MIDDLE: Navigation Tabs */}
             <div className="hidden lg:flex justify-center shrink-0">
-                <div className="relative flex items-center gap-1 bg-muted/30 p-1 rounded-full border border-border/50">
+                <div ref={navRef} className="relative flex items-center gap-1 bg-muted/30 p-1 rounded-full border border-border/50">
+                    <div
+                        aria-hidden="true"
+                        className={cn(
+                            "absolute inset-y-1 left-0 rounded-full bg-primary shadow-sm",
+                            animatePill
+                                ? "transition-[transform,width,opacity] duration-300 ease-springy"
+                                : "transition-none"
+                        )}
+                        style={{
+                            width: `${pill.width}px`,
+                            transform: `translate3d(${pill.left}px, 0, 0)`,
+                            opacity: pill.visible ? 1 : 0,
+                        }}
+                    />
                     {tabs.map((tab) => {
                         const isActive = location.pathname === tab.path;
                         const Icon = tab.icon;
                         return (
                             <Link
                                 key={tab.id}
+                                ref={(element) => setTabRef(tab.id, element)}
                                 to={tab.path}
                                 className={cn(
-                                    "relative flex items-center gap-2 whitespace-nowrap px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors duration-200",
+                                    "relative z-10 flex items-center gap-2 whitespace-nowrap px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors duration-200",
                                     isActive
-                                        ? "bg-primary text-primary-foreground shadow-sm"
+                                        ? "text-primary-foreground"
                                         : "text-muted-foreground hover:text-foreground"
                                 )}
                             >

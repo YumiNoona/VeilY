@@ -35,7 +35,7 @@ export const InstagramComments: React.FC<InstagramCommentsProps> = ({ state }) =
                         <div className="ml-4 flex flex-col items-center gap-1">
                             <Heart className="w-3 h-3 text-gray-400 hover:text-gray-500 cursor-pointer" />
                             {parseInt(comment.likes) > 0 && (
-                                <span className="text-[10px] text-gray-500">{comment.likes}</span>
+                                <span className="text-xs text-gray-500">{comment.likes}</span>
                             )}
                         </div>
                     </div>
@@ -53,11 +53,11 @@ export const InstagramComments: React.FC<InstagramCommentsProps> = ({ state }) =
                                     <AvatarImage src={state.profiles.find(p => p.isCreator)?.avatar} className="object-cover" />
                                     <AvatarFallback>C</AvatarFallback>
                                 </Avatar>
-                                <div className="absolute -bottom-1 -right-1 bg-red-500 rounded-full p-[1px] border border-background">
+                                <div className={cn("absolute -bottom-1 -right-1 rounded-full border bg-red-500 p-[1px]", isDark ? "border-black" : "border-white")}>
                                     <Heart className="w-2 h-2 text-white fill-white" />
                                 </div>
                             </div>
-                            <span className="text-[11px] text-gray-500">Liked by author</span>
+                            <span className={cn("text-xs", isDark ? "text-zinc-300" : "text-gray-500")}>Liked by author</span>
                         </div>
                     )}
 
@@ -65,7 +65,7 @@ export const InstagramComments: React.FC<InstagramCommentsProps> = ({ state }) =
                     {comment.replies.length > 0 && (
                         <div className="mt-4 pl-0">
                             <div className="flex items-center gap-2 mb-3 cursor-pointer">
-                                <div className="w-8 h-[1px] bg-gray-300 dark:bg-zinc-700"></div>
+                                <div className={cn("h-px w-8", isDark ? "bg-zinc-700" : "bg-gray-300")}></div>
                                 <span className="text-[12px] text-gray-500 font-semibold">View replies ({comment.replies.length})</span>
                             </div>
                             {/* In real insta, replies are nested but aligned differently. For mockup, simply indenting slightly or just listing them works well */}
@@ -83,7 +83,7 @@ export const InstagramComments: React.FC<InstagramCommentsProps> = ({ state }) =
             isDark ? "bg-black border-none text-white" : "border-gray-200 text-black"
         )}>
             {/* Mock Header for Context */}
-            <div className="p-3 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-center relative">
+            <div className={cn("relative flex items-center justify-center border-b p-3", isDark ? "border-zinc-800" : "border-gray-100")}>
                 <div className="w-10 h-1 bg-gray-300 rounded-full absolute top-2"></div>
                 <span className="font-semibold text-sm mt-3">Comments</span>
             </div>
@@ -92,7 +92,7 @@ export const InstagramComments: React.FC<InstagramCommentsProps> = ({ state }) =
                 {state.comments.map(c => renderComment(c))}
             </div>
 
-            <div className="p-3 border-t border-gray-100 dark:border-zinc-800 flex items-center gap-3">
+            <div className={cn("flex items-center gap-3 border-t p-3", isDark ? "border-zinc-800" : "border-gray-100")}>
                 <Avatar className="w-8 h-8">
                     <AvatarImage src={state.profiles[0].avatar} className="object-cover" />
                     <AvatarFallback>{state.profiles[0].name[0]}</AvatarFallback>

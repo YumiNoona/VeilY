@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- shared renderer helpers and small components form one public module */
 import { Message, Person, AppearanceSettings, ChatType, DeviceView } from "@/types/chat";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";

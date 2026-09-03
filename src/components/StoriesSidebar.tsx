@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Plus, Trash2, Upload, Instagram, Ghost, RotateCcw, Wand2, User, FileText, MessageCircle } from 'lucide-react';
+import React, { useRef } from 'react';
+import { Plus, Trash2, Upload, RotateCcw, Wand2, User, FileText } from 'lucide-react';
 import { useStoriesState } from '@/hooks/useStoriesState';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -55,26 +55,6 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Pill toggle animation
-    const pillContainerRef = useRef<HTMLDivElement>(null);
-    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
-    const [pillMounted, setPillMounted] = useState(false);
-
-    useEffect(() => {
-      if (!pillContainerRef.current) return;
-      const raf = requestAnimationFrame(() => {
-        const active = pillContainerRef.current?.querySelector<HTMLElement>('[data-state="active"]');
-        if (!active || !pillContainerRef.current) return;
-        const containerRect = pillContainerRef.current.getBoundingClientRect();
-        const rect = active.getBoundingClientRect();
-        setPillStyle({ left: rect.left - containerRect.left, width: rect.width });
-        if (!pillMounted) setPillMounted(true);
-      });
-      return () => cancelAnimationFrame(raf);
-    }, [state.platform, pillMounted]);
-
-    const pillRefs = { containerRef: pillContainerRef, pillStyle, mounted: pillMounted };
-
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -102,21 +82,27 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Instagram</SelectLabel>
-                                <SelectItem value="influencerDay">Influencer Day</SelectItem>
-                                <SelectItem value="natureEscape">Nature Escape</SelectItem>
-                                <SelectItem value="urbanVibe">Urban Scout</SelectItem>
-                                <SelectItem value="petLove">Paws & Claws</SelectItem>
-                                <SelectItem value="foodieHeaven">Chef Secrets</SelectItem>
-                                <SelectItem value="techSetup">Code Lab</SelectItem>
-                                <SelectItem value="minimalFashion">Style Edit</SelectItem>
-                                <SelectItem value="modernArch">Modern Lines</SelectItem>
+                                <SelectItem value="influencerDay">Coastal Trip</SelectItem>
+                                <SelectItem value="productLaunch">Product Photos</SelectItem>
+                                <SelectItem value="dayInLife">Saturday Diary</SelectItem>
+                                <SelectItem value="morningCoffee">Morning Coffee</SelectItem>
+                                <SelectItem value="gymSession">Training Session</SelectItem>
+                                <SelectItem value="natureEscape">Mountain Walk</SelectItem>
+                                <SelectItem value="urbanVibe">City Walk</SelectItem>
+                                <SelectItem value="petLove">Milo at Home</SelectItem>
+                                <SelectItem value="foodieHeaven">Dinner Prep</SelectItem>
+                                <SelectItem value="techSetup">Desk Setup</SelectItem>
+                                <SelectItem value="minimalFashion">Wardrobe Edit</SelectItem>
+                                <SelectItem value="modernArch">Architecture Study</SelectItem>
+                                <SelectItem value="artGallery">Gallery Visit</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
                                 <SelectLabel>Snapchat</SelectLabel>
-                                <SelectItem value="snapchatVibe">Chill Vibes</SelectItem>
-                                <SelectItem value="beachDay">Island Hopper</SelectItem>
-                                <SelectItem value="cityNight">Neon Vibes</SelectItem>
-                                <SelectItem value="luxuryDrive">Auto Elite</SelectItem>
+                                <SelectItem value="snapchatVibe">Evening Out</SelectItem>
+                                <SelectItem value="travelJournal">Road Trip</SelectItem>
+                                <SelectItem value="beachDay">Beach Day</SelectItem>
+                                <SelectItem value="cityNight">City at Night</SelectItem>
+                                <SelectItem value="luxuryDrive">Weekend Drive</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -155,25 +141,17 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                     onValueChange={(val) => setPlatform(val as 'instagram' | 'snapchat' | 'whatsapp' | 'messenger')}
                     className="w-full"
                 >
-                    <TabsList ref={pillRefs.containerRef} className="relative grid w-full grid-cols-4 h-10">
-                        <div
-                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-springy z-0"
-                            style={{
-                                left: `${pillRefs.pillStyle.left}px`,
-                                width: `${pillRefs.pillStyle.width}px`,
-                                opacity: pillRefs.mounted ? 1 : 0,
-                            }}
-                        />
-                        <TabsTrigger value="instagram" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                    <TabsList className="grid h-10 w-full grid-cols-4">
+                        <TabsTrigger value="instagram" aria-label="Instagram story" title="Instagram story">
                             <PlatformIcon platform="instagram" className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="snapchat" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                        <TabsTrigger value="snapchat" aria-label="Snapchat story" title="Snapchat story">
                             <PlatformIcon platform="snapchat" className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="whatsapp" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                        <TabsTrigger value="whatsapp" aria-label="WhatsApp status" title="WhatsApp status">
                             <PlatformIcon platform="whatsapp" className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="messenger" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                        <TabsTrigger value="messenger" aria-label="Messenger story" title="Messenger story">
                             <PlatformIcon platform="messenger" className="w-4 h-4" />
                         </TabsTrigger>
                     </TabsList>
@@ -227,11 +205,20 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Slides</Label>
                                 <div className="flex items-center gap-2 flex-wrap">
                                     {state.slides.map((slide, i) => (
-                                        <button
+                                        <div
                                             key={slide.id}
+                                            role="button"
+                                            tabIndex={0}
                                             onClick={() => setActiveSlide(i)}
+                                            onKeyDown={(event) => {
+                                                if (event.key === 'Enter' || event.key === ' ') {
+                                                    event.preventDefault();
+                                                    setActiveSlide(i);
+                                                }
+                                            }}
+                                            aria-label={`Select slide ${i + 1}`}
                                             className={cn(
-                                                "w-12 h-12 rounded-lg border-2 overflow-hidden flex items-center justify-center text-xs font-medium relative group",
+                                                "group relative flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 text-xs font-medium",
                                                 state.activeSlideIndex === i
                                                     ? 'border-primary border-solid'
                                                     : 'border-border border-solid hover:border-primary/50'
@@ -244,15 +231,19 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                                             )}
                                             {state.slides.length > 1 && (
                                                 <button
+                                                    type="button"
+                                                    aria-label={`Remove slide ${i + 1}`}
                                                     onClick={ev => { ev.stopPropagation(); removeSlide(i); }}
                                                     className="absolute inset-0 bg-black/60 hidden group-hover:flex items-center justify-center text-white"
                                                 >
                                                     <Trash2 className="w-3 h-3" />
                                                 </button>
                                             )}
-                                        </button>
+                                        </div>
                                     ))}
                                     <button
+                                        type="button"
+                                        aria-label="Add slide"
                                         onClick={addSlide}
                                         className="w-12 h-12 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
                                     >

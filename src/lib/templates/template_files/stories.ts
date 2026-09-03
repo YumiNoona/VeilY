@@ -17,7 +17,7 @@ const createChatAppearance = (darkMode = false): AppearanceSettings => ({
 export const STORIES_TEMPLATES = {
   influencerDay: {
     platform: 'instagram',
-    username: 'travel_diaries',
+    username: 'kavya.nair',
     verified: true,
     timeAgo: '2h',
     slides: [
@@ -32,7 +32,7 @@ export const STORIES_TEMPLATES = {
 
   productLaunch: {
     platform: 'instagram',
-    username: 'tech_gear_daily',
+    username: 'framebyframe',
     verified: true,
     timeAgo: '45m',
     slides: [
@@ -46,7 +46,7 @@ export const STORIES_TEMPLATES = {
 
   snapchatVibe: {
     platform: 'snapchat',
-    username: 'chill_vibes',
+    username: 'leahmorgan',
     verified: false,
     timeAgo: 'Just now',
     slides: [
@@ -60,7 +60,7 @@ export const STORIES_TEMPLATES = {
 
   dayInLife: {
     platform: 'instagram',
-    username: 'sara_vlogs',
+    username: 'sarahsaturday',
     verified: false,
     timeAgo: '5h',
     slides: [
@@ -75,7 +75,7 @@ export const STORIES_TEMPLATES = {
 
   morningCoffee: {
     platform: 'instagram',
-    username: 'cozy_mornings',
+    username: 'ellabrooks',
     verified: false,
     timeAgo: '2h',
     slides: [
@@ -89,7 +89,7 @@ export const STORIES_TEMPLATES = {
 
   gymSession: {
     platform: 'instagram',
-    username: 'fitness_junkie',
+    username: 'rohanruns',
     verified: true,
     timeAgo: '45m',
     slides: [
@@ -103,7 +103,7 @@ export const STORIES_TEMPLATES = {
 
   travelJournal: {
     platform: 'snapchat',
-    username: 'globetrotter',
+    username: 'nikhiltravels',
     verified: false,
     timeAgo: '12h',
     slides: [
@@ -118,7 +118,7 @@ export const STORIES_TEMPLATES = {
 
   natureEscape: {
     platform: 'instagram',
-    username: 'nature_seeker',
+    username: 'meeraoutdoors',
     verified: true,
     timeAgo: '1h',
     slides: [
@@ -132,7 +132,7 @@ export const STORIES_TEMPLATES = {
 
   urbanVibe: {
     platform: 'instagram',
-    username: 'city_scout',
+    username: 'tomwalks',
     verified: false,
     timeAgo: '3h',
     slides: [
@@ -146,7 +146,7 @@ export const STORIES_TEMPLATES = {
 
   petLove: {
     platform: 'instagram',
-    username: 'paws_n_claws',
+    username: 'milothebeagle',
     verified: false,
     timeAgo: '15m',
     slides: [
@@ -160,7 +160,7 @@ export const STORIES_TEMPLATES = {
 
   foodieHeaven: {
     platform: 'instagram',
-    username: 'chef_secrets',
+    username: 'ritucooks',
     verified: true,
     timeAgo: '4h',
     slides: [
@@ -174,7 +174,7 @@ export const STORIES_TEMPLATES = {
 
   techSetup: {
     platform: 'instagram',
-    username: 'code_lab',
+    username: 'mayacodes',
     verified: true,
     timeAgo: '6h',
     slides: [
@@ -188,7 +188,7 @@ export const STORIES_TEMPLATES = {
 
   minimalFashion: {
     platform: 'instagram',
-    username: 'style_edit',
+    username: 'sofiamartin',
     verified: false,
     timeAgo: '2h',
     slides: [
@@ -202,7 +202,7 @@ export const STORIES_TEMPLATES = {
 
   modernArch: {
     platform: 'instagram',
-    username: 'lines_n_space',
+    username: 'arjunbuilds',
     verified: false,
     timeAgo: '8h',
     slides: [
@@ -216,7 +216,7 @@ export const STORIES_TEMPLATES = {
 
   beachDay: {
     platform: 'snapchat',
-    username: 'island_hopper',
+    username: 'zoyakhan',
     verified: false,
     timeAgo: 'Just now',
     slides: [
@@ -230,7 +230,7 @@ export const STORIES_TEMPLATES = {
 
   cityNight: {
     platform: 'snapchat',
-    username: 'neon_vibes',
+    username: 'devmalhotra',
     verified: false,
     timeAgo: '10m',
     slides: [
@@ -244,7 +244,7 @@ export const STORIES_TEMPLATES = {
 
   luxuryDrive: {
     platform: 'snapchat',
-    username: 'auto_elite',
+    username: 'vikramdrive',
     verified: true,
     timeAgo: '5m',
     slides: [
@@ -258,7 +258,7 @@ export const STORIES_TEMPLATES = {
 
   artGallery: {
     platform: 'instagram',
-    username: 'palette_press',
+    username: 'tarastudio',
     verified: true,
     timeAgo: '20m',
     slides: [

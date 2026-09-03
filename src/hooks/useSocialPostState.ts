@@ -58,21 +58,21 @@ export interface SocialPostState {
 const defaultState: SocialPostState = {
   platform: 'twitter',
   author: {
-    name: 'Alex Rivera',
-    handle: 'arivera_dev',
-    avatar: getAvatarUrl('Alex Rivera'),
-    verified: true,
+    name: 'Neha Kulkarni',
+    handle: 'nehakulkarni',
+    avatar: getAvatarUrl('Neha Kulkarni'),
+    verified: false,
   },
   content: {
-    text: "designers if you haven't tried Veily yet you're missing out 🔥\n\nit's a free mockup tool that supports WhatsApp, iMessage, Discord and 20+ other platforms. you can customize literally everything. been using it for my portfolio case studies and the exports are crisp.\n\nalso peep vexo.venusapp.in for more cool stuff",
-    image: null,
+    text: "The first rain after a week of heat. Pune needed this.",
+    image: 'https://images.unsplash.com/photo-1519692933481-e162a57d6721?w=1200&h=900&fit=crop',
     date: new Date(),
   },
   metrics: {
-    likes: '3.4K',
-    comments: '287',
-    reposts: '1.2K',
-    views: '142K',
+    likes: '184',
+    comments: '12',
+    reposts: '9',
+    views: '6.8K',
   },
   config: {
     theme: 'light',
@@ -82,10 +82,13 @@ const defaultState: SocialPostState = {
 };
 
 const hydrateState = (): SocialPostState => {
-  const saved = localStorage.getItem('veily_social_state');
-  if (saved) {
-    try {
+  try {
+    const saved = localStorage.getItem('veily_social_state');
+    if (saved) {
       const parsed = JSON.parse(saved);
+      if (parsed.content?.text?.includes("designers if you haven't tried Veily")) {
+        return defaultState;
+      }
       // Revive dates safely
       if (parsed.content?.date) {
           parsed.content.date = new Date(parsed.content.date);
@@ -101,9 +104,9 @@ const hydrateState = (): SocialPostState => {
         }));
       }
       return { ...defaultState, ...parsed };
-    } catch (e) {
-      console.error("Failed to parse saved social state", e);
     }
+  } catch (error) {
+    console.warn('Unable to restore social post settings:', error);
   }
   return defaultState;
 };
@@ -113,7 +116,26 @@ export const useSocialPostState = () => {
 
   // Auto-save
   React.useEffect(() => {
-    localStorage.setItem('veily_social_state', JSON.stringify(state));
+    const persistableState: SocialPostState = {
+      ...state,
+      content: {
+        ...state.content,
+        image: state.content.image?.startsWith('data:') ? null : state.content.image,
+      },
+      threadItems: state.threadItems.map(item => ({
+        ...item,
+        content: {
+          ...item.content,
+          image: item.content.image?.startsWith('data:') ? null : item.content.image,
+        },
+      })),
+    };
+
+    try {
+      localStorage.setItem('veily_social_state', JSON.stringify(persistableState));
+    } catch (error) {
+      console.warn('Unable to persist social post settings:', error);
+    }
   }, [state]);
 
   const handleResetState = () => {
@@ -153,14 +175,14 @@ export const useSocialPostState = () => {
       ...prev,
       platform: scenario.platform as SocialPlatform,
       author: {
-        ...prev.author,
         name: scenario.author.name,
         handle: scenario.author.handle,
-        avatar: getAvatarUrl(scenario.author.name)
+        avatar: getAvatarUrl(scenario.author.name),
+        verified: false,
       },
       content: {
-        ...prev.content,
         text: scenario.text,
+        image: scenario.image ?? null,
         date: new Date()
       },
       metrics: {
@@ -170,7 +192,8 @@ export const useSocialPostState = () => {
       config: {
         ...prev.config,
         theme: Math.random() > 0.5 ? 'dark' : 'light'
-      }
+      },
+      threadItems: [],
     }));
     
     toast.success(`Randomized: ${scenario.name}`);

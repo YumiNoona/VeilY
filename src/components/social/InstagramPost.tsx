@@ -51,7 +51,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({ state }) => {
             </div>
 
             {/* Image */}
-            <div className="bg-gray-100 dark:bg-zinc-900 aspect-square w-full flex items-center justify-center overflow-hidden">
+            <div className={cn("flex aspect-square w-full items-center justify-center overflow-hidden", isDark ? "bg-zinc-900" : "bg-gray-100")}>
                 {state.content.image ? (
                     <img src={state.content.image} alt="Post content" className="w-full h-full object-cover" />
                 ) : (
@@ -93,7 +93,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({ state }) => {
                 )}
 
                 {/* Date */}
-                <div className="text-[10px] text-gray-500 uppercase tracking-wide mt-2">
+                <div className="mt-2 text-xs uppercase tracking-wide text-gray-500">
                     {formatDistanceToNow(state.content.date)} ago
                 </div>
             </div>
@@ -135,7 +135,7 @@ const InstagramComment = ({ item, isDark, depth }: { item: ThreadItem & { childr
             {(item.children || []).length > 0 && (
                 <div className="mt-1">
                     <div className="flex items-center gap-3 ml-10 mb-2 mt-2">
-                        <div className="w-6 h-[1px] bg-gray-300 dark:bg-zinc-700" />
+                        <div className={cn("h-px w-6", isDark ? "bg-zinc-700" : "bg-gray-300")} />
                         <span className="text-xs text-gray-500 font-semibold cursor-pointer">
                             View replies ({(item.children || []).length})
                         </span>

@@ -31,7 +31,7 @@ export function useKeyboardShortcuts() {
             const tag = (e.target as HTMLElement)?.tagName;
             if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
 
-            // Escape — dismiss any open modal
+            // Escape dismisses any open modal.
             if (e.key === 'Escape') {
                 if (isProfileModalOpen) { setProfileModalOpen(false); return; }
                 if (isUpgradeModalOpen) { setUpgradeModalOpen(false); return; }

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { useSocialPostState, SocialPlatform, ThreadItem } from '@/hooks/useSocialPostState';
 import { formatMetric } from '@/lib/utils';
 import { SOCIAL_TEMPLATES } from '@/lib/templates';
@@ -49,26 +49,6 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
 }) => {
     const [collapsedThreads, setCollapsedThreads] = React.useState<Record<string, boolean>>({});
     const [isSmartFillOpen, setIsSmartFillOpen] = React.useState(false);
-
-    // Pill toggle animation
-    const pillContainerRef = useRef<HTMLDivElement>(null);
-    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
-    const [pillMounted, setPillMounted] = useState(false);
-
-    useEffect(() => {
-      if (!pillContainerRef.current) return;
-      const raf = requestAnimationFrame(() => {
-        const active = pillContainerRef.current?.querySelector<HTMLElement>('[data-state="active"]');
-        if (!active || !pillContainerRef.current) return;
-        const containerRect = pillContainerRef.current.getBoundingClientRect();
-        const rect = active.getBoundingClientRect();
-        setPillStyle({ left: rect.left - containerRect.left, width: rect.width });
-        if (!pillMounted) setPillMounted(true);
-      });
-      return () => cancelAnimationFrame(raf);
-    }, [state.platform, pillMounted]);
-
-    const pillRefs = { containerRef: pillContainerRef, pillStyle, mounted: pillMounted };
 
     const handleSmartFillSuccess = (data: ParsedChat) => {
         if (data.participants && data.participants.length > 0) {
@@ -195,28 +175,28 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>X</SelectLabel>
-                                <SelectItem value="viralTweet">Growth Playbook</SelectItem>
-                                <SelectItem value="techNewsX">Tech News</SelectItem>
+                                <SelectItem value="viralTweet">Product Note</SelectItem>
+                                <SelectItem value="techNewsX">Local News</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
                                 <SelectLabel>Instagram</SelectLabel>
-                                <SelectItem value="instagramAesthetic">Aesthetic Vibe</SelectItem>
-                                <SelectItem value="instagramBrand">Brand Post</SelectItem>
+                                <SelectItem value="instagramAesthetic">Sunday Breakfast</SelectItem>
+                                <SelectItem value="instagramBrand">Studio Launch</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
                                 <SelectLabel>LinkedIn</SelectLabel>
-                                <SelectItem value="linkedinHired">New Job</SelectItem>
-                                <SelectItem value="linkedinAdvice">Expert Advice</SelectItem>
+                                <SelectItem value="linkedinHired">New Role</SelectItem>
+                                <SelectItem value="linkedinAdvice">Operations Note</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
                                 <SelectLabel>Other</SelectLabel>
-                                <SelectItem value="redditAITA">Reddit AITA</SelectItem>
-                                <SelectItem value="redditTheory">Reddit Theory</SelectItem>
-                                <SelectItem value="facebookMarketplace">Facebook Sale</SelectItem>
+                                <SelectItem value="redditAITA">Flatmate Question</SelectItem>
+                                <SelectItem value="redditTheory">Film Detail</SelectItem>
+                                <SelectItem value="facebookMarketplace">Local Sale</SelectItem>
                             </SelectGroup>
                             <SelectGroup>
                                 <SelectLabel>X Spaces</SelectLabel>
-                                <SelectItem value="xSpace">X Space Live</SelectItem>
+                                <SelectItem value="xSpace">Community Audio</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -268,24 +248,16 @@ export const SocialPostSidebar: React.FC<SocialPostSidebarProps> = ({
                     onValueChange={(val) => setPlatform(val as SocialPlatform)}
                     className="w-full"
                 >
-                    <TabsList ref={pillRefs.containerRef} className="relative grid w-full grid-cols-5 h-10">
-                        <div
-                            className="absolute top-1 bottom-1 rounded-sm bg-background shadow-sm transition-all duration-300 ease-springy z-0"
-                            style={{
-                                left: `${pillRefs.pillStyle.left}px`,
-                                width: `${pillRefs.pillStyle.width}px`,
-                                opacity: pillRefs.mounted ? 1 : 0,
-                            }}
-                        />
-                        <TabsTrigger value="twitter" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10"><PlatformIcon platform="x" className="w-4 h-4" /></TabsTrigger>
-                        <TabsTrigger value="instagram" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10"><PlatformIcon platform="instagram" className="w-4 h-4" /></TabsTrigger>
-                        <TabsTrigger value="linkedin" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                    <TabsList className="grid h-10 w-full grid-cols-5">
+                        <TabsTrigger value="twitter" aria-label="X post" title="X" className="transition-colors"><PlatformIcon platform="x" className="w-4 h-4" /></TabsTrigger>
+                        <TabsTrigger value="instagram" aria-label="Instagram post" title="Instagram" className="transition-colors"><PlatformIcon platform="instagram" className="w-4 h-4" /></TabsTrigger>
+                        <TabsTrigger value="linkedin" aria-label="LinkedIn post" title="LinkedIn" className="transition-colors">
                             <PlatformIcon platform="linkedin" className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="facebook" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                        <TabsTrigger value="facebook" aria-label="Facebook post" title="Facebook" className="transition-colors">
                             <PlatformIcon platform="facebook" className="w-4 h-4" />
                         </TabsTrigger>
-                        <TabsTrigger value="reddit" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none relative z-10">
+                        <TabsTrigger value="reddit" aria-label="Reddit post" title="Reddit" className="transition-colors">
                             <PlatformIcon platform="reddit" className="w-4 h-4" />
                         </TabsTrigger>
                     </TabsList>

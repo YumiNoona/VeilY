@@ -35,15 +35,13 @@ export interface CommentsState {
     };
 }
 
-const DEFAULT_AVATAR = "https://github.com/shadcn.png";
-
 const INITIAL_PROFILES: Profile[] = [
     {
         id: 'creator',
-        name: 'Veily Official',
-        handle: 'veily_app',
-        avatar: DEFAULT_AVATAR,
-        verified: true,
+        name: 'Meera Makes',
+        handle: 'meeramakes',
+        avatar: getAvatarUrl('Meera Makes'),
+        verified: false,
         isCreator: true,
     },
     {
@@ -55,9 +53,9 @@ const INITIAL_PROFILES: Profile[] = [
     },
     {
         id: 'user2',
-        name: 'Marcus Chen',
-        handle: 'marcuschen',
-        avatar: getAvatarUrl('Marcus Chen'),
+        name: 'Arjun Menon',
+        handle: 'arjunmenon',
+        avatar: getAvatarUrl('Arjun Menon'),
         verified: false,
     },
 ];
@@ -66,16 +64,16 @@ const INITIAL_COMMENTS: Comment[] = [
     {
         id: 'c1',
         userId: 'user1',
-        text: 'been using Veily for my design portfolio for 3 months now and its honestly the best mockup tool out there. the AI chat templates are insane 🔥',
-        likes: '847',
+        text: 'Tried this with the smaller tin and it still baked evenly. Saving the recipe.',
+        likes: '84',
         timeAgo: '2h',
         isLikedByAuthor: true,
         replies: [
             {
                 id: 'r1',
                 userId: 'creator',
-                text: 'Thank you so much Priya! Really glad you are enjoying it. Have you checked out vexo.venusapp.in too?',
-                likes: '234',
+                text: 'Good to know. I was worried the centre would stay soft in that size.',
+                likes: '18',
                 timeAgo: '1h',
                 replies: [],
             }
@@ -84,8 +82,8 @@ const INITIAL_COMMENTS: Comment[] = [
     {
         id: 'c2',
         userId: 'user2',
-        text: 'ok but can we talk about how clean the UI is? and its completely free?? whoever made this deserves a raise',
-        likes: '512',
+        text: 'Would jaggery work here, or will it change the texture too much?',
+        likes: '21',
         timeAgo: '4h',
         isLikedByAuthor: false,
         replies: [],
@@ -115,7 +113,7 @@ export const useCommentState = () => {
             id: uuidv4(),
             name: 'New User',
             handle: 'newuser',
-        avatar: getAvatarUrl('Veily Official'),
+            avatar: getAvatarUrl('New User'),
             verified: false,
         };
         setState(prev => ({ ...prev, profiles: [...prev.profiles, newProfile] }));
@@ -129,12 +127,14 @@ export const useCommentState = () => {
     };
 
     const removeProfile = (id: string) => {
-        if (state.profiles.length <= 1) return; // Prevent removing last profile
+        if (state.profiles.length <= 1 || state.profiles.find(profile => profile.id === id)?.isCreator) return;
+        const removeUserComments = (comments: Comment[]): Comment[] => comments
+            .filter(comment => comment.userId !== id)
+            .map(comment => ({ ...comment, replies: removeUserComments(comment.replies) }));
         setState(prev => ({
             ...prev,
             profiles: prev.profiles.filter(p => p.id !== id),
-            // Also remove comments by this user? Or reassign? For now, let's keep them but they might break if not handled.
-            // Better to filter comments or handle missing profile in UI.
+            comments: removeUserComments(prev.comments),
         }));
     };
 
@@ -233,13 +233,13 @@ export const useCommentState = () => {
         const scenario = commentScenarios[Math.floor(Math.random() * commentScenarios.length)];
         
         const newProfiles: Profile[] = [
-            { id: 'creator', ...scenario.creator, avatar: getAvatarUrl(scenario.creator.name), verified: true, isCreator: true },
+            { id: 'creator', ...scenario.creator, handle: scenario.creator.handle.replace(/^@/, ''), avatar: getAvatarUrl(scenario.creator.name), verified: false, isCreator: true },
             ...scenario.comments.map(c => ({
                 id: c.userId,
                 name: c.name,
                 handle: c.name.toLowerCase().replace(/\s+/g, ''),
                 avatar: getAvatarUrl(c.name),
-                verified: Math.random() > 0.8
+                verified: false
             }))
         ];
 
@@ -250,7 +250,7 @@ export const useCommentState = () => {
             likes: c.likes,
             timeAgo: c.timeAgo,
             replies: [],
-            isLikedByAuthor: (c as any).isLikedByAuthor || false
+            isLikedByAuthor: c.isLikedByAuthor ?? false
         }));
 
         setState(prev => ({

@@ -1,153 +1,115 @@
 <div align="center">
 
-# 🌕 Veily
+# Veily
 
-### Chat Mockup Design Tool
+Create editable chat, AI conversation, social post, comment, story, email, and group-call mockups in your browser or on desktop.
 
-Create pixel-perfect chat screenshots for 20+ platforms. No signup. No paywall. Just beautiful mockups.
-
-[![Live Web App](https://img.shields.io/badge/🌐_Live_App-veily.app-00ff41?style=for-the-badge)]([https://veily.app](https://veily.venusapp.in/))
-[![Download Desktop](https://img.shields.io/badge/⬇️_Download-.exe-ff6600?style=for-the-badge)](https://github.com/YumiNoona/VeilY/releases/latest)
+[Open the web app](https://veily.venusapp.in/) · [Download the desktop app](https://github.com/YumiNoona/VeilY/releases/latest)
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
-![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite)
-![Tauri](https://img.shields.io/badge/Tauri-Desktop-FFC131?style=flat-square&logo=tauri)
-![Tailwind](https://img.shields.io/badge/TailwindCSS-3-06B6D4?style=flat-square&logo=tailwindcss)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite)
+![Tauri](https://img.shields.io/badge/Tauri-2-FFC131?style=flat-square&logo=tauri)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=flat-square&logo=tailwindcss)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
 </div>
 
----
+## What Veily includes
 
-## ✨ Features
+- Chat editor for WhatsApp, iMessage, Discord, Instagram, Telegram, Messenger, TikTok, Slack, Reddit, Snapchat, LINE, Teams, Signal, Tinder, WeChat, and X
+- Desktop-style chat previews where the platform supports a distinct web layout
+- AI conversation previews for ChatGPT, Claude, Gemini, and Grok, including custom model names
+- Social post previews for X, Instagram, LinkedIn, Facebook, and Reddit
+- Comment previews for Instagram, TikTok, X, and YouTube
+- Story, email, and group-call editors
+- Call layouts for WhatsApp, Discord, FaceTime, Zoom, and Google Meet
+- Editable people, avatars, messages, timestamps, metrics, themes, wallpapers, and device details
+- PNG and WebM export at Standard, HD, or 4K output sizes
+- Local templates and randomized scenarios with Indian and global conversations
 
-### 💬 Chat Mockups
-- **20+ Platforms** — WhatsApp, iMessage, Discord, Instagram, Telegram, Signal, Snapchat, Slack, Teams, WeChat, LINE, Reddit, X, Messenger, TikTok, Tinder, Facebook, LinkedIn
-- **Pixel-perfect rendering** — Every platform faithfully recreated with proper colors, fonts, bubble shapes, read receipts, and platform-specific UI elements
-- **Dark & Light mode** — Full theme support per platform
-- **Typing indicators, timestamps, status messages** — All the small details that make mockups look real
+No account is required for the editor. Most work stays in the browser or desktop app.
 
-### 🤖 AI Chat
-- **4 AI platforms** — ChatGPT, Claude (4.8 Opus), Gemini (2.5 Pro), Grok (4)
-- **Dumb & fun scenarios** — 20 pre-built Q&A scenarios that feel genuinely human
-- **Custom model selection** — Pick from GPT-4.1, Claude 4.8 Opus, Gemini 2.5 Pro, Grok 4 and more
+## Template library
 
-### 🎨 Social & Comments
-- **Social post mockups** — Twitter/X, Instagram, LinkedIn, Facebook, Reddit posts with likes, comments, reposts, views
-- **Comment threads** — YouTube, TikTok, Instagram, Twitter comment sections
-- **20 randomized scenarios** per tab — Fresh content every time you hit randomize
+| Editor | Included content |
+| --- | --- |
+| Chat | 30 templates and more than 60 randomized conversations |
+| AI Chat | 11 templates with customizable provider and model labels |
+| Social | 10 templates and 20 randomized posts |
+| Comments | 5 templates and 20 randomized threads |
+| Email | 15 templates and 20 randomized email scenarios |
+| Stories | 18 templates and 20 randomized story scenarios |
+| Calls | Presets for five calling platforms |
 
-### 📧 Email Preview
-- **Gmail, Outlook, Generic** email providers
-- **Redacted text** — Black-box sensitive content using `**double asterisks**`
-- **Attachments, timestamps, participant fields**
+## Local development
 
-### 📸 Stories
-- **Instagram & Snapchat** story mockups
-- **15 photo templates** with unique Unsplash imagery
-- **Multiple slides** with captions and timestamps
+### Requirements
 
-### 🔧 Editor Features
-- **30 chat templates + 60 randomize scenarios** (Global & Indian styles)
-- **20 scenarios each** for Social, Comments, Email, and Stories randomize
-- **Bulk import** of real WhatsApp `.txt` and Telegram `.json` exports
-- **AI Smart Fill** — Generate entire conversations with one click using Gemini
-- **Full customization** — Names, avatars, timestamps, wallpapers, device frames, fonts, chat style
+- Node.js 20 or newer
+- npm
+- Rust and the Tauri prerequisites only if you want to run or build the desktop app
 
-### 🖥️ Desktop App
-- **Tauri native app** — Windows/macOS executables with auto-updates from GitHub releases
-- **Fully offline** — Everything runs locally. No server dependencies.
-- **Update checker** — Notifies when a new version is available on GitHub
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+
-- (Optional) Google Gemini API key for AI Smart Fill
-- (Optional) Rust toolchain for Tauri desktop builds
-
-### Quick Start
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Run development server
 npm run dev
-
-# 3. Build for production
-npm run build
-
-# 4. Optional: Set AI keys for Smart Fill (Groq is tried first, then Gemini)
-echo "VITE_GROQ_API_KEY=your_groq_key" > .env
-echo "VITE_GEMINI_API_KEY=your_gemini_key" >> .env
 ```
 
-### Tauri Desktop
-```bash
-# Development
-npm run tauri:dev
+The development server opens at `http://localhost:8080` by default.
 
-# Production build
+### Quality checks
+
+```bash
+npm run lint
+npm run build
+```
+
+### Desktop app
+
+```bash
+npm run tauri:dev
 npm run tauri:build
 ```
 
----
+### Optional Smart Fill keys
 
-## 📂 Project Structure
+Smart Fill can use Groq or Gemini when the corresponding key is available. Keep keys in a local `.env` file; environment files are ignored by Git.
+
+```dotenv
+VITE_GROQ_API_KEY=your_key
+VITE_GEMINI_API_KEY=your_key
+```
+
+## Project structure
 
 ```text
 Veily/
+├── public/                         Static assets
 ├── src/
 │   ├── components/
-│   │   ├── platforms/          # 20+ chat platform renderers
-│   │   ├── social/              # Social post renderers
-│   │   ├── comments/            # Comment thread renderers
-│   │   ├── modals/              # Dialog modals (Support, Download, etc.)
-│   │   ├── sidebar/sections/   # Editor sidebar sections
-│   │   └── ui/                  # ShadCN UI primitives
-│   ├── hooks/
-│   │   ├── useChatState.ts      # Chat state management
-│   │   ├── scenarios.ts         # 60 chat randomize scenarios
-│   │   └── scenarios/           # Social, Comments, Email, Stories scenarios
-│   ├── lib/
-│   │   ├── templates/           # Modular template files (30 chat, 15 stories, etc.)
-│   │   ├── avatar-utils.ts      # Gendered avatar generation
-│   │   └── ai-utils.ts          # Gemini AI integration
-│   ├── pages/                   # Route pages (Index, AIChat, Social, etc.)
-│   ├── contexts/                # AuthContext (local-only premium user)
-│   └── types/                   # TypeScript type definitions
-├── src-tauri/                   # Tauri Rust backend
-├── public/                      # Static assets
-├── index.html                   # Entry point
-└── package.json
+│   │   ├── platforms/              Chat platform previews
+│   │   ├── social/                 Social post previews
+│   │   ├── comments/               Comment previews
+│   │   ├── call/                   Calling-platform previews
+│   │   ├── modals/                 Export, support, import, and update dialogs
+│   │   ├── sidebar/sections/       Chat configuration panels
+│   │   └── ui/                     Shared UI primitives
+│   ├── hooks/                      Editor state and randomized scenarios
+│   ├── lib/templates/              Preset content by editor
+│   ├── pages/                      Application routes
+│   └── types/                      Shared TypeScript models
+├── src-tauri/                      Tauri desktop application
+├── package.json
+└── vite.config.ts
 ```
 
----
+## Export notes
 
-## 🎮 Powered By
+- Image export creates a PNG from the active preview only.
+- Video export records the active preview as WebM and can restart chat animation before capture.
+- Standard preserves the preview dimensions. HD and 4K scale the longest edge up to 1920 and 3840 pixels.
+- Browser support for WebM recording depends on `MediaRecorder` and canvas capture support.
 
-| Layer | Technology |
-|---|---|
-| **UI Framework** | React 18 + TypeScript |
-| **Build Tool** | Vite 5 |
-| **Styling** | TailwindCSS 3 + ShadCN UI |
-| **Desktop Shell** | Tauri 2 (Rust) |
-| **AI (Optional)** | Google Gemini API |
-| **Animations** | CSS + Lucide React Icons |
+## License
 
----
-
-## 📝 License
-
-MIT [LICENSE](./LICENSE).
-
----
-
-<div align="center">
-
-Built with 💙 Made by [Veil](https://vexo.venusapp.in)
-
-</div>
+Veily is available under the [MIT License](./LICENSE).

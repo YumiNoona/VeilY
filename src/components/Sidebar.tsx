@@ -148,28 +148,32 @@ export function Sidebar({
                       <SelectLabel>OpenAI</SelectLabel>
                       <SelectItem value="chatgptCoding">ChatGPT Coding</SelectItem>
                       <SelectItem value="chatgptCreative">ChatGPT Creative</SelectItem>
+                      <SelectItem value="chatgptDebug">ChatGPT Debugging</SelectItem>
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Anthropic</SelectLabel>
                       <SelectItem value="claudeAnalysis">Claude Analysis</SelectItem>
                       <SelectItem value="claudePhilosophy">Claude Philo</SelectItem>
+                      <SelectItem value="claudeWriter">Claude Writing</SelectItem>
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Google</SelectLabel>
                       <SelectItem value="geminiTokyo">Gemini Travel</SelectItem>
                       <SelectItem value="geminiBusiness">Gemini Business</SelectItem>
+                      <SelectItem value="geminiResearch">Gemini Research</SelectItem>
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>xAI</SelectLabel>
                       <SelectItem value="grokSarcasm">Grok Spicy</SelectItem>
+                      <SelectItem value="grokRoast">Grok Roast</SelectItem>
                     </SelectGroup>
                   </>
                 ) : (
                   <>
                     <SelectGroup>
                       <SelectLabel>Apple</SelectLabel>
-                      <SelectItem value="iMessageDrama">iMessage Drama</SelectItem>
-                      <SelectItem value="iMessageCasual">iMessage Bestie</SelectItem>
+                      <SelectItem value="iMessageDrama">iMessage Trip</SelectItem>
+                      <SelectItem value="iMessageCasual">iMessage Coffee</SelectItem>
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Meta</SelectLabel>
@@ -178,30 +182,41 @@ export function Sidebar({
                       <SelectItem value="whatsappShopping">WhatsApp Shop</SelectItem>
                       <SelectItem value="messengerMarket">Messenger Deal</SelectItem>
                       <SelectItem value="messengerNightOut">Messenger Plan</SelectItem>
+                      <SelectItem value="whatsappFamily">WhatsApp Family</SelectItem>
+                      <SelectItem value="messengerBusiness">Messenger Studio</SelectItem>
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Community</SelectLabel>
-                      <SelectItem value="discordCommunity">Discord Raid</SelectItem>
+                      <SelectItem value="discordCommunity">Discord Game Night</SelectItem>
                       <SelectItem value="discordGaming">Discord Gaming</SelectItem>
                       <SelectItem value="slackWorkspace">Slack Sync</SelectItem>
                       <SelectItem value="slackGeneral">Slack Pizza</SelectItem>
                       <SelectItem value="teamsMeeting">Teams Sync</SelectItem>
+                      <SelectItem value="telegramChannel">Telegram Editorial</SelectItem>
+                      <SelectItem value="discordMod">Discord Moderation</SelectItem>
+                      <SelectItem value="teamsStandup">Teams Standup</SelectItem>
+                      <SelectItem value="slackDesign">Slack Design</SelectItem>
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Social & Dating</SelectLabel>
                       <SelectItem value="snapchatDaily">Snapchat Daily</SelectItem>
                       <SelectItem value="tinderMatch">Tinder Match</SelectItem>
+                      <SelectItem value="instagramChat">Instagram Plans</SelectItem>
+                      <SelectItem value="tiktokChat">TikTok Plans</SelectItem>
+                      <SelectItem value="redditChat">Reddit Moderation</SelectItem>
+                      <SelectItem value="xChat">X Meetup</SelectItem>
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Regional</SelectLabel>
                       <SelectItem value="lineBusiness">LINE Business</SelectItem>
                       <SelectItem value="wechatFamily">WeChat Family</SelectItem>
+                      <SelectItem value="lineGroup">LINE Group Order</SelectItem>
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Privacy</SelectLabel>
-                      <SelectItem value="telegramCrypto">Telegram Whale</SelectItem>
-                      <SelectItem value="telegramSecret">Telegram Secret</SelectItem>
-                      <SelectItem value="signalSecure">Signal Secure</SelectItem>
+                      <SelectItem value="telegramCrypto">Telegram Investing</SelectItem>
+                      <SelectItem value="telegramSecret">Telegram House Key</SelectItem>
+                      <SelectItem value="signalSecure">Signal Plumber Visit</SelectItem>
                     </SelectGroup>
                   </>
                 )}

@@ -12,6 +12,9 @@ node_modules
 dist
 dist-ssr
 dist_electron
+.vite/
+.cache/
+.eslintcache
 *.exe
 *.dmg
 *.zip
@@ -52,6 +55,9 @@ _agent/
 *.tsbuildinfo
 coverage
 *.tmp
+*.bak
+*.orig
+*.rej
 *.saved
 *.head
 *.tail
@@ -62,5 +68,5 @@ api/node_modules/
 
 # Rust / Tauri
 **/*.rs.bk
-src-tauri/target/
+src-tauri/target*/
 src-tauri/gen/schemas/

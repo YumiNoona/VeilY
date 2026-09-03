@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- renderer registry is intentionally colocated with its preview component */
 // Barrel re-export for all platform chat components
 // Each platform lives in its own file for maintainability
 
@@ -25,7 +26,7 @@ export { ClaudeChat } from './ClaudeChat';
 export { GeminiChat } from './GeminiChat';
 export { GrokChat } from './GrokChat';
 
-// Component map — replaces the switch statement in ChatPreview.tsx
+// Component map replacing the switch statement in ChatPreview.tsx.
 import React from 'react';
 import type { PlatformChatProps as PCProps } from './shared';
 import { Platform } from '@/types/chat';

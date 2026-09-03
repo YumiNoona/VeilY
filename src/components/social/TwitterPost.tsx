@@ -1,7 +1,7 @@
 import React from 'react';
 import { SocialPostState, ThreadItem } from '@/hooks/useSocialPostState';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BadgeCheck, Heart, MessageCircle, Repeat2, BarChart2, Share, MoreHorizontal } from 'lucide-react';
+import { Heart, MessageCircle, Repeat2, BarChart2, Share, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { VerifiedBadge } from '@/components/ui/VerifiedBadge';
 import { format } from 'date-fns';

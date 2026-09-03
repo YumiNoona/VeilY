@@ -11,6 +11,7 @@ import { ProfileModal } from "@/components/modals/ProfileModal";
 import { TitleBar } from "@/components/layout/TitleBar";
 import { isElectron } from "@/lib/electron-utils";
 import { UpdateModal } from "@/components/modals/UpdateModal";
+import { SupportModal } from "@/components/modals/SupportModal";
 import { useUpdateChecker } from "@/hooks/useUpdateChecker";
 
 const EDITOR_TABS = [
@@ -41,6 +42,7 @@ export const Layout = () => {
             <AuthModal />
             <UpgradeModal />
             <ProfileModal />
+            <SupportModal />
             <UpdateModal
                 open={updateAvailable}
                 onOpenChange={(open) => { if (!open) dismiss(); }}

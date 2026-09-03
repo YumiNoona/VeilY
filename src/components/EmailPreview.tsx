@@ -301,7 +301,7 @@ export const EmailPreview = React.forwardRef<EmailPreviewRef, EmailPreviewProps>
     }));
 
     return (
-        <div ref={captureRef} className="inline-block p-8">
+        <div ref={captureRef} data-export-root className="inline-block p-8">
             <div className="relative">
                 <EmailCard state={state} />
                 <Watermark isDark={false} />

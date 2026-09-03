@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { AppearanceSettings, CallParticipant, CallPlatform, CallState, DeviceView } from "@/types/chat";
 import {
-    ArrowLeft, Captions, Disc, Grid2X2, Info, Lock, Maximize2, MessageCircle, Mic, MicOff,
+    ArrowLeft, Captions, Disc, Info, Lock, Maximize2, MessageCircle, Mic, MicOff,
     MonitorUp, MoreVertical, Phone, Settings, ShieldCheck, SignalHigh, SignalLow,
     Smile, UserPlus, Users, Video, VideoOff, Volume2, Hand, LayoutDashboard,
 } from "lucide-react";
@@ -130,9 +130,6 @@ function ScreenShare({ state, isMobile }: { state: CallState; isMobile: boolean 
                     </div>
                 </div>
             </div>}
-            <div className="absolute left-3 top-12 flex items-center gap-1.5 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-semibold text-white shadow-lg">
-                <MonitorUp className="h-3 w-3" /> {state.title}
-            </div>
         </div>
     );
 }
@@ -382,11 +379,12 @@ export function GroupCallPreview({ state, deviceView, appearance }: GroupCallPre
             )}
 
             <div className={cn(
-                "absolute inset-x-0 bottom-0 z-30 flex h-[84px] items-center justify-center gap-2 bg-gradient-to-t from-black/90 via-black/65 to-transparent px-2 pt-2",
+                "absolute inset-x-0 bottom-0 z-30 flex h-[84px] items-center justify-center gap-2 px-2 pt-2",
+                platform !== 'facetime' && "bg-gradient-to-t from-black/90 via-black/65 to-transparent",
                 platform === 'zoom' && !isMobile && "justify-between bg-[#111214] px-5",
                 platform === 'discord' && "bg-[#232428]",
                 platform === 'discord' && !isMobile && "left-[68px]",
-                platform === 'facetime' && "bottom-4 left-1/2 right-auto h-[64px] w-fit -translate-x-1/2 rounded-full bg-black/45 px-5 pt-0 backdrop-blur-2xl",
+                platform === 'facetime' && "bottom-4 left-1/2 right-auto h-[64px] w-fit -translate-x-1/2 bg-transparent px-0 pt-0",
                 platform === 'meet' && "justify-between border-t border-white/10 bg-[#202124] px-5 pt-0",
             )}>
                 {platform === 'zoom' && !isMobile && (
@@ -401,13 +399,6 @@ export function GroupCallPreview({ state, deviceView, appearance }: GroupCallPre
                 {platform === 'zoom' && !isMobile && <Settings className="hidden h-4 w-4 text-white/60 md:block" />}
                 {platform === 'meet' && !isMobile && <div className="hidden items-center gap-3 text-white/70 md:flex"><Info className="h-4 w-4" /><Users className="h-4 w-4" /><MessageCircle className="h-4 w-4" /><LayoutDashboard className="h-4 w-4" /></div>}
             </div>
-
-            {platform === 'discord' && !isMobile && (
-                <div className="absolute bottom-24 left-3 z-30 flex items-center gap-2 rounded-lg bg-[#232428]/90 px-3 py-2 text-[10px] text-[#b5bac1] shadow-xl">
-                    <Grid2X2 className="h-3.5 w-3.5 text-[#23a55a]" />
-                    <span>Connected to Lounge</span>
-                </div>
-            )}
 
             <Watermark isDark />
         </div>

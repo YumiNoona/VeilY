@@ -1,208 +1,262 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { cn } from "@/lib/utils";
-import { 
-    Image as ImageIcon, 
-    Zap,
+import { cn } from '@/lib/utils';
+import {
+    Check,
+    Clock3,
+    Download,
+    Film,
+    Image as ImageIcon,
     Monitor,
     Sparkles,
-    X
+    X,
+    Zap,
 } from 'lucide-react';
-
-import { exportAsImage } from '@/lib/export-utils';
+import { exportAsImage, exportAsVideo } from '@/lib/export-utils';
 import { toast } from 'sonner';
 
+type ExportType = 'image' | 'video';
+type ExportQuality = 'sd' | 'hd' | '4k';
+
 interface DownloadModalProps {
-    previewRef: React.RefObject<HTMLElement>;
+    previewRef?: React.RefObject<HTMLElement>;
+    getPreviewElement?: () => HTMLElement | null;
+    onPrepareVideo?: () => void;
 }
 
-export const DownloadModal: React.FC<DownloadModalProps> = ({ previewRef }) => {
-    const { 
-        isDownloadModalOpen, 
-        setDownloadModalOpen, 
-    } = useAuth();
+const qualityOptions = [
+    { id: 'sd' as const, label: 'Standard', detail: 'Original size', targetLongEdge: null, icon: Zap },
+    { id: 'hd' as const, label: 'HD', detail: 'Up to 1920px', targetLongEdge: 1920, icon: Sparkles },
+    { id: '4k' as const, label: '4K', detail: 'Up to 3840px', targetLongEdge: 3840, icon: Monitor },
+];
 
-    const [exportType, setExportType] = useState<'image' | 'video'>('image');
-    const [quality, setQuality] = useState<'sd' | 'hd' | '4k'>('sd');
-    const [filename, setFilename] = useState(`mockly-${Date.now()}`);
+const videoDurations = [
+    { value: 3000, label: '3 sec' },
+    { value: 6000, label: '6 sec' },
+    { value: 10000, label: '10 sec' },
+];
+
+export const DownloadModal: React.FC<DownloadModalProps> = ({
+    previewRef,
+    getPreviewElement,
+    onPrepareVideo,
+}) => {
+    const { isDownloadModalOpen, setDownloadModalOpen, setSupportModalOpen } = useAuth();
+    const [exportType, setExportType] = useState<ExportType>('image');
+    const [quality, setQuality] = useState<ExportQuality>('hd');
+    const [filename, setFilename] = useState('veily-mockup');
+    const [durationMs, setDurationMs] = useState(6000);
     const [isExporting, setIsExporting] = useState(false);
+    const [progress, setProgress] = useState(0);
+
+    const availableQualities = useMemo(() => qualityOptions, []);
+
+    const handleTypeChange = (type: ExportType) => {
+        setExportType(type);
+        setProgress(0);
+    };
+
+    const resolvePreview = () => {
+        const candidate = getPreviewElement?.() ?? previewRef?.current ?? null;
+        if (!candidate) return null;
+        if (candidate.matches('[data-export-root]')) return candidate;
+        return candidate.querySelector<HTMLElement>('[data-export-root]') ?? candidate;
+    };
+
+    const getPresetScale = (element: HTMLElement, preset: typeof qualityOptions[number]) => {
+        if (!preset.targetLongEdge) return 1;
+        const longestEdge = Math.max(element.offsetWidth, element.offsetHeight, 1);
+        return Math.min(8, Math.max(1, preset.targetLongEdge / longestEdge));
+    };
+    const safeFilename = filename.trim().replace(/[<>:"/\\|?*]+/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-') || 'veily-mockup';
 
     const handleDownload = async () => {
-        if (!previewRef.current) return;
+        const element = resolvePreview();
+        if (!element) {
+            toast.error('Preview is still loading. Try again in a moment.');
+            return;
+        }
 
+        const selectedQuality = qualityOptions.find((option) => option.id === quality) ?? qualityOptions[1];
+        const exportScale = getPresetScale(element, selectedQuality);
         setIsExporting(true);
-        const scale = quality === '4k' ? 4 : quality === 'hd' ? 2 : 1.5;
+        setProgress(0);
 
         try {
-            await exportAsImage(previewRef.current, {
-                scale,
-                filename: `${filename}.png`,
-            });
-            toast.success("Mockup downloaded successfully!");
+            if (exportType === 'video') {
+                onPrepareVideo?.();
+                await new Promise((resolve) => window.setTimeout(resolve, 120));
+                await exportAsVideo(element, {
+                    scale: exportScale,
+                    filename: `${safeFilename}.webm`,
+                    durationMs,
+                    onProgress: setProgress,
+                });
+                toast.success('Video exported as WebM.');
+            } else {
+                await exportAsImage(element, {
+                    scale: exportScale,
+                    filename: `${safeFilename}.png`,
+                });
+                setProgress(1);
+                toast.success('Image exported successfully.');
+            }
             setDownloadModalOpen(false);
-        } catch (err) {
-            toast.error("Failed to export mockup.");
+            window.setTimeout(() => setSupportModalOpen(true), 220);
+        } catch (error) {
+            console.error('Export failed:', error);
+            toast.error(error instanceof Error ? error.message : 'The export could not be completed.');
         } finally {
             setIsExporting(false);
         }
     };
 
-    const typeOptions = [
-        { id: 'image' as const, label: 'Image', icon: ImageIcon },
-    ];
-
-    const qualityOptions = [
-        { id: 'sd' as const, label: 'Standard', desc: 'Quick previews', res: '468x832', icon: Zap },
-        { id: 'hd' as const, label: 'HD', desc: 'Sharp exports', res: '936x1664', icon: Sparkles },
-        { id: '4k' as const, label: '4K', desc: 'Maximum detail', res: '1872x3328', icon: Monitor },
-    ];
-
-    const handleExportTypeChange = (id: string) => {
-        setExportType(id as 'image' | 'video');
-    };
-
-    const handleQualityChange = (id: string) => {
-        setQuality(id as 'sd' | 'hd' | '4k');
-    };
-
     return (
-        <Dialog open={isDownloadModalOpen} onOpenChange={setDownloadModalOpen}>
-            <DialogContent hideClose className="sm:max-w-[500px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-2xl">
-                <div className="relative flex flex-col h-full bg-white max-h-[90vh] overflow-y-auto scrollbar-hide">
-
-                    {/* Close Button */}
-                    <button 
+        <Dialog open={isDownloadModalOpen} onOpenChange={(open) => !isExporting && setDownloadModalOpen(open)}>
+            <DialogContent hideClose className="max-h-[92vh] overflow-y-auto rounded-3xl border border-zinc-200 bg-white p-0 shadow-2xl sm:max-w-[620px]">
+                <div className="relative p-5 sm:p-7">
+                    <button
+                        type="button"
                         onClick={() => setDownloadModalOpen(false)}
-                        className="absolute top-3 right-3 z-50 p-2 rounded-full hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-zinc-600"
+                        disabled={isExporting}
+                        className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-40"
+                        aria-label="Close export dialog"
                     >
-                        <X className="w-5 h-5" />
+                        <X className="h-5 w-5" />
                     </button>
 
-                    <div className="relative z-10 p-6 space-y-7">
-                        {/* Header */}
-                        <div className="flex items-center justify-between">
-                            <DialogTitle className="text-xl font-bold tracking-tight text-zinc-900">Download mockup</DialogTitle>
-                            <DialogDescription className="sr-only">Choose image quality and a file name for the exported mockup.</DialogDescription>
-                        </div>
+                    <div className="pr-12">
+                        <DialogTitle className="text-2xl font-bold tracking-tight text-zinc-950">Export preview</DialogTitle>
+                        <DialogDescription className="mt-1.5 text-sm leading-6 text-zinc-500">
+                            Save a crisp image or record the live preview as a shareable video.
+                        </DialogDescription>
+                    </div>
 
-                        {/* Export Type Section */}
-                        <div className="space-y-3">
-                            <label className="text-sm font-semibold text-zinc-900">Export type</label>
-                            <div className="space-y-2">
-                                {typeOptions.map((option) => {
-                                    const Icon = option.icon;
-                                    const active = exportType === option.id;
-                                    return (
-                                        <button
-                                            key={option.id}
-                                            onClick={() => handleExportTypeChange(option.id)}
-                                            className={cn(
-                                                "w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200",
-                                                active 
-                                                    ? "border-zinc-900 bg-zinc-50/50" 
-                                                    : "border-zinc-100 hover:border-zinc-200 bg-white"
-                                            )}
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className={cn(
-                                                    "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors",
-                                                    active ? "border-zinc-900" : "border-zinc-200"
-                                                )}>
-                                                    {active && <div className="w-2.5 h-2.5 bg-zinc-900 rounded-full" />}
-                                                </div>
-                                                <div className="flex items-center gap-3">
-                                                    <Icon className="w-5 h-5 text-zinc-500" />
-                                                    <span className="font-bold text-sm text-zinc-800">{option.label}</span>
-                                                </div>
-                                            </div>
-                                        </button>
-                                    );
-                                })}
+                    <div className="mt-6 grid grid-cols-2 gap-3" role="radiogroup" aria-label="Export format">
+                        {([
+                            { id: 'image' as const, label: 'Image', detail: 'PNG', icon: ImageIcon },
+                            { id: 'video' as const, label: 'Video', detail: 'WebM', icon: Film },
+                        ]).map((option) => {
+                            const Icon = option.icon;
+                            const active = exportType === option.id;
+                            return (
+                                <button
+                                    key={option.id}
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={active}
+                                    onClick={() => handleTypeChange(option.id)}
+                                    disabled={isExporting}
+                                    className={cn(
+                                        'flex min-h-20 items-center gap-3 rounded-2xl border p-4 text-left transition',
+                                        active ? 'border-zinc-900 bg-zinc-950 text-white shadow-lg' : 'border-zinc-200 bg-white text-zinc-900 hover:border-zinc-400',
+                                    )}
+                                >
+                                    <span className={cn('flex h-10 w-10 items-center justify-center rounded-xl', active ? 'bg-white/15' : 'bg-zinc-100')}>
+                                        <Icon className="h-5 w-5" />
+                                    </span>
+                                    <span>
+                                        <span className="block text-sm font-bold">{option.label}</span>
+                                        <span className={cn('mt-0.5 block text-xs', active ? 'text-white/60' : 'text-zinc-500')}>{option.detail}</span>
+                                    </span>
+                                    {active && <Check className="ml-auto h-4 w-4" />}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    <div className="mt-6">
+                        <div className="mb-3 flex items-center justify-between">
+                            <label className="text-sm font-semibold text-zinc-900">Quality</label>
+                            <span className="text-xs font-medium text-zinc-500">Longest-edge output size</span>
+                        </div>
+                        <div className="grid gap-2 sm:grid-cols-3">
+                            {availableQualities.map((option) => {
+                                const Icon = option.icon;
+                                const active = quality === option.id;
+                                return (
+                                    <button
+                                        key={option.id}
+                                        type="button"
+                                        onClick={() => setQuality(option.id)}
+                                        disabled={isExporting}
+                                        className={cn(
+                                            'rounded-2xl border p-3 text-left transition',
+                                            active ? 'border-zinc-900 bg-zinc-50 ring-1 ring-zinc-900' : 'border-zinc-200 hover:border-zinc-400',
+                                        )}
+                                    >
+                                        <Icon className={cn('h-4 w-4', active ? 'text-zinc-900' : 'text-zinc-400')} />
+                                        <span className="mt-2 block text-sm font-bold text-zinc-900">{option.label}</span>
+                                        <span className="mt-0.5 block text-xs text-zinc-500">{option.detail}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {exportType === 'video' && (
+                        <div className="mt-6 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-zinc-900">
+                                <Clock3 className="h-4 w-4" /> Clip length
                             </div>
-                        </div>
-
-                        {/* Export Quality Section */}
-                        <div className="space-y-3">
-                            <label className="text-sm font-semibold text-zinc-900">Export quality</label>
-                            <div className="space-y-2">
-                                {qualityOptions.map((option) => {
-                                    const active = quality === option.id;
-                                    const Icon = option.icon;
-                                    return (
-                                        <button
-                                            key={option.id}
-                                            onClick={() => handleQualityChange(option.id)}
-                                            className={cn(
-                                                "w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200",
-                                                active 
-                                                    ? "border-zinc-900 bg-zinc-50/50" 
-                                                    : "border-zinc-100 hover:border-zinc-200 bg-white"
-                                            )}
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className={cn(
-                                                    "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors",
-                                                    active ? "border-zinc-900" : "border-zinc-200"
-                                                )}>
-                                                    {active && <div className="w-2.5 h-2.5 bg-zinc-900 rounded-full" />}
-                                                </div>
-                                                <div className="flex items-center gap-3">
-                                                    <Icon className="w-5 h-5 text-zinc-500" />
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-bold text-sm text-zinc-800">{option.label}</span>
-                                                        <span className="text-xs text-zinc-400 font-medium">{option.desc}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-xs font-bold text-zinc-500">{option.res}</span>
-                                            </div>
-                                        </button>
-                                    );
-                                })}
+                            <div className="mt-3 grid grid-cols-3 gap-2">
+                                {videoDurations.map((duration) => (
+                                    <button
+                                        key={duration.value}
+                                        type="button"
+                                        onClick={() => setDurationMs(duration.value)}
+                                        disabled={isExporting}
+                                        className={cn(
+                                            'h-10 rounded-xl border text-sm font-semibold transition',
+                                            durationMs === duration.value ? 'border-zinc-900 bg-white text-zinc-950 shadow-sm' : 'border-transparent text-zinc-500 hover:bg-white',
+                                        )}
+                                    >
+                                        {duration.label}
+                                    </button>
+                                ))}
                             </div>
+                            <p className="mt-3 text-xs leading-5 text-zinc-500">For chats, recording restarts the typing animation so messages appear naturally in the clip.</p>
                         </div>
+                    )}
 
-                        {/* File Name Section */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold text-zinc-900">File name</label>
-                            <div className="relative group">
-                                <Input 
-                                    value={filename}
-                                    onChange={(e) => setFilename(e.target.value)}
-                                    className="h-11 transition-all border-zinc-200 focus:border-zinc-900 focus:ring-0 rounded-xl font-medium text-sm pr-12"
-                                />
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-zinc-400">
-                                    .{exportType === 'image' ? 'png' : 'mp4'}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Footer Action */}
-                        <div className="flex justify-end pt-2">
-                            <Button
-                                onClick={handleDownload}
+                    <div className="mt-6">
+                        <label htmlFor="export-filename" className="text-sm font-semibold text-zinc-900">File name</label>
+                        <div className="relative mt-2">
+                            <Input
+                                id="export-filename"
+                                value={filename}
+                                onChange={(event) => setFilename(event.target.value)}
                                 disabled={isExporting}
-                                className={cn(
-                                    "h-11 px-8 rounded-xl font-bold transition-all duration-300",
-                                    isExporting 
-                                        ? "bg-zinc-100 text-zinc-400" 
-                                        : "bg-zinc-950 text-white hover:bg-zinc-800 shadow-lg shadow-zinc-200 hover:scale-[1.02]"
-                                )}
-                            >
-                                {isExporting ? (
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 border-2 border-zinc-300 border-t-zinc-600 rounded-full animate-spin" />
-                                        Processing...
-                                    </div>
-                                ) : (
-                                    `Download ${exportType}`
-                                )}
-                            </Button>
+                                className="h-12 rounded-xl border-zinc-200 pr-20 text-sm font-medium focus-visible:ring-zinc-900"
+                            />
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-zinc-400">.{exportType === 'image' ? 'png' : 'webm'}</span>
                         </div>
+                    </div>
+
+                    {isExporting && (
+                        <div className="mt-6" aria-live="polite">
+                            <div className="mb-2 flex items-center justify-between text-xs font-semibold text-zinc-600">
+                                <span>{exportType === 'video' ? 'Recording preview' : 'Rendering image'}</span>
+                                <span>{Math.round(progress * 100)}%</span>
+                            </div>
+                            <div className="h-2 overflow-hidden rounded-full bg-zinc-100">
+                                <div className="h-full rounded-full bg-zinc-900 transition-[width] duration-200" style={{ width: `${Math.max(4, progress * 100)}%` }} />
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="mt-7 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                        <Button variant="ghost" onClick={() => setDownloadModalOpen(false)} disabled={isExporting} className="h-11 rounded-xl px-5">Cancel</Button>
+                        <Button onClick={handleDownload} disabled={isExporting} className="h-11 rounded-xl bg-zinc-950 px-6 font-semibold text-white hover:bg-zinc-800">
+                            {isExporting ? (
+                                <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" /> Processing</>
+                            ) : (
+                                <><Download className="h-4 w-4" /> Export {exportType}</>
+                            )}
+                        </Button>
                     </div>
                 </div>
             </DialogContent>

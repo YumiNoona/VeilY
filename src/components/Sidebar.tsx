@@ -3,7 +3,6 @@ import { ChatState, ChatType, Person, AppearanceSettings, CallState } from "@/ty
 import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Wand2, RotateCcw, Sparkles } from "lucide-react";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSection } from "./sidebar/sections/AppSection";
 import { TypeSection } from "./sidebar/sections/TypeSection";
 import { PeopleSection } from "./sidebar/sections/PeopleSection";
@@ -112,10 +111,9 @@ export function Sidebar({
   const [isSmartFillOpen, setIsSmartFillOpen] = React.useState(false);
 
   return (
-    <TooltipProvider>
-      <aside className="w-full md:w-[380px] xl:w-[450px] h-[45%] md:h-full shrink-0 bg-sidebar-bg border-b md:border-b-0 md:border-r border-sidebar-border flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between px-3 pt-5 pb-2 border-b border-sidebar-border shrink-0 min-h-[64px]">
+      <aside className="w-full md:w-[390px] xl:w-[430px] h-[48%] md:h-full shrink-0 bg-sidebar-bg border-b md:border-b-0 md:border-r border-sidebar-border flex flex-col">
+        <div className="shrink-0 border-b border-sidebar-border p-3">
+          <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 flex-1">
             <Select onValueChange={(val) => {
               if (mode === 'call') {
@@ -133,7 +131,7 @@ export function Sidebar({
                 onTemplateLoad(template as any);
               }
             }}>
-              <SelectTrigger className="w-[110px] h-8 text-xs font-medium">
+              <SelectTrigger className="h-10 w-full rounded-xl text-sm font-medium">
                 <SelectValue placeholder={mode === 'call' ? "Presets" : "Templates"} />
               </SelectTrigger>
               <SelectContent>
@@ -216,11 +214,11 @@ export function Sidebar({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 text-muted-foreground"
+                className="h-10 w-10 shrink-0 rounded-xl text-muted-foreground"
                 onClick={onReset}
-                title="Reset All"
+                aria-label="Reset configuration"
               >
-                <RotateCcw className="w-4 h-4" />
+                <RotateCcw className="h-4 w-4" />
               </Button>
             )}
 
@@ -229,7 +227,7 @@ export function Sidebar({
                 value={chatState.appearance.chatStyle ?? 'mixed'}
                 onValueChange={(val) => onAppearanceChange?.({ ...chatState.appearance, chatStyle: val as any })}
               >
-                <SelectTrigger className="h-9 w-auto gap-1 border-dashed border-zinc-300 px-2 text-sm font-medium">
+                <SelectTrigger className="h-10 w-auto gap-1 rounded-xl border-dashed border-zinc-300 px-2.5 text-sm font-medium">
                   <SelectValue placeholder="Style" />
                 </SelectTrigger>
                 <SelectContent>
@@ -244,11 +242,11 @@ export function Sidebar({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 relative group"
+                className="h-10 w-10 rounded-xl text-sky-600 hover:bg-sky-50 hover:text-sky-700 dark:hover:bg-sky-950/30"
                 onClick={onRandomize}
-                title="Randomize Content"
+                aria-label="Randomize content"
               >
-                <Wand2 className="w-4 h-4" />
+                <Wand2 className="h-4 w-4" />
               </Button>
             )}
 
@@ -256,13 +254,14 @@ export function Sidebar({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                className="h-10 w-10 rounded-xl text-amber-600 hover:bg-amber-50 hover:text-amber-700 dark:hover:bg-amber-950/30"
                 onClick={() => setIsSmartFillOpen(true)}
-                title="AI Smart Fill"
+                aria-label="Open smart fill"
               >
-                <Sparkles className="w-4 h-4 fill-amber-500/20" />
+                <Sparkles className="h-4 w-4 fill-amber-500/20" />
               </Button>
             )}
+          </div>
           </div>
         </div>
 
@@ -354,6 +353,5 @@ export function Sidebar({
           </Accordion>
         </div>
       </aside>
-    </TooltipProvider >
   );
 }

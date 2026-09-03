@@ -72,6 +72,7 @@ export const CommentsPreview = React.forwardRef<CommentsPreviewRef, CommentsPrev
             <div className="flex-1 overflow-auto flex items-center justify-center p-8">
                 <div
                     ref={previewRef}
+                    data-export-root
                     className="transition-all duration-300 ease-in-out"
                     // Add some spacing around the preview for export capture
                     style={{ padding: '2rem' }}

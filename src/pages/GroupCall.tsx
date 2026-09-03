@@ -37,6 +37,7 @@ export default function GroupCall() {
     } = useGroupCallState();
 
     const [deviceView, setDeviceView] = useState<DeviceView>(() => window.innerWidth < 768 ? 'mobile' : 'desktop');
+    const [zoom, setZoom] = useState(100);
     const { setDownloadModalOpen } = useAuth();
     const previewRef = useRef<HTMLDivElement>(null);
     const { copyScreenshot } = useScreenshot(previewRef);
@@ -78,15 +79,17 @@ export default function GroupCall() {
                     resetCall();
                     setAppearance(defaultCallAppearance);
                     setDeviceView(window.innerWidth < 768 ? 'mobile' : 'desktop');
+                    setZoom(100);
                 }}
             />
 
-            <main className="flex-1 flex flex-col items-center justify-start md:justify-center p-3 md:p-8 xl:pr-24 relative bg-muted/30 overflow-y-auto overflow-x-hidden">
-                <div className="min-h-full flex items-start justify-start md:items-center md:justify-center w-full max-w-6xl py-16 md:py-6">
-                    <div className="relative group transition-all duration-500 ease-out">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-[48px] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+            <main className="relative flex min-w-0 flex-1 flex-col items-center justify-start overflow-x-hidden overflow-y-auto bg-[radial-gradient(circle_at_top,hsl(var(--background)),hsl(var(--muted)/0.55))] px-3 py-8 md:justify-center md:px-8 lg:pr-24">
+                <div className="min-h-full flex items-start justify-start md:items-center md:justify-center w-full max-w-6xl py-12 md:py-2">
+                    <div className="group relative max-w-full shrink-0" style={{ zoom: zoom / 100 }}>
+                        <div className="absolute -inset-1 rounded-[48px] bg-primary/15 blur-md opacity-70 transition group-hover:opacity-100"></div>
                         <div 
                             ref={previewRef}
+                            data-export-root
                             className={cn(
                                 "overflow-hidden shadow-2xl transition-all duration-300",
                                 deviceView === 'mobile' && appearance.showDeviceFrame ? "rounded-[40px] border-[8px] border-black bg-black" : "rounded-xl",
@@ -109,6 +112,8 @@ export default function GroupCall() {
                     onViewChange={setDeviceView}
                     onDownload={() => setDownloadModalOpen(true)}
                     onCopy={copyScreenshot}
+                    zoom={zoom}
+                    onZoomChange={setZoom}
                 />
 
             </main>

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,8 @@ import {
     CirclePlay,
     Mail,
     Video,
-    ChevronDown
+    ChevronDown,
+    Heart
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -30,11 +31,6 @@ import {
     AvatarImage,
 } from "@/components/ui/avatar";
 
-interface PillState {
-  left: number;
-  width: number;
-}
-
 export const Navbar = () => {
     const location = useLocation();
     const { 
@@ -42,6 +38,7 @@ export const Navbar = () => {
         signOut, 
         setProfileModalOpen,
         setAuthModalOpen,
+        setSupportModalOpen,
         fullName,
         avatarUrl 
     } = useAuth();
@@ -56,29 +53,8 @@ export const Navbar = () => {
         { id: "group-call", label: "Call", path: "/app/group-call", icon: Video },
     ];
 
-    const containerRef = useRef<HTMLDivElement>(null);
-    const tabRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
-    const [pill, setPill] = useState<PillState>({ left: 0, width: 0 });
-    const [mounted, setMounted] = useState(false);
-
     const activeIndex = tabs.findIndex(t => t.path === location.pathname);
     const activeTab = tabs[activeIndex] || tabs[0];
-
-    useEffect(() => {
-      const el = tabRefs.current.get(activeTab.id);
-      if (el && containerRef.current) {
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const rect = el.getBoundingClientRect();
-        setPill({ left: rect.left - containerRect.left, width: rect.width });
-      }
-      // Mark mounted after first measurement so the entrance transition doesn't play
-      if (!mounted) setMounted(true);
-    }, [activeTab.id, mounted]);
-
-    const setTabRef = (id: string, el: HTMLAnchorElement | null) => {
-      if (el) tabRefs.current.set(id, el);
-      else tabRefs.current.delete(id);
-    };
 
     const userInitial = (fullName || user?.email || 'U').charAt(0).toUpperCase();
     const ActiveIcon = activeTab.icon;
@@ -105,34 +81,20 @@ export const Navbar = () => {
                 className="flex-1 min-w-[16px] h-full"
             />
             
-            {/* MIDDLE: Navigation Tabs with Animated Pill */}
+            {/* MIDDLE: Navigation Tabs */}
             <div className="hidden lg:flex justify-center shrink-0">
-                <div
-                    ref={containerRef}
-                    className="relative flex items-center gap-1 bg-muted/30 p-1 rounded-full border border-border/50"
-                >
-                    {/* Animated pill indicator */}
-                    <div
-                        className="absolute top-1 bottom-1 rounded-full bg-primary shadow-sm transition-all duration-300 ease-springy"
-                        style={{
-                            left: `${pill.left}px`,
-                            width: `${pill.width}px`,
-                            opacity: mounted ? 1 : 0,
-                        }}
-                    />
-
+                <div className="relative flex items-center gap-1 bg-muted/30 p-1 rounded-full border border-border/50">
                     {tabs.map((tab) => {
                         const isActive = location.pathname === tab.path;
                         const Icon = tab.icon;
                         return (
                             <Link
                                 key={tab.id}
-                                ref={(el) => setTabRef(tab.id, el)}
                                 to={tab.path}
                                 className={cn(
-                                    "relative z-10 flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium transition-all duration-200",
+                                    "relative flex items-center gap-2 whitespace-nowrap px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors duration-200",
                                     isActive
-                                        ? "text-primary-foreground"
+                                        ? "bg-primary text-primary-foreground shadow-sm"
                                         : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
@@ -189,6 +151,17 @@ export const Navbar = () => {
 
             {/* RIGHT: User Actions */}
             <div className="flex items-center justify-end gap-3 w-auto min-w-0 lg:min-w-[200px]">
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSupportModalOpen(true)}
+                    className="h-9 rounded-full border-rose-200 bg-rose-50 px-3 text-rose-600 shadow-sm hover:border-rose-300 hover:bg-rose-100 hover:text-rose-700"
+                    aria-label="Support Veily"
+                >
+                    <Heart className="h-4 w-4 fill-current" />
+                    <span className="hidden xl:inline">Donate</span>
+                </Button>
                 {!user ? (
                     <Button 
                         variant="ghost" 

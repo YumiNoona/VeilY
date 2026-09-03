@@ -74,6 +74,7 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
             <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
                 <div
                     ref={previewRef}
+                    data-export-root
                     className="transition-all duration-300 ease-in-out p-8 rounded-xl"
                     style={{
                         backgroundColor: state.config.transparentBackground

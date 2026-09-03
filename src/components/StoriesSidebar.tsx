@@ -88,7 +88,7 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
 
     return (
         <aside className="w-full lg:w-[450px] bg-sidebar-bg border-r border-sidebar-border h-full flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between px-3 pt-5 pb-2 border-b border-sidebar-border shrink-0 min-h-[64px]">
+            <div className="flex items-center justify-between gap-2 border-b border-sidebar-border p-3 shrink-0">
                 <div className="flex items-center gap-1.5 flex-1">
                     <Select onValueChange={(val) => {
                         if (onTemplateLoad) {
@@ -96,7 +96,7 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                             if (template) onTemplateLoad(template);
                         }
                     }}>
-                        <SelectTrigger className="w-[140px] h-8 text-xs font-medium">
+                        <SelectTrigger className="h-10 w-full rounded-xl text-sm font-medium">
                             <SelectValue placeholder="Templates" />
                         </SelectTrigger>
                         <SelectContent>
@@ -127,9 +127,9 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 text-muted-foreground"
+                            className="h-10 w-10 rounded-xl text-muted-foreground"
                             onClick={handleReset}
-                            title="Reset All"
+                            aria-label="Reset configuration"
                         >
                             <RotateCcw className="w-4 h-4" />
                         </Button>
@@ -139,9 +139,9 @@ export const StoriesSidebar: React.FC<StoriesSidebarProps> = ({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                            className="h-10 w-10 rounded-xl text-sky-600 hover:text-sky-700 hover:bg-sky-50 dark:hover:bg-sky-950/30"
                             onClick={onRandomize}
-                            title="Randomize Content"
+                            aria-label="Randomize content"
                         >
                             <Wand2 className="w-4 h-4" />
                         </Button>

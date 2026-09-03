@@ -61,6 +61,7 @@ const Index = () => {
 
    const { setDownloadModalOpen } = useAuth();
    const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
+   const [zoom, setZoom] = useState(100);
    const [isAnimating, setIsAnimating] = useState(false);
    const chatPreviewRef = useRef<HTMLDivElement>(null);
    const { copyScreenshot } = useScreenshot(chatPreviewRef);
@@ -96,24 +97,26 @@ const Index = () => {
         onSmartFill={handleSmartFill}
       />
 
-      <main className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
-        <div className="min-h-full flex flex-col items-center justify-center gap-8 p-4 lg:p-8 xl:pr-24">
-          <ChatPreview
-            ref={chatPreviewRef}
-            platform={chatState.platform}
-            messages={chatState.messages}
-            people={chatState.people}
-            activePerson={activePerson}
-            chatType={chatState.chatType}
-            deviceView={deviceView}
-            appearance={chatState.appearance}
-            onUpdateMessage={handleUpdateMessage}
-            onRemoveMessage={handleRemoveMessage}
-            onUpdatePerson={handleUpdatePerson}
-            onUpdateAppearance={handleAppearanceChange}
-            isAnimating={isAnimating}
-            onAnimationComplete={() => setIsAnimating(false)}
-          />
+      <main className="flex-1 relative overflow-y-auto overflow-x-hidden bg-[radial-gradient(circle_at_top,hsl(var(--background)),hsl(var(--muted)/0.55))]">
+        <div className="min-h-full flex flex-col items-center justify-center gap-8 px-4 py-10 lg:px-8">
+          <div className="shrink-0" style={{ zoom: zoom / 100 }}>
+            <ChatPreview
+              ref={chatPreviewRef}
+              platform={chatState.platform}
+              messages={chatState.messages}
+              people={chatState.people}
+              activePerson={activePerson}
+              chatType={chatState.chatType}
+              deviceView={deviceView}
+              appearance={chatState.appearance}
+              onUpdateMessage={handleUpdateMessage}
+              onRemoveMessage={handleRemoveMessage}
+              onUpdatePerson={handleUpdatePerson}
+              onUpdateAppearance={handleAppearanceChange}
+              isAnimating={isAnimating}
+              onAnimationComplete={() => setIsAnimating(false)}
+            />
+          </div>
           <SupportBanner />
         </div>
 
@@ -125,10 +128,12 @@ const Index = () => {
           isAnimating={isAnimating}
           onToggleAnimation={() => setIsAnimating(!isAnimating)}
           availableViews={desktopPreviewAvailable ? ['desktop', 'mobile'] : ['mobile']}
+          zoom={zoom}
+          onZoomChange={setZoom}
         />
 
       </main>
-      <DownloadModal previewRef={chatPreviewRef} />
+      <DownloadModal previewRef={chatPreviewRef} onPrepareVideo={() => setIsAnimating(true)} />
     </div>
   );
 };

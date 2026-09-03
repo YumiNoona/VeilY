@@ -1,14 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Copy, Check, Heart, Loader2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SupportModalProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onOpenChange }) => {
+  const { isSupportModalOpen, setSupportModalOpen } = useAuth();
+  const open = isOpen ?? isSupportModalOpen;
+  const setOpen = onOpenChange ?? setSupportModalOpen;
   const [isCopying, setIsCopying] = useState(false);
   const [qrLoaded, setQrLoaded] = useState(false);
   const [upiId] = useState('rushikeshingale2001@okicici');
@@ -17,13 +21,10 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onOpenChange
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(upiLink)}`;
 
   useEffect(() => {
-    if (isOpen) {
-      setQrLoaded(false);
-      const img = new Image();
-      img.src = qrUrl;
-      img.onload = () => setQrLoaded(true);
-    }
-  }, [isOpen, qrUrl]);
+    const img = new Image();
+    img.src = qrUrl;
+    img.onload = () => setQrLoaded(true);
+  }, [qrUrl]);
 
   const handleCopy = async () => {
     setIsCopying(true);
@@ -38,7 +39,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onOpenChange
   const handleOpenAutoFocus = (e: Event) => e.preventDefault();
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[520px]" onOpenAutoFocus={handleOpenAutoFocus}>
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-bold tracking-tight">

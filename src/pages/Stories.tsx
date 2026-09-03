@@ -27,6 +27,7 @@ const Stories = () => {
 
     const { setDownloadModalOpen } = useAuth();
     const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
+    const [zoom, setZoom] = useState(100);
     const previewRef = useRef<StoriesPreviewRef>(null);
 
     return (
@@ -48,12 +49,14 @@ const Stories = () => {
                 setAppearance={setAppearance}
             />
             <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
-                <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8">
-                    <StoriesPreview
-                        ref={previewRef}
-                        state={state}
-                        onSlideChange={setActiveSlide}
-                    />
+                <div className="min-h-full flex flex-col items-center justify-center px-4 py-8 lg:px-8">
+                    <div className="shrink-0" style={{ zoom: zoom / 100 }}>
+                        <StoriesPreview
+                            ref={previewRef}
+                            state={state}
+                            onSlideChange={setActiveSlide}
+                        />
+                    </div>
                 </div>
                 <PreviewControls
                     activeView={deviceView}
@@ -61,11 +64,11 @@ const Stories = () => {
                     onDownload={() => setDownloadModalOpen(true)}
                     onCopy={() => previewRef.current?.handleCopy()}
                     showDeviceToggle={false}
+                    zoom={zoom}
+                    onZoomChange={setZoom}
                 />
             </div>
-            <DownloadModal 
-                previewRef={previewRef.current?.getRef() || { current: null }}
-            />
+            <DownloadModal getPreviewElement={() => previewRef.current?.getRef().current ?? null} />
         </div>
     );
 };

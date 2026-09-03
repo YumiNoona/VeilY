@@ -31,6 +31,7 @@ const Comments = () => {
     }, []);
 
     const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
+    const [zoom, setZoom] = useState(100);
     const previewRef = useRef<CommentsPreviewRef>(null);
 
     return (
@@ -50,8 +51,10 @@ const Comments = () => {
                 onRandomize={randomizeState}
             />
             <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-muted/30">
-                <div className="min-h-full flex flex-col items-center justify-center p-4 lg:p-8">
-                    <CommentsPreview ref={previewRef} state={state} />
+                <div className="min-h-full flex flex-col items-center justify-center px-4 py-8 lg:px-8">
+                    <div className="shrink-0" style={{ zoom: zoom / 100 }}>
+                        <CommentsPreview ref={previewRef} state={state} />
+                    </div>
                 </div>
                 <PreviewControls
                     activeView={deviceView}
@@ -59,12 +62,12 @@ const Comments = () => {
                     onDownload={() => setDownloadModalOpen(true)}
                     onCopy={() => previewRef.current?.handleCopy()}
                     showDeviceToggle={false}
+                    zoom={zoom}
+                    onZoomChange={setZoom}
                 />
 
             </div>
-            <DownloadModal 
-                previewRef={previewRef.current?.getRef() || { current: null }}
-            />
+            <DownloadModal getPreviewElement={() => previewRef.current?.getRef().current ?? null} />
         </div>
     );
 };

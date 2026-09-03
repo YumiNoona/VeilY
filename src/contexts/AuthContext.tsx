@@ -18,6 +18,8 @@ interface AuthContextType {
     setProfileModalOpen: (open: boolean) => void;
     isDownloadModalOpen: boolean;
     setDownloadModalOpen: (open: boolean) => void;
+    isSupportModalOpen: boolean;
+    setSupportModalOpen: (open: boolean) => void;
     refetchUserStatus: () => Promise<void>;
     signOut: () => Promise<void>;
     updateProfile: (updates: { avatar_url?: string; full_name?: string }) => Promise<void>;
@@ -52,6 +54,8 @@ const AuthContext = createContext<AuthContextType>({
     setProfileModalOpen: () => {},
     isDownloadModalOpen: false,
     setDownloadModalOpen: () => {},
+    isSupportModalOpen: false,
+    setSupportModalOpen: () => {},
     refetchUserStatus: async () => {},
     signOut: async () => {},
     updateProfile: async () => {},
@@ -77,6 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [isUpgradeModalOpen, setUpgradeModalOpen] = useState(false);
     const [isProfileModalOpen, setProfileModalOpen] = useState(false);
     const [isDownloadModalOpen, setDownloadModalOpen] = useState(false);
+    const [isSupportModalOpen, setSupportModalOpen] = useState(false);
 
     const markBulkImportAsTried = () => {
         setTriedBulkImport(true);
@@ -91,6 +96,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isUpgradeModalOpen, setUpgradeModalOpen,
             isProfileModalOpen, setProfileModalOpen,
             isDownloadModalOpen, setDownloadModalOpen,
+            isSupportModalOpen, setSupportModalOpen,
             refetchUserStatus: async () => {},
             signOut: async () => { setAiFillsUsed(0); },
             updateProfile: async (updates: any) => {

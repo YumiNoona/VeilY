@@ -47,11 +47,11 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
     const handleDownload = async () => {
         if (!previewRef.current) return;
         try {
-            await exportAsImage(previewRef.current, {
+            const saved = await exportAsImage(previewRef.current, {
                 scale: 2,
                 filename: `veily-${state.platform}-post-${Date.now()}.png`
             });
-            toast.success("Mockup downloaded!");
+            if (saved) toast.success("Mockup downloaded!");
         } catch (err) {
             toast.error("Failed to download image");
         }

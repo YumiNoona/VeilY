@@ -179,11 +179,11 @@ export const StoriesPreview = React.forwardRef<StoriesPreviewRef, StoriesPreview
         handleDownload: async () => {
             if (!captureRef.current) return;
             try {
-                await exportAsImage(captureRef.current, {
+                const saved = await exportAsImage(captureRef.current, {
                     scale: 2,
                     filename: `veily-story-${state.platform}-${Date.now()}.png`
                 });
-                toast.success("Mockup downloaded!");
+                if (saved) toast.success("Mockup downloaded!");
             } catch (err) {
                 toast.error("Download failed");
             }

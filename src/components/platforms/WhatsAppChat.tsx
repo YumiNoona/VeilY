@@ -218,6 +218,7 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, deviceV
           </div>
         )}
       </div>
+      </div>
 
       {/* Input */}
       <div className={cn("p-2 flex items-center gap-2 shrink-0", appearance.darkMode ? "bg-[#202c33]" : "bg-[#f0f2f5]")}>
@@ -230,7 +231,6 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, deviceV
         <button aria-label="Record voice message" className="w-10 h-10 rounded-full bg-[#00a884] text-white flex items-center justify-center shrink-0">
           <Mic className="w-5 h-5" />
         </button>
-        </div>
       </div>
       {/* Edit Modal */}
       <EditMessageModal

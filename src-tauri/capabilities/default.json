@@ -8,6 +8,8 @@
   "permissions": [
     "core:default",
     "shell:allow-open",
+    "dialog:allow-save",
+    "fs:allow-write-file",
     "core:window:allow-start-dragging",
     "core:window:allow-toggle-maximize",
     "core:window:allow-minimize",

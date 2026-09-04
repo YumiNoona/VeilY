@@ -35,11 +35,11 @@ export const CommentsPreview = React.forwardRef<CommentsPreviewRef, CommentsPrev
         if (!previewRef.current) return;
 
         try {
-            await exportAsImage(previewRef.current, {
+            const saved = await exportAsImage(previewRef.current, {
                 scale: 2,
                 filename: `veily-comments-${state.platform}-${Date.now()}.png`
             });
-            toast.success("Mockup downloaded!");
+            if (saved) toast.success("Mockup downloaded!");
         } catch (err) {
             toast.error("Download failed");
         }

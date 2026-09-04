@@ -4,6 +4,7 @@ export interface ExportOptions {
     scale?: number;
     filename?: string;
     format?: 'png' | 'jpg';
+    captureMode?: 'viewport' | 'full';
 }
 
 export interface VideoExportOptions {
@@ -11,30 +12,171 @@ export interface VideoExportOptions {
     filename?: string;
     durationMs?: number;
     fps?: number;
+    autoScroll?: boolean;
     onProgress?: (progress: number) => void;
 }
 
-const captureElement = (element: HTMLElement, scale: number) => {
-    const width = Math.max(element.offsetWidth || Math.ceil(element.getBoundingClientRect().width), 1);
-    const height = Math.max(element.offsetHeight || Math.ceil(element.getBoundingClientRect().height), 1);
+const findChatScroller = (element: HTMLElement): HTMLElement | null => {
+    const explicitScroller = element.querySelector<HTMLElement>('[data-chat-scroll]');
+    if (explicitScroller) return explicitScroller;
 
-    return html2canvas(element, {
-        scale,
-        width,
-        height,
-        windowWidth: document.documentElement.clientWidth,
-        windowHeight: document.documentElement.clientHeight,
-        scrollX: window.scrollX,
-        scrollY: window.scrollY,
-        backgroundColor: null,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        imageTimeout: 15000,
-    });
+    const message = element.querySelector<HTMLElement>('[data-chat-message]');
+    let candidate = message?.parentElement ?? null;
+    while (candidate && candidate !== element) {
+        const overflowY = window.getComputedStyle(candidate).overflowY;
+        if (overflowY === 'auto' || overflowY === 'scroll') return candidate;
+        candidate = candidate.parentElement;
+    }
+    return null;
 };
 
-const downloadBlob = (blob: Blob, filename: string) => {
+const waitForCloneAssets = async (element: HTMLElement) => {
+    await document.fonts?.ready;
+    await Promise.all(Array.from(element.querySelectorAll('img')).map((image) => {
+        if (image.complete) return Promise.resolve();
+        return new Promise<void>((resolve) => {
+            image.addEventListener('load', () => resolve(), { once: true });
+            image.addEventListener('error', () => resolve(), { once: true });
+        });
+    }));
+};
+
+const prepareFullConversationClone = async (element: HTMLElement) => {
+    const sourceWidth = Math.max(element.offsetWidth || Math.ceil(element.getBoundingClientRect().width), 1);
+    const host = document.createElement('div');
+    const clone = element.cloneNode(true) as HTMLElement;
+
+    Object.assign(host.style, {
+        position: 'absolute',
+        left: '-100000px',
+        top: '0',
+        width: `${sourceWidth}px`,
+        height: 'auto',
+        overflow: 'visible',
+        pointerEvents: 'none',
+    });
+    Object.assign(clone.style, {
+        width: `${sourceWidth}px`,
+        maxWidth: 'none',
+        height: 'auto',
+        minHeight: '0',
+        maxHeight: 'none',
+        margin: '0',
+        overflow: 'visible',
+        transform: 'none',
+        transition: 'none',
+    });
+
+    host.appendChild(clone);
+    document.body.appendChild(host);
+
+    const scroller = findChatScroller(clone);
+    if (scroller) {
+        scroller.scrollTop = 0;
+        Object.assign(scroller.style, {
+            height: 'auto',
+            minHeight: '0',
+            maxHeight: 'none',
+            overflow: 'visible',
+            overflowY: 'visible',
+            flex: 'none',
+        });
+
+        let ancestor = scroller.parentElement;
+        while (ancestor && ancestor !== host) {
+            ancestor.style.height = 'auto';
+            ancestor.style.maxHeight = 'none';
+            ancestor.style.overflow = 'visible';
+            ancestor.style.overflowY = 'visible';
+            if (ancestor !== clone && window.getComputedStyle(ancestor).flexDirection === 'column') {
+                ancestor.style.flex = 'none';
+            }
+            ancestor = ancestor.parentElement;
+        }
+    }
+
+    await waitForCloneAssets(clone);
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    return { clone, host };
+};
+
+const getSafeCanvasScale = (width: number, height: number, requestedScale: number) => {
+    const maxDimension = 32760;
+    const maxArea = 64_000_000;
+    return Math.max(0.1, Math.min(
+        requestedScale,
+        maxDimension / width,
+        maxDimension / height,
+        Math.sqrt(maxArea / (width * height)),
+    ));
+};
+
+const captureElement = async (
+    element: HTMLElement,
+    scale: number,
+    captureMode: 'viewport' | 'full' = 'viewport',
+) => {
+    let captureTarget = element;
+    let cleanup: (() => void) | undefined;
+
+    if (captureMode === 'full' && findChatScroller(element)) {
+        const { clone, host } = await prepareFullConversationClone(element);
+        captureTarget = clone;
+        cleanup = () => host.remove();
+    }
+
+    const width = Math.max(element.offsetWidth || Math.ceil(element.getBoundingClientRect().width), 1);
+    const height = Math.max(
+        captureTarget.scrollHeight,
+        captureTarget.offsetHeight,
+        Math.ceil(captureTarget.getBoundingClientRect().height),
+        1,
+    );
+    const safeScale = getSafeCanvasScale(width, height, scale);
+
+    try {
+        return await html2canvas(captureTarget, {
+            scale: safeScale,
+            width,
+            height,
+            windowWidth: Math.max(document.documentElement.clientWidth, width),
+            windowHeight: Math.max(document.documentElement.clientHeight, height),
+            scrollX: window.scrollX,
+            scrollY: window.scrollY,
+            backgroundColor: null,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            imageTimeout: 15000,
+        });
+    } finally {
+        cleanup?.();
+    }
+};
+
+const isTauri = () =>
+    typeof window !== 'undefined' && typeof window.__TAURI_INTERNALS__ !== 'undefined';
+
+const saveBlob = async (blob: Blob, filename: string): Promise<boolean> => {
+    if (isTauri()) {
+        const [{ save }, { writeFile }] = await Promise.all([
+            import('@tauri-apps/plugin-dialog'),
+            import('@tauri-apps/plugin-fs'),
+        ]);
+        const extension = filename.split('.').pop()?.toLowerCase() || 'png';
+        const path = await save({
+            defaultPath: filename,
+            filters: [{
+                name: extension === 'webm' ? 'WebM video' : extension === 'jpg' ? 'JPEG image' : 'PNG image',
+                extensions: [extension],
+            }],
+        });
+
+        if (!path) return false;
+        await writeFile(path, new Uint8Array(await blob.arrayBuffer()));
+        return true;
+    }
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.download = filename;
@@ -43,6 +185,7 @@ const downloadBlob = (blob: Blob, filename: string) => {
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return true;
 };
 
 /**
@@ -53,21 +196,22 @@ const downloadBlob = (blob: Blob, filename: string) => {
 export const exportAsImage = async (
     element: HTMLElement,
     options: ExportOptions = {}
-): Promise<void> => {
+): Promise<boolean> => {
     const { 
         scale = 2, 
         filename = `mockup-${Date.now()}.png`,
-        format = 'png'
+        format = 'png',
+        captureMode = 'viewport',
     } = options;
 
     try {
-        const canvas = await captureElement(element, scale);
+        const canvas = await captureElement(element, scale, captureMode);
         const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
         const blob = await new Promise<Blob | null>((resolve) =>
             canvas.toBlob(resolve, mimeType, format === 'jpg' ? 0.9 : undefined)
         );
         if (!blob) throw new Error('The image encoder returned an empty file.');
-        downloadBlob(blob, filename);
+        return await saveBlob(blob, filename);
     } catch (error) {
         console.error('Failed to export image:', error);
         throw error;
@@ -106,12 +250,13 @@ export const copyToClipboard = async (
 export const exportAsVideo = async (
     element: HTMLElement,
     options: VideoExportOptions = {}
-): Promise<void> => {
+): Promise<boolean> => {
     const {
         scale = 1.5,
         filename = `mockup-${Date.now()}.webm`,
         durationMs = 6000,
         fps = 30,
+        autoScroll = false,
         onProgress,
     } = options;
 
@@ -126,6 +271,13 @@ export const exportAsVideo = async (
     ].find((type) => MediaRecorder.isTypeSupported(type));
 
     if (!mimeType) throw new Error('No supported WebM encoder was found.');
+
+    const scroller = autoScroll ? findChatScroller(element) : null;
+    const originalScrollTop = scroller?.scrollTop ?? 0;
+    if (scroller) {
+        scroller.scrollTop = 0;
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    }
 
     const firstFrame = await captureElement(element, scale);
     const output = document.createElement('canvas');
@@ -157,19 +309,25 @@ export const exportAsVideo = async (
 
     try {
         while (performance.now() - start < durationMs) {
+            const elapsed = performance.now() - start;
+            if (scroller) {
+                const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+                scroller.scrollTop = maxScroll * Math.min(1, elapsed / durationMs);
+            }
             const frame = await captureElement(element, scale);
             context.clearRect(0, 0, output.width, output.height);
             context.drawImage(frame, 0, 0, output.width, output.height);
-            onProgress?.(Math.min(0.98, (performance.now() - start) / durationMs));
+            onProgress?.(Math.min(0.98, elapsed / durationMs));
             await new Promise((resolve) => window.setTimeout(resolve, captureIntervalMs));
         }
     } finally {
         if (recorder.state !== 'inactive') recorder.stop();
         stream.getTracks().forEach((track) => track.stop());
+        if (scroller) scroller.scrollTop = originalScrollTop;
     }
 
     const video = await recordingComplete;
     if (!video.size) throw new Error('The video encoder returned an empty file.');
     onProgress?.(1);
-    downloadBlob(video, filename.endsWith('.webm') ? filename : `${filename}.webm`);
+    return await saveBlob(video, filename.endsWith('.webm') ? filename : `${filename}.webm`);
 };

@@ -278,11 +278,11 @@ export const EmailPreview = React.forwardRef<EmailPreviewRef, EmailPreviewProps>
         handleDownload: async () => {
             if (!captureRef.current) return;
             try {
-                await exportAsImage(captureRef.current, {
+                const saved = await exportAsImage(captureRef.current, {
                     scale: 2,
                     filename: `veily-email-${Date.now()}.png`
                 });
-                toast.success("Mockup downloaded!");
+                if (saved) toast.success("Mockup downloaded!");
             } catch (err) {
                 toast.error("Download failed");
             }

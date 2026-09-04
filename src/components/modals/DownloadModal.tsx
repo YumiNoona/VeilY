@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 
 type ExportType = 'image' | 'video';
 type ExportQuality = 'sd' | 'hd' | '4k';
+type ImageCaptureMode = 'full' | 'viewport';
 
 interface DownloadModalProps {
     previewRef?: React.RefObject<HTMLElement>;
@@ -47,6 +48,8 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
     const { isDownloadModalOpen, setDownloadModalOpen, setSupportModalOpen } = useAuth();
     const [exportType, setExportType] = useState<ExportType>('image');
     const [quality, setQuality] = useState<ExportQuality>('hd');
+    const [imageCaptureMode, setImageCaptureMode] = useState<ImageCaptureMode>('full');
+    const [autoScrollVideo, setAutoScrollVideo] = useState(true);
     const [filename, setFilename] = useState('veily-mockup');
     const [durationMs, setDurationMs] = useState(6000);
     const [isExporting, setIsExporting] = useState(false);
@@ -71,6 +74,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
         const longestEdge = Math.max(element.offsetWidth, element.offsetHeight, 1);
         return Math.min(8, Math.max(1, preset.targetLongEdge / longestEdge));
     };
+    const hasConversation = isDownloadModalOpen && !!resolvePreview()?.querySelector('[data-chat-scroll], [data-chat-message]');
     const safeFilename = filename.trim().replace(/[<>:"/\\|?*]+/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-') || 'veily-mockup';
 
     const handleDownload = async () => {
@@ -86,24 +90,34 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
         setProgress(0);
 
         try {
+            let saved: boolean;
             if (exportType === 'video') {
-                onPrepareVideo?.();
-                await new Promise((resolve) => window.setTimeout(resolve, 120));
-                await exportAsVideo(element, {
+                if (!autoScrollVideo) {
+                    onPrepareVideo?.();
+                    await new Promise((resolve) => window.setTimeout(resolve, 120));
+                }
+                saved = await exportAsVideo(element, {
                     scale: exportScale,
                     filename: `${safeFilename}.webm`,
                     durationMs,
+                    autoScroll: hasConversation && autoScrollVideo,
                     onProgress: setProgress,
                 });
-                toast.success('Video exported as WebM.');
             } else {
-                await exportAsImage(element, {
+                saved = await exportAsImage(element, {
                     scale: exportScale,
                     filename: `${safeFilename}.png`,
+                    captureMode: hasConversation ? imageCaptureMode : 'viewport',
                 });
                 setProgress(1);
-                toast.success('Image exported successfully.');
             }
+
+            if (!saved) {
+                setProgress(0);
+                return;
+            }
+
+            toast.success(exportType === 'video' ? 'Video exported as WebM.' : 'Image exported successfully.');
             setDownloadModalOpen(false);
             window.setTimeout(() => setSupportModalOpen(true), 220);
         } catch (error) {
@@ -197,6 +211,69 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
                         </div>
                     </div>
 
+                    {hasConversation && (
+                        <div className="mt-6">
+                            <div className="mb-3 flex items-center justify-between">
+                                <label className="text-sm font-semibold text-zinc-900">
+                                    {exportType === 'image' ? 'Conversation capture' : 'Conversation motion'}
+                                </label>
+                                <span className="text-xs font-medium text-zinc-500">
+                                    {exportType === 'image' ? 'Choose the output shape' : 'Keep the device ratio'}
+                                </span>
+                            </div>
+
+                            {exportType === 'image' ? (
+                                <div className="grid grid-cols-2 gap-2">
+                                    {([
+                                        { id: 'full' as const, label: 'Full conversation', detail: 'One long image' },
+                                        { id: 'viewport' as const, label: 'Current screen', detail: 'Device-sized image' },
+                                    ]).map((option) => {
+                                        const active = imageCaptureMode === option.id;
+                                        return (
+                                            <button
+                                                key={option.id}
+                                                type="button"
+                                                onClick={() => setImageCaptureMode(option.id)}
+                                                disabled={isExporting}
+                                                className={cn(
+                                                    'flex min-h-16 items-center gap-3 rounded-2xl border p-3 text-left transition',
+                                                    active ? 'border-zinc-900 bg-zinc-50 ring-1 ring-zinc-900' : 'border-zinc-200 hover:border-zinc-400',
+                                                )}
+                                            >
+                                                <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg', active ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-500')}>
+                                                    {active ? <Check className="h-4 w-4" /> : <ImageIcon className="h-4 w-4" />}
+                                                </span>
+                                                <span>
+                                                    <span className="block text-sm font-bold text-zinc-900">{option.label}</span>
+                                                    <span className="mt-0.5 block text-xs text-zinc-500">{option.detail}</span>
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <button
+                                    type="button"
+                                    aria-pressed={autoScrollVideo}
+                                    onClick={() => setAutoScrollVideo((enabled) => !enabled)}
+                                    disabled={isExporting}
+                                    className={cn(
+                                        'flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition',
+                                        autoScrollVideo ? 'border-zinc-900 bg-zinc-50 ring-1 ring-zinc-900' : 'border-zinc-200 hover:border-zinc-400',
+                                    )}
+                                >
+                                    <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl', autoScrollVideo ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-500')}>
+                                        {autoScrollVideo ? <Check className="h-4 w-4" /> : <Film className="h-4 w-4" />}
+                                    </span>
+                                    <span>
+                                        <span className="block text-sm font-bold text-zinc-900">Auto-scroll full conversation</span>
+                                        <span className="mt-0.5 block text-xs text-zinc-500">Record from the first message to the latest message.</span>
+                                    </span>
+                                </button>
+                            )}
+                        </div>
+                    )}
+
                     {exportType === 'video' && (
                         <div className="mt-6 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
                             <div className="flex items-center gap-2 text-sm font-semibold text-zinc-900">
@@ -218,7 +295,11 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
                                     </button>
                                 ))}
                             </div>
-                            <p className="mt-3 text-xs leading-5 text-zinc-500">For chats, recording restarts the typing animation so messages appear naturally in the clip.</p>
+                            <p className="mt-3 text-xs leading-5 text-zinc-500">
+                                {hasConversation && autoScrollVideo
+                                    ? 'The video starts at the first message and smoothly scrolls to the latest one.'
+                                    : 'For chats, recording restarts the typing animation so messages appear naturally in the clip.'}
+                            </p>
                         </div>
                     )}
 

@@ -16,6 +16,12 @@ export interface VideoExportOptions {
     onProgress?: (progress: number) => void;
 }
 
+type CaptureMode = NonNullable<ExportOptions['captureMode']>;
+
+const nextPaint = () => new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+});
+
 const findChatScroller = (element: HTMLElement): HTMLElement | null => {
     const explicitScroller = element.querySelector<HTMLElement>('[data-chat-scroll]');
     if (explicitScroller) return explicitScroller;
@@ -30,7 +36,7 @@ const findChatScroller = (element: HTMLElement): HTMLElement | null => {
     return null;
 };
 
-const waitForCloneAssets = async (element: HTMLElement) => {
+const waitForAssets = async (element: HTMLElement) => {
     await document.fonts?.ready;
     await Promise.all(Array.from(element.querySelectorAll('img')).map((image) => {
         if (image.complete) return Promise.resolve();
@@ -39,10 +45,16 @@ const waitForCloneAssets = async (element: HTMLElement) => {
             image.addEventListener('error', () => resolve(), { once: true });
         });
     }));
+    await nextPaint();
 };
 
 const prepareFullConversationClone = async (element: HTMLElement) => {
-    const sourceWidth = Math.max(element.offsetWidth || Math.ceil(element.getBoundingClientRect().width), 1);
+    const sourceRect = element.getBoundingClientRect();
+    const sourceWidth = Math.max(element.offsetWidth || Math.ceil(sourceRect.width), 1);
+    const sourceHeight = Math.max(element.offsetHeight || Math.ceil(sourceRect.height), 1);
+    const sourceScroller = findChatScroller(element);
+    const overflowHeight = sourceScroller ? Math.max(0, sourceScroller.scrollHeight - sourceScroller.clientHeight) : 0;
+    const exportHeight = sourceHeight + overflowHeight;
     const host = document.createElement('div');
     const clone = element.cloneNode(true) as HTMLElement;
 
@@ -51,18 +63,17 @@ const prepareFullConversationClone = async (element: HTMLElement) => {
         left: '-100000px',
         top: '0',
         width: `${sourceWidth}px`,
-        height: 'auto',
+        height: `${exportHeight}px`,
         overflow: 'visible',
         pointerEvents: 'none',
     });
     Object.assign(clone.style, {
         width: `${sourceWidth}px`,
         maxWidth: 'none',
-        height: 'auto',
+        height: `${exportHeight}px`,
         minHeight: '0',
-        maxHeight: 'none',
+        maxHeight: `${exportHeight}px`,
         margin: '0',
-        overflow: 'visible',
         transform: 'none',
         transition: 'none',
     });
@@ -71,33 +82,21 @@ const prepareFullConversationClone = async (element: HTMLElement) => {
     document.body.appendChild(host);
 
     const scroller = findChatScroller(clone);
-    if (scroller) {
+    if (scroller && sourceScroller) {
         scroller.scrollTop = 0;
         Object.assign(scroller.style, {
-            height: 'auto',
-            minHeight: '0',
-            maxHeight: 'none',
+            height: `${sourceScroller.scrollHeight}px`,
+            minHeight: `${sourceScroller.scrollHeight}px`,
+            maxHeight: `${sourceScroller.scrollHeight}px`,
             overflow: 'visible',
             overflowY: 'visible',
             flex: 'none',
         });
 
-        let ancestor = scroller.parentElement;
-        while (ancestor && ancestor !== host) {
-            ancestor.style.height = 'auto';
-            ancestor.style.maxHeight = 'none';
-            ancestor.style.overflow = 'visible';
-            ancestor.style.overflowY = 'visible';
-            if (ancestor !== clone && window.getComputedStyle(ancestor).flexDirection === 'column') {
-                ancestor.style.flex = 'none';
-            }
-            ancestor = ancestor.parentElement;
-        }
     }
 
-    await waitForCloneAssets(clone);
-    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-    return { clone, host };
+    await waitForAssets(clone);
+    return { clone, host, width: sourceWidth, height: exportHeight };
 };
 
 const getSafeCanvasScale = (width: number, height: number, requestedScale: number) => {
@@ -114,24 +113,23 @@ const getSafeCanvasScale = (width: number, height: number, requestedScale: numbe
 const captureElement = async (
     element: HTMLElement,
     scale: number,
-    captureMode: 'viewport' | 'full' = 'viewport',
+    captureMode: CaptureMode = 'viewport',
 ) => {
+    await waitForAssets(element);
     let captureTarget = element;
     let cleanup: (() => void) | undefined;
+    const sourceRect = element.getBoundingClientRect();
+    let width = Math.max(element.offsetWidth || Math.ceil(sourceRect.width), 1);
+    let height = Math.max(element.offsetHeight || Math.ceil(sourceRect.height), 1);
 
     if (captureMode === 'full' && findChatScroller(element)) {
-        const { clone, host } = await prepareFullConversationClone(element);
+        const { clone, host, width: cloneWidth, height: cloneHeight } = await prepareFullConversationClone(element);
         captureTarget = clone;
         cleanup = () => host.remove();
+        width = cloneWidth;
+        height = cloneHeight;
     }
 
-    const width = Math.max(element.offsetWidth || Math.ceil(element.getBoundingClientRect().width), 1);
-    const height = Math.max(
-        captureTarget.scrollHeight,
-        captureTarget.offsetHeight,
-        Math.ceil(captureTarget.getBoundingClientRect().height),
-        1,
-    );
     const safeScale = getSafeCanvasScale(width, height, scale);
 
     try {
@@ -141,13 +139,21 @@ const captureElement = async (
             height,
             windowWidth: Math.max(document.documentElement.clientWidth, width),
             windowHeight: Math.max(document.documentElement.clientHeight, height),
-            scrollX: window.scrollX,
-            scrollY: window.scrollY,
+            scrollX: 0,
+            scrollY: 0,
             backgroundColor: null,
             useCORS: true,
-            allowTaint: true,
+            allowTaint: false,
             logging: false,
             imageTimeout: 15000,
+            removeContainer: true,
+            onclone: (clonedDocument) => {
+                clonedDocument.querySelectorAll<HTMLElement>('[data-export-root], [data-export-root] *').forEach((node) => {
+                    node.style.animationPlayState = 'paused';
+                    node.style.transition = 'none';
+                    node.style.caretColor = 'transparent';
+                });
+            },
         });
     } finally {
         cleanup?.();
@@ -223,10 +229,14 @@ export const exportAsImage = async (
  */
 export const copyToClipboard = async (
     element: HTMLElement,
-    scale: number = 2
+    scale: number = 2,
+    captureMode: CaptureMode = 'viewport',
 ): Promise<boolean> => {
     try {
-        const canvas = await captureElement(element, scale);
+        if (!navigator.clipboard?.write || typeof ClipboardItem === 'undefined') {
+            throw new Error('Copying images is not supported by this browser.');
+        }
+        const canvas = await captureElement(element, scale, captureMode);
 
         const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
         if (blob) {

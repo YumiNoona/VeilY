@@ -1,56 +1,34 @@
-import React, { useCallback, useRef } from "react";
-import html2canvas from "html2canvas";
+import React, { useCallback } from "react";
+import { copyToClipboard, exportAsImage } from "@/lib/export-utils";
 import { toast } from "sonner";
 
 export const useScreenshot = (ref: React.RefObject<HTMLElement>) => {
-    const getCanvas = useCallback(async (): Promise<HTMLCanvasElement | null> => {
-        if (!ref.current) return null;
-        try {
-            const canvas = await html2canvas(ref.current, {
-                backgroundColor: null,
-                scale: 2,
-                useCORS: true,
-            });
-            return canvas;
-        } catch (error) {
-            console.error("Canvas render failed:", error);
-            toast.error("Failed to generate image");
-            return null;
-        }
-    }, [ref]);
-
     const downloadScreenshot = useCallback(async (fileNamePrefix: string = 'screenshot') => {
-        const canvas = await getCanvas();
-        if (!canvas) return;
+        if (!ref.current) return;
         try {
-            const link = document.createElement('a');
-            link.download = `${fileNamePrefix}-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            toast.success("Screenshot downloaded!");
+            const saved = await exportAsImage(ref.current, {
+                scale: 2,
+                filename: `${fileNamePrefix}-${Date.now()}.png`,
+                captureMode: 'viewport',
+            });
+            if (saved) toast.success("Screenshot downloaded!");
         } catch (error) {
             console.error("Download failed:", error);
             toast.error("Failed to download screenshot");
         }
-    }, [getCanvas]);
+    }, [ref]);
 
     const copyScreenshot = useCallback(async () => {
-        const canvas = await getCanvas();
-        if (!canvas) return;
+        if (!ref.current) return;
         try {
-            // Wrap toBlob in a Promise so we can properly catch null
-            const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
-            if (!blob) {
-                toast.error("Failed to copy because the image could not be generated");
-                return;
-            }
-            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-            toast.success("Screenshot copied to clipboard!");
+            const copied = await copyToClipboard(ref.current, 2, 'viewport');
+            if (copied) toast.success("Screenshot copied to clipboard!");
+            else toast.error("Failed to copy screenshot");
         } catch (error) {
             console.error("Copy failed:", error);
             toast.error("Failed to copy screenshot");
         }
-    }, [getCanvas]);
+    }, [ref]);
 
     return { downloadScreenshot, copyScreenshot };
 };

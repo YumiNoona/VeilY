@@ -1,6 +1,6 @@
 [package]
 name = "Veily"
-version = "0.1.0"
+version = "4.0.0"
 description = "Chat Mockup Design Tool"
 authors = ["Veily"]
 license = "MIT"

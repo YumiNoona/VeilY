@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -48,12 +48,13 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
     const { isDownloadModalOpen, setDownloadModalOpen, setSupportModalOpen } = useAuth();
     const [exportType, setExportType] = useState<ExportType>('image');
     const [quality, setQuality] = useState<ExportQuality>('hd');
-    const [imageCaptureMode, setImageCaptureMode] = useState<ImageCaptureMode>('full');
+    const [imageCaptureMode, setImageCaptureMode] = useState<ImageCaptureMode>('viewport');
     const [autoScrollVideo, setAutoScrollVideo] = useState(true);
     const [filename, setFilename] = useState('veily-mockup');
     const [durationMs, setDurationMs] = useState(6000);
     const [isExporting, setIsExporting] = useState(false);
     const [progress, setProgress] = useState(0);
+    const exportLockRef = useRef(false);
 
     const availableQualities = useMemo(() => qualityOptions, []);
 
@@ -78,6 +79,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
     const safeFilename = filename.trim().replace(/[<>:"/\\|?*]+/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-') || 'veily-mockup';
 
     const handleDownload = async () => {
+        if (exportLockRef.current) return;
         const element = resolvePreview();
         if (!element) {
             toast.error('Preview is still loading. Try again in a moment.');
@@ -86,6 +88,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
 
         const selectedQuality = qualityOptions.find((option) => option.id === quality) ?? qualityOptions[1];
         const exportScale = getPresetScale(element, selectedQuality);
+        exportLockRef.current = true;
         setIsExporting(true);
         setProgress(0);
 
@@ -124,6 +127,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
             console.error('Export failed:', error);
             toast.error(error instanceof Error ? error.message : 'The export could not be completed.');
         } finally {
+            exportLockRef.current = false;
             setIsExporting(false);
         }
     };

@@ -110,6 +110,70 @@ const getSafeCanvasScale = (width: number, height: number, requestedScale: numbe
     ));
 };
 
+const normalizeExportClone = (clonedDocument: Document) => {
+    const exportRoots = clonedDocument.querySelectorAll<HTMLElement>('[data-export-root]');
+
+    exportRoots.forEach((root) => {
+        root.querySelectorAll<HTMLElement>('*').forEach((node) => {
+            node.style.animationPlayState = 'paused';
+            node.style.transition = 'none';
+            node.style.caretColor = 'transparent';
+        });
+
+        // html2canvas positions compact fonts a little lower than Chromium. Elements
+        // using Tailwind's `truncate` then clip the lower half of the glyphs. Extra
+        // bottom paint room plus a compensating margin preserves the live layout.
+        root.querySelectorAll<HTMLElement>('.truncate').forEach((node) => {
+            const styles = clonedDocument.defaultView?.getComputedStyle(node);
+            const paddingBottom = Number.parseFloat(styles?.paddingBottom || '0');
+            const marginBottom = Number.parseFloat(styles?.marginBottom || '0');
+            node.style.paddingBottom = `${paddingBottom + 3}px`;
+            node.style.marginBottom = `${marginBottom - 3}px`;
+        });
+
+        // Native input/textarea text is painted with incorrect baselines by
+        // html2canvas. A visually equivalent span keeps placeholders and active
+        // values aligned without affecting the interactive preview.
+        root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach((control) => {
+            const styles = clonedDocument.defaultView?.getComputedStyle(control);
+            if (!styles) return;
+
+            const replacement = clonedDocument.createElement('span');
+            const value = control.value || control.getAttribute('value') || control.placeholder;
+            replacement.textContent = value;
+            replacement.style.display = 'flex';
+            replacement.style.alignItems = control instanceof HTMLTextAreaElement ? 'flex-start' : 'center';
+            replacement.style.whiteSpace = control instanceof HTMLTextAreaElement ? 'pre-wrap' : 'nowrap';
+            replacement.style.flex = styles.flex;
+            replacement.style.alignSelf = styles.alignSelf;
+            replacement.style.width = styles.width;
+            replacement.style.minWidth = styles.minWidth;
+            replacement.style.maxWidth = styles.maxWidth;
+            replacement.style.boxSizing = styles.boxSizing;
+            replacement.style.padding = styles.padding;
+            replacement.style.margin = styles.margin;
+            replacement.style.border = styles.border;
+            replacement.style.borderRadius = styles.borderRadius;
+            replacement.style.background = styles.background;
+            replacement.style.font = styles.font;
+            replacement.style.fontSize = styles.fontSize;
+            replacement.style.fontFamily = styles.fontFamily;
+            replacement.style.fontWeight = styles.fontWeight;
+            replacement.style.lineHeight = styles.lineHeight === 'normal' ? '1.4' : styles.lineHeight;
+            replacement.style.letterSpacing = styles.letterSpacing;
+            replacement.style.textAlign = styles.textAlign;
+            replacement.style.overflow = 'visible';
+            replacement.style.caretColor = 'transparent';
+            if (!control.value && control.placeholder) {
+                const placeholderStyles = clonedDocument.defaultView?.getComputedStyle(control, '::placeholder');
+                if (placeholderStyles?.color) replacement.style.color = placeholderStyles.color;
+                if (placeholderStyles?.opacity) replacement.style.opacity = placeholderStyles.opacity;
+            }
+            control.replaceWith(replacement);
+        });
+    });
+};
+
 const captureElement = async (
     element: HTMLElement,
     scale: number,
@@ -147,13 +211,7 @@ const captureElement = async (
             logging: false,
             imageTimeout: 15000,
             removeContainer: true,
-            onclone: (clonedDocument) => {
-                clonedDocument.querySelectorAll<HTMLElement>('[data-export-root], [data-export-root] *').forEach((node) => {
-                    node.style.animationPlayState = 'paused';
-                    node.style.transition = 'none';
-                    node.style.caretColor = 'transparent';
-                });
-            },
+            onclone: normalizeExportClone,
         });
     } finally {
         cleanup?.();

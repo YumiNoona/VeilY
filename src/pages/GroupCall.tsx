@@ -90,6 +90,7 @@ export default function GroupCall() {
                         <div 
                             ref={previewRef}
                             data-export-root
+                            data-export-theme={appearance.darkMode ? "dark" : "light"}
                             className={cn(
                                 "overflow-hidden shadow-2xl transition-all duration-300",
                                 deviceView === 'mobile' && appearance.showDeviceFrame ? "rounded-[40px] border-[8px] border-black bg-black" : "rounded-xl",

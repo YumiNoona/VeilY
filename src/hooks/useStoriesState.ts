@@ -23,7 +23,7 @@ export interface StoriesState {
     appearance: AppearanceSettings;
 }
 
-const defaultSlide = (): StorySlide => ({ id: uuidv4(), imageUrl: '/stories/weekend-city.svg' });
+const defaultSlide = (): StorySlide => ({ id: uuidv4(), imageUrl: '/stories/rooftop-evening.png' });
 
 const INITIAL_STATE: StoriesState = {
     platform: 'instagram',

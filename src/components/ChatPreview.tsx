@@ -154,6 +154,7 @@ export const ChatPreview = forwardRef<HTMLDivElement, ChatPreviewProps>(
       <div
         ref={setPreviewRef}
         data-export-root
+        data-export-theme={appearance.darkMode ? "dark" : "light"}
         style={chatStyle}
         className={cn(
           "chat-preview-shell overflow-hidden shadow-2xl transition-all duration-300 mx-auto mt-16 md:mt-0",

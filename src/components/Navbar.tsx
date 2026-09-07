@@ -11,7 +11,7 @@ import {
     MessageCircleMore,
     User as UserIcon,
     LogOut,
-    CirclePlay,
+    CircleDashed,
     Mail,
     Video,
     ChevronDown,
@@ -48,7 +48,7 @@ export const Navbar = () => {
         { id: "ai-chat", label: "AI Chat", path: "/app/ai-chat", icon: Sparkles },
         { id: "social", label: "Social", path: "/app/social", icon: LayoutGrid },
         { id: "comments", label: "Comments", path: "/app/comments", icon: MessageCircleMore },
-        { id: "stories", label: "Stories", path: "/app/stories", icon: CirclePlay },
+        { id: "stories", label: "Stories", path: "/app/stories", icon: CircleDashed },
         { id: "email", label: "Email", path: "/app/email", icon: Mail },
         { id: "group-call", label: "Call", path: "/app/group-call", icon: Video },
     ];

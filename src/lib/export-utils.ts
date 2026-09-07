@@ -147,6 +147,10 @@ const captureElement = async (
                     node.style.animationPlayState = 'paused';
                     node.style.transition = 'none';
                     node.style.caretColor = 'transparent';
+                    // The exported subtree is detached from the app's theme provider.
+                    // Preserve the theme on the capture root so Tailwind dark variants
+                    // inside previews render exactly as they do on screen.
+                    if (node.dataset.exportTheme === 'dark') node.classList.add('dark');
                 }
             },
         });

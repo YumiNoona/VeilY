@@ -1,7 +1,7 @@
 import React from 'react';
 import { SocialPostState, ThreadItem } from '@/hooks/useSocialPostState';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowBigUp, ArrowBigDown, MessageSquare, Share, Bookmark, MoreHorizontal } from 'lucide-react';
+import { ArrowBigUp, ArrowBigDown, MessageSquare, Share2, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -34,19 +34,6 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
             {/* Post Section */}
             <div className="flex">
                 {/* Left upvote bar */}
-                <div className={cn(
-                    "w-10 pt-2 flex flex-col items-center bg-transparent shrink-0",
-                    isDark ? "bg-[#1A1A1B]" : "bg-gray-50/50 hidden sm:flex"
-                )}>
-                    <button className={cn("rounded p-1", isDark ? "text-zinc-400 hover:bg-zinc-800" : "text-gray-400 hover:bg-gray-200")}>
-                        <ArrowBigUp className="w-6 h-6" />
-                    </button>
-                    <span className="text-xs font-medium my-1">{state.metrics.likes}</span>
-                    <button className={cn("rounded p-1", isDark ? "text-zinc-400 hover:bg-zinc-800" : "text-gray-400 hover:bg-gray-200")}>
-                        <ArrowBigDown className="w-6 h-6" />
-                    </button>
-                </div>
-
                 <div className="flex-1 p-2 pt-2 pb-1 min-w-0">
                     {/* Header */}
                     <div className="flex items-center gap-1.5 text-xs mb-1.5">
@@ -79,13 +66,15 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
                     )}
 
                     {/* Action Bar */}
-                    <div className="flex items-center gap-1 text-xs font-bold mt-2">
-                        <ActionButton icon={MessageSquare} label={`${state.metrics.comments} Comments`} isDark={isDark} />
-                        <ActionButton icon={Share} label="Share" isDark={isDark} />
-                        <ActionButton icon={Bookmark} label="Save" isDark={isDark} />
-                        <button className={cn("rounded p-1.5", isDark ? "text-zinc-400 hover:bg-zinc-800" : "text-gray-500 hover:bg-gray-100")}>
-                            <MoreHorizontal className="w-4 h-4" />
-                        </button>
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-semibold mt-3">
+                        <div className={cn("flex h-9 items-center overflow-hidden rounded-full", isDark ? "bg-[#272d30] text-[#d7dadc]" : "bg-[#e5ebee] text-[#1a1a1b]")}>
+                            <button aria-label="Upvote" className="flex h-full items-center gap-1 px-2.5 hover:bg-orange-500/15 hover:text-[#ff4500]"><ArrowBigUp className="h-5 w-5" /><span>{state.metrics.likes}</span></button>
+                            <span className={cn("h-5 w-px", isDark ? "bg-white/10" : "bg-black/10")} />
+                            <button aria-label="Downvote" className="flex h-full items-center px-2 hover:bg-indigo-500/15 hover:text-indigo-500"><ArrowBigDown className="h-5 w-5" /></button>
+                        </div>
+                        <ActionPill icon={MessageSquare} label={`${state.metrics.comments}`} isDark={isDark} />
+                        <ActionPill icon={RotateCcw} label="" isDark={isDark} ariaLabel="Repost" />
+                        <ActionPill icon={Share2} label="Share" isDark={isDark} />
                     </div>
                 </div>
             </div>
@@ -106,13 +95,13 @@ export const RedditPost: React.FC<RedditPostProps> = ({ state }) => {
     );
 };
 
-const ActionButton = ({ icon: Icon, label, isDark }: { icon: React.ElementType, label: string, isDark: boolean }) => (
+const ActionPill = ({ icon: Icon, label, isDark, ariaLabel }: { icon: React.ElementType, label: string, isDark: boolean, ariaLabel?: string }) => (
     <button className={cn(
-        "flex items-center gap-1.5 px-2 py-1.5 rounded transition-colors",
-        isDark ? "hover:bg-zinc-800 text-zinc-400" : "hover:bg-gray-100 text-gray-500"
-    )}>
-        <Icon className="w-4 h-4" />
-        <span>{label}</span>
+        "flex h-9 items-center gap-1.5 rounded-full px-3 transition-colors",
+        isDark ? "bg-[#272d30] text-[#d7dadc] hover:bg-[#333a3e]" : "bg-[#e5ebee] text-[#1a1a1b] hover:bg-[#d8e0e4]"
+    )} aria-label={ariaLabel}>
+        <Icon className="w-[18px] h-[18px]" />
+        {label && <span>{label}</span>}
     </button>
 );
 

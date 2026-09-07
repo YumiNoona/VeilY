@@ -1,6 +1,6 @@
 import { Message, Person, AppearanceSettings, DeviceView } from "@/types/chat";
 import { cn } from "@/lib/utils";
-import { Mic, Pencil, Plus, ArrowUp, Search, Settings, PanelLeft, FolderKanban } from "lucide-react";
+import { Mic, Pencil, Plus, ArrowUp, Settings, PanelLeft, FolderKanban, Palette, Code2, SlidersHorizontal, Sparkles } from "lucide-react";
 import { EditableText } from "@/components/ui/EditableText";
 import { getAIModelDisplayName } from "@/lib/ai-models";
 
@@ -16,8 +16,8 @@ interface ChatProps {
 }
 
 export function ClaudeChat({ messages, appearance, aiModel, deviceView = 'mobile', onUpdateMessage }: ChatProps) {
-    const bgColor = appearance.darkMode ? 'bg-[#1c1917]' : 'bg-[#fbfbfa]';
-    const headerBg = appearance.darkMode ? 'bg-[#1c1917]' : 'bg-[#fbfbfa]';
+    const bgColor = appearance.darkMode ? 'bg-[#141414]' : 'bg-[#fbfbfa]';
+    const headerBg = appearance.darkMode ? 'bg-[#141414]' : 'bg-[#fbfbfa]';
     const textColor = appearance.darkMode ? 'text-[#e0d6cc]' : 'text-stone-900';
     const userBubble = appearance.darkMode ? 'bg-[#3a322e]' : 'bg-[#F0F0EB]';
     const userText = appearance.darkMode ? 'text-[#e0d6cc]' : 'text-[#2D2D2D]';
@@ -43,13 +43,16 @@ export function ClaudeChat({ messages, appearance, aiModel, deviceView = 'mobile
     return (
         <div className={cn("flex h-full font-[Inter,sans-serif]", appearance.transparentBackground ? 'bg-transparent' : bgColor, textColor)}>
             {isDesktop && (
-                <aside className={cn("flex w-[232px] shrink-0 flex-col border-r p-3", appearance.darkMode ? "border-[#3a322e] bg-[#171411]" : "border-[#e8e5df] bg-[#f5f3ee]")}>
-                    <div className="mb-3 flex items-center gap-2 px-2 py-1 text-base font-semibold"><div className="text-xl text-[#d97757]">✦</div> Claude</div>
-                    <button className="mb-2 flex h-10 items-center gap-2 rounded-xl bg-[#d97757] px-3 text-xs font-semibold text-white"><Pencil className="h-4 w-4" /> New chat</button>
-                    <button className={cn("flex h-9 items-center gap-2 rounded-lg px-2 text-xs", appearance.darkMode ? "hover:bg-white/5" : "hover:bg-black/5")}><Search className="h-4 w-4" /> Search</button>
-                    <button className={cn("flex h-9 items-center gap-2 rounded-lg px-2 text-xs", appearance.darkMode ? "hover:bg-white/5" : "hover:bg-black/5")}><FolderKanban className="h-4 w-4" /> Projects</button>
-                    <p className="mb-1 mt-4 px-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Recents</p>
-                    {['Portfolio mockup tools', 'Product launch notes', 'Weekend planning'].map((item, index) => <div key={item} className={cn("truncate rounded-lg px-2 py-2 text-xs", index === 0 && (appearance.darkMode ? "bg-white/5" : "bg-black/5"))}>{item}</div>)}
+                <aside className={cn("flex w-[232px] shrink-0 flex-col border-r p-2.5", appearance.darkMode ? "border-white/10 bg-[#0f0f0f]" : "border-[#e8e5df] bg-[#f5f3ee]")}>
+                    <div className="mb-3 px-1.5 py-1 font-serif text-lg font-semibold">Claude</div>
+                    <ClaudeNav icon={Plus} label="New" active dark={appearance.darkMode} />
+                    <ClaudeNav icon={FolderKanban} label="Projects" dark={appearance.darkMode} />
+                    <ClaudeNav icon={Sparkles} label="Artifacts" dark={appearance.darkMode} />
+                    <ClaudeNav icon={Code2} label="Code" dark={appearance.darkMode} badge="Upgrade" />
+                    <ClaudeNav icon={SlidersHorizontal} label="Customize" dark={appearance.darkMode} />
+                    <p className="mt-4 px-2 text-[10px] text-muted-foreground">Usage ›</p>
+                    <p className="mt-7 px-2 text-[11px] text-muted-foreground">Chats and tasks</p>
+                    <div className="mt-auto border-t border-current/10 pt-2"><ClaudeNav icon={Palette} label="Design" dark={appearance.darkMode} /></div>
                     <div className="mt-auto flex items-center gap-2 px-2 py-2 text-xs"><div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#d97757] font-semibold text-white">Y</div><span>You</span><Settings className="ml-auto h-4 w-4 text-muted-foreground" /></div>
                 </aside>
             )}
@@ -63,10 +66,7 @@ export function ClaudeChat({ messages, appearance, aiModel, deviceView = 'mobile
                         <div className={cn("w-4 h-0.5", appearance.darkMode ? 'bg-[#e0d6cc]' : 'bg-stone-900')}></div>
                     </div>}
                 </button>
-                <div className={cn("flex items-center gap-1 cursor-pointer px-2 py-1 rounded-lg transition-colors", appearance.darkMode ? 'hover:bg-[#2a2420]' : 'hover:bg-[#f5f5f0]')}>
-                    <span className="font-semibold text-[15px]">{getModelDisplayName()}</span>
-                    <span className="text-gray-400 text-[10px] transform translate-y-[1px]">▼</span>
-                </div>
+                {isDesktop ? <div className="rounded-lg bg-black/10 px-2.5 py-1 text-xs text-muted-foreground">Free plan · <span className="text-blue-500 underline">Upgrade</span></div> : <div className={cn("flex items-center gap-1 cursor-pointer px-2 py-1 rounded-lg transition-colors", appearance.darkMode ? 'hover:bg-[#2a2420]' : 'hover:bg-[#f5f5f0]')}><span className="font-semibold text-[15px]">{getModelDisplayName()}</span><span className="text-gray-400 text-[10px] translate-y-px">▼</span></div>}
                 <div className="w-9 h-9 rounded-full bg-[#D97757]/10 flex items-center justify-center text-[#D97757] hover:bg-[#D97757]/20 transition-colors cursor-pointer">
                     <Pencil className="w-[18px] h-[18px]" />
                 </div>
@@ -138,3 +138,5 @@ export function ClaudeChat({ messages, appearance, aiModel, deviceView = 'mobile
         </div>
     );
 }
+
+const ClaudeNav = ({ icon: Icon, label, active, dark, badge }: { icon: React.ElementType; label: string; active?: boolean; dark: boolean; badge?: string }) => <button className={cn("mb-0.5 flex h-8 w-full items-center gap-2 rounded-lg px-2 text-xs", active ? (dark ? "bg-[#343434]" : "bg-black/10") : (dark ? "hover:bg-white/5" : "hover:bg-black/5"))}><Icon className="h-4 w-4"/><span>{label}</span>{badge && <span className="ml-auto rounded-full border border-current/20 px-1.5 py-0.5 text-[9px] text-blue-500">{badge}</span>}</button>;

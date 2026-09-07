@@ -202,7 +202,7 @@ export const StoriesPreview = React.forwardRef<StoriesPreviewRef, StoriesPreview
     }));
 
     return (
-        <div ref={captureRef} data-export-root className="inline-block relative">
+        <div ref={captureRef} data-export-root data-export-theme="dark" className="inline-block relative">
             <StoryFrame state={state} onSlideChange={onSlideChange} />
         </div>
     );

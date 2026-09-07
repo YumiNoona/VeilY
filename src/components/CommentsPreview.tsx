@@ -73,6 +73,7 @@ export const CommentsPreview = React.forwardRef<CommentsPreviewRef, CommentsPrev
                 <div
                     ref={previewRef}
                     data-export-root
+                    data-export-theme={state.config.theme}
                     className="transition-all duration-300 ease-in-out"
                     // Add some spacing around the preview for export capture
                     style={{ padding: '2rem' }}

@@ -75,6 +75,7 @@ export const SocialPostPreview = React.forwardRef<SocialPostPreviewRef, SocialPo
                 <div
                     ref={previewRef}
                     data-export-root
+                    data-export-theme={state.config.theme}
                     className="transition-all duration-300 ease-in-out p-8 rounded-xl"
                     style={{
                         backgroundColor: state.config.transparentBackground

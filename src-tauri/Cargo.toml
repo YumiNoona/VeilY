@@ -1,6 +1,6 @@
 [package]
 name = "Veily"
-version = "4.0.2"
+version = "4.0.3"
 description = "Create polished, editable chat and social mockups with pixel-accurate image and video exports."
 authors = ["Veily"]
 license = "MIT"

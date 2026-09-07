@@ -112,11 +112,8 @@ export function WhatsAppChat({ messages, people, activePerson, chatType, deviceV
             backgroundImage: `url(${appearance.wallpaperUrl})`,
           } : {
             backgroundColor: appearance.darkMode ? '#0b141a' : '#efeae2',
-            backgroundImage: "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')",
+            backgroundImage: appearance.darkMode ? 'none' : "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')",
             backgroundSize: '412px 749px',
-            filter: appearance.darkMode
-              ? 'invert(1) saturate(0.7) brightness(0.72) contrast(1.15)'
-              : undefined,
           }}
         />
         <div data-chat-scroll className="relative z-10 h-full overflow-y-auto p-3">

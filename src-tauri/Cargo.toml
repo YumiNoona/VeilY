@@ -1,7 +1,7 @@
 [package]
 name = "Veily"
-version = "4.0.1"
-description = "Chat Mockup Design Tool"
+version = "4.0.2"
+description = "Create polished, editable chat and social mockups with pixel-accurate image and video exports."
 authors = ["Veily"]
 license = "MIT"
 repository = "https://github.com/YumiNoona/VeilY"
